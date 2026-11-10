@@ -24,7 +24,7 @@ The day number comes from his message. The date is today's date when he sends it
 
 ## The stages
 1. `days/NN/prompt.md`: his prompt, verbatim, typos and all. Never tidy it.
-2. `days/NN/meta.json`: `day`, `date` (YYYY-MM-DD), `title`, `note` (one line on the idea).
+2. `days/NN/meta.json`: `day`, `date` (YYYY-MM-DD), `started_at` (ISO time his prompt message arrived, UTC), `title`, `note` (one line on the idea). Day 01's `started_at` sets the whole schedule on the site: day N is due at day 01 `started_at` + (N − 1) × 24 hours, and every empty slot counts down to it.
 3. `days/NN/poster.html`: the poster. A3 portrait, exactly 1240 × 1754 px. Self-contained HTML (Google Fonts are fine). Any generated images go in `days/NN/`. The poster follows the prompt, not the Blame Opal brand. Only the socials are in the brand.
 4. `days/NN/social/social.html`: copy `days/_template/social/social.html`, change only the JSON content block. Keep the five frames in this order: 3 × ig-post (fb2 poster, statement, e2), ig-story fb2, li-portrait fb2. Image names stay `mount-N.jpg`. Move the fb2 `corner` day to day so the series doesn't repeat.
 5. `days/NN/copy/`: the six files in `days/_template/copy/`, every word rewritten for the day, `{{LINK}}` left as is (the packager fills it in). Load the `james-tone-of-voice` and `blame-opal` skills first and run the Blame Opal `check` tool on the copy. UK English, no em or en dashes, no emoji, `we give a sh*t.` only as a sign-off. Each platform's shape is in the template: LinkedIn hooks before "see more", link in the first comment, ends on a question; Instagram hooks on line one, asks for the save, niche hashtags; Story is stickers only.
@@ -33,9 +33,9 @@ The day number comes from his message. The date is today's date when he sends it
 8. Publish the site: `scripts/publish-site.sh "Day NN: Title"` (needs the site repo cloned, see below). Vercel deploys on push. Then check it's live: `curl -s https://thirty-posters-site.vercel.app/data/posters.js` should list day NN (allow up to a minute for the deploy; poll with a Monitor until-loop, not sleep).
 
 ## The website
-Source is `site/` (page, `site.config.js`, `vercel.json`). `scripts/build-site.js` builds it into `dist/` with the posters, `data/posters.js`, `feed.xml` and the share tags. `dist/` is pushed to the separate site repo, which Vercel deploys.
+Source is `site/` (page, `site.config.js`, `vercel.json`, `vendor/` GSAP 3.13). `scripts/build-site.js` builds it into `dist/` with the posters, `data/posters.js` and the share tags. The page is an endless draggable wall (GSAP Draggable + Inertia) with a live digital countdown on every empty slot, the Blame Opal cursor and glass HUD, all on the house easing cubic-bezier(.2,.7,.2,1) and the system durations. `dist/` is pushed to the separate site repo, which Vercel deploys.
 - `site/site.config.js` holds the live URL. Change it there only.
-- Notifications are free only: "Watch on GitHub" (each day's GitHub Release notifies watchers) and the RSS feed. No email service: James decided against paying for one.
+- Notifications: "Watch on GitHub" only (each day's GitHub Release notifies watchers). No email, no RSS: James decided against both.
 
 ## Setup status
 - [x] Site repo: `JNBO2026/thirty-posters-site` (private), deploys from `main`. In a new session, if `../thirty-posters-site` is missing: `add_repo` it with push access, then `git clone https://github.com/JNBO2026/thirty-posters-site ../thirty-posters-site`. Do this before the day starts, not mid-timer.
