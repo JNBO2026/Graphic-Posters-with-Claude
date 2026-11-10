@@ -1,10 +1,10 @@
 For the next 30 days I get 60 seconds to brief Claude. Then I’m not allowed to touch it.
 
-One prompt a day, typed in a minute. Claude Code, running Opus 5.5, makes the poster. I can only answer its questions. Whatever comes back gets posted. No redos, no tidying up after.
+One prompt a day, spoken into voice to text in a minute. Claude Code, running Opus 5.5, makes the poster. I can only answer its questions. Whatever comes back gets posted. No redos, no tidying up after.
 
 What I actually want to find out: how far it gets on direction alone. Which visual treatments it’s genuinely good at, and which parts of a brief it sticks to when nobody’s checking.
 
-Day 01 is below. 147 words, rambling, typos and all (“bow house” for Bauhaus). I asked for pixel letters, a Japanese gradient, aggressive noise and nothing inside a 100 px margin. It built its own letters from squares, quarter circles and triangles, then audited its own layout. Margins measured: 100 px exactly. All code, no image model.
+Day 01 is below. 147 words, rambling, mishearings and all (“bow house” was Bauhaus). I asked for pixel letters, a Japanese gradient, aggressive noise and nothing inside a 100 px margin. It built its own letters from squares, quarter circles and triangles, then audited its own layout. Margins measured: 100 px exactly. All code, no image model.
 
 Every prompt goes on the wall, free to copy. Link in the comments.
 

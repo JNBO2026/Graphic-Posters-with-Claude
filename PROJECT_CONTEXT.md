@@ -17,6 +17,8 @@ James (Blame Opal, London; Instagram `blameopal`, LinkedIn `jamesnawka`) is runn
 4. Hands off: Claude makes every decision the prompt doesn't.
 5. Post it as is.
 
+Prompts are dictated with a voice to text tool, not typed. That's why the site says "The prompt, inputted in 60 seconds". Transcripts come through unpunctuated with misheard words (day 01: "bow house" for Bauhaus). Interpret the intent, keep the transcript verbatim. In copy, say "said" or "dictated" rather than "typed".
+
 During a challenge day: never offer options to pick from. Ask only if genuinely blocked. During set-up and website work (like this session) he does want options, presented on the review page.
 
 ### The daily trigger (see CLAUDE.md for the exact steps)

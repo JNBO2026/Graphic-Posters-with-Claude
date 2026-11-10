@@ -18,7 +18,7 @@ The challenge hasn't started until James sends "day one", "day 2", "Day 14" or s
 
 1. **He sends "day N".** Reply with one short message and nothing else, for example "Day 01. You have 60 seconds from now. Go." In the same turn, start the timer: a Bash call with `run_in_background: true` running `sleep 60`. Record the start time (`date -u +%FT%TZ`). Don't do any other work in that turn, then end it so he can type.
 2. **The timer ends.** You're woken when the background `sleep` exits. Send one message: "STOP. Hit enter." Also call PushNotification with "STOP. Hit enter." Nothing else.
-3. **His next message is the prompt.** Accept it exactly as sent, whatever state it's in. If it arrives before the stop, it still counts. Never ask him to rephrase.
+3. **His next message is the prompt.** Accept it exactly as sent, whatever state it's in. If it arrives before the stop, it still counts. Never ask him to rephrase. He dictates it with a voice to text tool (that's why the site says "inputted", not "typed"), so expect run-on sentences, no punctuation and words heard wrong: "bow house" meant Bauhaus. Read it for what he said and design from that, but save and show it exactly as transcribed. Only ask if a misheard word could genuinely mean two different things for the design.
 4. **Make it.** Ask a question only if you genuinely can't go on without the answer. His answers are inputs, not new direction. Then run the stages below without stopping.
 5. **Hand over.** SendUserFile the three zips in `days/NN/handover/` (see HANDOVER.md), then a short summary with the live link.
 
