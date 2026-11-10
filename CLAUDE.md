@@ -11,14 +11,25 @@ James is doing a 30 day challenge. Each day he opens a session and types one pro
 
 So: don't offer options to pick from (this overrides the Blame Opal "show two or three approaches" step). Ask a question only when you genuinely can't proceed without one. Then make it, check it properly, and hand back finished work.
 
+## The trigger: how a day starts
+The challenge hasn't started until James sends "day one", "day 2", "Day 14" or similar. Nothing in `days/` exists before that.
+
+1. **He sends "day N".** Reply with one short message and nothing else, for example "Day 01. You have 60 seconds from now. Go." In the same turn, start the timer: a Bash call with `run_in_background: true` running `sleep 60`. Record the start time (`date -u +%FT%TZ`). Don't do any other work in that turn, then end it so he can type.
+2. **The timer ends.** You're woken when the background `sleep` exits. Send one message: "STOP. Hit enter." Also call PushNotification with "STOP. Hit enter." so it reaches his phone. Nothing else.
+3. **His next message is the prompt.** Accept it exactly as sent, whatever state it's in, half-finished sentences included. If it arrives before the stop, that's fine: it's still the prompt, so cancel nothing and carry on. Never ask him to rephrase.
+4. **Make it.** Ask a question only if you genuinely can't go on without the answer (rule 3). His answers are inputs, not new direction. Then run the stages below without stopping.
+5. **Hand over.** Send the poster, the socials and `copy.md` with SendUserFile, then a two-line summary. Commit and push.
+
+The day number comes from his message. The date is today's date when he sends it.
+
 ## Every day, do all of this
 1. `days/NN/prompt.md`: his prompt, verbatim, typos and all. Never tidy it.
 2. `days/NN/meta.json`: `day`, `date` (YYYY-MM-DD), `title`, `note` (one line on the idea).
 3. `days/NN/poster.html`: the poster. A3 portrait, exactly 1240 × 1754 px. Self-contained HTML (fonts from Google Fonts are fine). Any generated images go in `days/NN/` next to it.
    The poster follows the prompt, not the Blame Opal brand. Only the socials are in the brand.
-4. `days/NN/social/social.html`: copy the previous day's and change only the JSON content block (labels, titles, day number). Keep the frames: 3 × ig-post carousel (fb2 poster, statement, e2), 1 × ig-story fb2, 1 × li-portrait fb2. Use the `mount-N.jpg` image names, where N is the frame number. Move the fb2 corner around day to day so the series doesn't repeat.
+4. `days/NN/social/social.html`: copy `days/_template/social/social.html` (or the previous day's) and change only the JSON content block (labels, titles, day number). Keep the frames: 3 × ig-post carousel (fb2 poster, statement, e2), 1 × ig-story fb2, 1 × li-portrait fb2. Use the `mount-N.jpg` image names, where N is the frame number. Move the fb2 corner around day to day so the series doesn't repeat.
 5. Run `scripts/build-day.sh NN`. Look at `poster.jpg` and every export before handing over: no clipped, overlapping or wrapped-badly type.
-6. `days/NN/copy.md`: LinkedIn post and first comment, Instagram caption, Story stickers. Same structure as day 01. Load the `james-tone-of-voice` and `blame-opal` skills first, and run the Blame Opal `check` tool on the copy. UK English, no em or en dashes, no emoji, tagline `we give a sh*t.` only as a sign-off.
+6. `days/NN/copy.md`: LinkedIn post and first comment, Instagram caption, Story stickers. Same structure as `days/_template/copy.md`, every word new. Load the `james-tone-of-voice` and `blame-opal` skills first, and run the Blame Opal `check` tool on the copy. UK English, no em or en dashes, no emoji, tagline `we give a sh*t.` only as a sign-off.
 7. Commit and push.
 
 ## The wall

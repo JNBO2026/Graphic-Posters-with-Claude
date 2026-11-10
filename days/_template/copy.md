@@ -1,4 +1,4 @@
-# Day 01 copy
+# Day NN copy (TEMPLATE: the dry run from setup. Keep the structure and the "why it’s built this way" notes, rewrite every word.)
 
 Assets are in `social/export/`. Light is the default, dark is there if you want it.
 
