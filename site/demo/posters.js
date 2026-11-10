@@ -11,14 +11,14 @@ window.DEMO = true;
     prompt: 'Everyday for 30 days ill create a poster only using Claude code and my prompts. Rules: 1. Generative AI Can be used. 2. You only get 60 Seconds to do your prompt. 3. You can only answer any question The LLM asks 4. hands off 5. post it as is',
     process: 'Code only, no generative model. Built as one HTML page in [[Claude Code]]: the clock face is 60 [[SVG]] lines drawn in a loop, the type is Archivo Black and IBM Plex Mono from [[Google Fonts]], and the paper grain is an SVG noise filter. Rendered to A3 with [[Playwright]].',
     tools: ['Claude Code', 'HTML and CSS', 'SVG', 'Google Fonts', 'Playwright'],
-    thumb: 'demo/thumb.jpg', image: 'demo/poster.jpg'
+    thumb: 'demo/thumb.jpg', thumbS: 'demo/thumb-s.jpg', image: 'demo/poster.jpg'
   }, {
     day: 2, date: d(26), title: 'Hands Off.',
     note: 'Example poster. Two words, as big as A3 allows.',
     prompt: 'example prompt for the preview, two words big type hands off',
     process: 'Code only, no generative model. Pure type set in [[HTML and CSS]] with Anton from [[Google Fonts]], laid out in [[Claude Code]] and rendered with [[Playwright]].',
     tools: ['Claude Code', 'HTML and CSS', 'Google Fonts', 'Playwright'],
-    thumb: 'demo/thumb-02.jpg', image: 'demo/poster-02.jpg'
+    thumb: 'demo/thumb-02.jpg', thumbS: 'demo/thumb-s-02.jpg', image: 'demo/poster-02.jpg'
   }, {
     day: 3, date: d(50), title: 'Ten Seconds.',
     note: 'Example animated poster. The last ten seconds of a sixty second brief, on a loop.',
@@ -26,6 +26,6 @@ window.DEMO = true;
     process: 'Code only, no generative model. The digits roll with a stepped [[CSS]] animation and the hand sweeps once every ten seconds. [[Playwright]] captured all 240 frames one by one and [[FFmpeg]] encoded them to an MP4 that loops.',
     tools: ['Claude Code', 'CSS', 'Playwright', 'FFmpeg'],
     skills: [{ name: 'canvas-design', url: 'https://github.com/anthropics/skills/tree/main/skills/canvas-design' }],
-    thumb: 'demo/thumb-03.jpg', image: 'demo/poster-03.jpg', video: 'demo/poster-03.mp4'
+    thumb: 'demo/thumb-03.jpg', thumbS: 'demo/thumb-s-03.jpg', image: 'demo/poster-03.jpg', video: 'demo/poster-03.mp4'
   }];
 })();

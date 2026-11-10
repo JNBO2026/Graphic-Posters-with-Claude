@@ -2,7 +2,6 @@
   "cleanUrls": true,
   "headers": [
     { "source": "/(index.html|data/posters.js)?", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
-    { "source": "/remind.ics", "headers": [{ "key": "Content-Type", "value": "text/calendar; charset=utf-8" }, { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
     { "source": "/posters/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }
   ]
 }

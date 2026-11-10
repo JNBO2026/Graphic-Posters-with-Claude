@@ -21,6 +21,8 @@
   .lock img { height:14px; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lock img { filter:invert(1); } }
   .opts { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:16px; }
+  .opts.four { grid-template-columns:repeat(4, minmax(0, 1fr)); }
+  .opts.one { grid-template-columns:minmax(0, 360px); }
   .opt { display:flex; flex-direction:column; gap:12px; padding:12px; border-radius:var(--radius); background:var(--raised); box-shadow:inset 0 0 0 1.5px transparent; transition:box-shadow 200ms var(--ease); }
   .opt.on { box-shadow:inset 0 0 0 2px var(--ink); }
   .opt .t { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
@@ -42,33 +44,32 @@
   .bar { position:sticky; bottom:2px; z-index:5; flex-direction:row; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; box-shadow:0 0 0 2px var(--ground); }
   .sum { font:500 14px/20px 'Instrument Sans'; color:var(--sec); }
   .sum strong { color:var(--ink); font-weight:600; }
-  @media (max-width:900px) { .opts { grid-template-columns:1fr; } .phone { max-width:360px; margin:0 auto; } h1 { font:600 28px/28px 'Instrument Sans'; } .tile { padding:16px; } }
+  @media (max-width:900px) { .opts, .opts.four { grid-template-columns:1fr; } .phone { max-width:360px; margin:0 auto; } h1 { font:600 28px/28px 'Instrument Sans'; } .tile { padding:16px; } }
 </style>
 </head>
 <body>
 <header class="tile">
   <span class="lock"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</span>
   <h1>Thirty posters: review</h1>
-  <p>Each option below is the real site running with example data. Scroll, drag and tap inside the phones. Pick one per question, add any notes, then copy your selections and paste them back to Claude.</p>
+  <p>Each option below is the real site running with example data. Scroll, drag and tap inside the phones. Pick a phone layout, add any notes, then copy your selections and paste them back to Claude.</p>
 </header>
 
-<section class="tile" data-q="tile">
-  <span class="k">Question 1</span><h2>Countdown tiles</h2>
-  <p>Round two, after your notes: Swiss and fintech layouts. Hairline rows, label left and value right, tabular figures, big cropped numerals. How each empty day looks on the wall, desktop and phone.</p>
-  <div class="opts">
-    <div class="opt" data-v="D"><div class="t"><b>D</b><small>Ledger</small></div><small>C, with edge. A huge cropped day number, then hairline rows like a bank statement: opens, due in, how far through the wait, and a progress rule.</small><div class="phone"><iframe loading="lazy" title="Tile option D" data-src="./?demo&tile=d&mobile=d"></iframe></div><button class="btn ghost pick">Pick D</button></div>
-    <div class="opt" data-v="E"><div class="t"><b>E</b><small>Ticker</small></div><small>A fintech stat card. Day label and a status chip, a big tabular countdown, the open date, and a 30 bar strip showing where this day sits in the run.</small><div class="phone"><iframe loading="lazy" title="Tile option E" data-src="./?demo&tile=e&mobile=d"></iframe></div><button class="btn ghost pick">Pick E</button></div>
-    <div class="opt" data-v="F"><div class="t"><b>F</b><small>Departures</small></div><small>A Swiss timetable. Day number and status up top, then one ruled row each for days, hours, minutes and seconds.</small><div class="phone"><iframe loading="lazy" title="Tile option F" data-src="./?demo&tile=f&mobile=d"></iframe></div><button class="btn ghost pick">Pick F</button></div>
+<section class="tile">
+  <span class="k">Decided</span><h2>Countdown tiles: F</h2>
+  <p>Departures. Day number and status, then one ruled row each for days, hours, minutes and seconds.</p>
+  <div class="opts one">
+    <div class="opt on" data-v="F"><div class="t"><b>F</b><small>Departures, picked</small></div><small>Locked in. Shown here so you can see it with each phone layout.</small><div class="phone"><iframe loading="lazy" title="Tile option F" data-src="./?demo&tile=f&mobile=g"></iframe></div></div>
   </div>
 </section>
 
 <section class="tile" data-q="mobile">
-  <span class="k">Question 2</span><h2>Phone layout</h2>
-  <p>Round two: a pill bottom left that reads "30 posters in 30 minutes" and opens into the story when you tap it. Three ways to show the countdown alongside it.</p>
-  <div class="opts">
-    <div class="opt" data-v="D"><div class="t"><b>D</b><small>Pill and bell</small></div><small>"30 posters in 30 minutes" as a pill bottom left, a green bell bottom right. Tap the pill for the story, the clock and the reminders.</small><div class="phone"><iframe loading="lazy" title="Phone layout D" data-src="./?demo&tile=d&mobile=d"></iframe></div><button class="btn ghost pick">Pick D</button></div>
-    <div class="opt" data-v="E"><div class="t"><b>E</b><small>Pill with clock</small></div><small>One pill, two lines: the title and the live countdown under it. Nothing else on screen. Tap it to open.</small><div class="phone"><iframe loading="lazy" title="Phone layout E" data-src="./?demo&tile=d&mobile=e"></iframe></div><button class="btn ghost pick">Pick E</button></div>
-    <div class="opt" data-v="F"><div class="t"><b>F</b><small>Pill and clock chip</small></div><small>The title pill bottom left, the countdown as a small chip top right. Reminders live inside the pill.</small><div class="phone"><iframe loading="lazy" title="Phone layout F" data-src="./?demo&tile=d&mobile=f"></iframe></div><button class="btn ghost pick">Pick F</button></div>
+  <span class="k">Question</span><h2>Phone layout, round three</h2>
+  <p>Four different ways in, all minimal. No extra countdowns and no calendar: just the story, your socials and Get notified on GitHub. Tap the mark, pill, bar or dock inside each phone to open it.</p>
+  <div class="opts four">
+    <div class="opt" data-v="G"><div class="t"><b>G</b><small>Just the mark</small></div><small>Nothing on screen but the blame opal mark, bottom left. Tap it for the story, your socials and Get notified on GitHub.</small><div class="phone"><iframe loading="lazy" title="Phone layout G" data-src="./?demo&tile=f&mobile=g"></iframe></div><button class="btn ghost pick">Pick G</button></div>
+    <div class="opt" data-v="H"><div class="t"><b>H</b><small>Title pill</small></div><small>"30 posters in 30 minutes" as a pill bottom left with an info icon. The name does the work. Tap for the same sheet.</small><div class="phone"><iframe loading="lazy" title="Phone layout H" data-src="./?demo&tile=f&mobile=h"></iframe></div><button class="btn ghost pick">Pick H</button></div>
+    <div class="opt" data-v="I"><div class="t"><b>I</b><small>Top bar</small></div><small>A slim bar across the top: the mark and title on the left, Instagram and LinkedIn icons on the right. Socials one tap away, the wall stays clear below.</small><div class="phone"><iframe loading="lazy" title="Phone layout I" data-src="./?demo&tile=f&mobile=i"></iframe></div><button class="btn ghost pick">Pick I</button></div>
+    <div class="opt" data-v="J"><div class="t"><b>J</b><small>Dock</small></div><small>A small dock bottom centre: the mark (about), Instagram, LinkedIn and a green GitHub button. Everything is one tap, no sheet needed unless you want the story.</small><div class="phone"><iframe loading="lazy" title="Phone layout J" data-src="./?demo&tile=f&mobile=j"></iframe></div><button class="btn ghost pick">Pick J</button></div>
   </div>
 </section>
 
@@ -84,9 +85,9 @@
 
 <script>
 (() => {
-  const pick = { tile: '', mobile: '' };
-  let store = {}; try { store = JSON.parse(localStorage.getItem('tp-review-2') || '{}'); } catch {}
-  const save = () => { try { localStorage.setItem('tp-review-2', JSON.stringify({ ...pick, notes: notes.value })); } catch {} };
+  const pick = { tile: 'F', mobile: '' };
+  let store = {}; try { store = JSON.parse(localStorage.getItem('tp-review-3') || '{}'); } catch {}
+  const save = () => { try { localStorage.setItem('tp-review-3', JSON.stringify({ ...pick, notes: notes.value })); } catch {} };
   const notes = document.getElementById('notes');
   // phones: scale a real 390 x 844 viewport into each frame, load when on screen
   const fit = () => document.querySelectorAll('.phone').forEach(ph => { const f = ph.querySelector('iframe'); f.style.transform = `scale(${ph.clientWidth / 390})`; });
@@ -101,15 +102,14 @@
   function paint() {
     document.querySelectorAll('[data-q]').forEach(sec => sec.querySelectorAll('.opt').forEach(o => {
       const on = pick[sec.dataset.q] === o.dataset.v; o.classList.toggle('on', on); o.querySelector('.pick').textContent = on ? `Picked ${o.dataset.v}` : `Pick ${o.dataset.v}`; }));
-    document.getElementById('sum').innerHTML = `Tiles <strong>${pick.tile || 'not picked'}</strong> · Phone layout <strong>${pick.mobile || 'not picked'}</strong>`;
+    document.getElementById('sum').innerHTML = `Tiles <strong>F</strong> · Phone layout <strong>${pick.mobile || 'not picked'}</strong>`;
   }
-  pick.tile = store.tile || ''; pick.mobile = store.mobile || ''; notes.value = store.notes || '';
+  pick.mobile = store.mobile || ''; notes.value = store.notes || '';
   notes.addEventListener('input', save);
   paint();
   document.getElementById('copy').onclick = async e => {
     const text = [
-      'Thirty posters review, round two',
-      `Countdown tiles: ${pick.tile || 'not picked'}`,
+      'Thirty posters review, round three',
       `Phone layout: ${pick.mobile || 'not picked'}`,
       ...(notes.value.trim() ? ['Notes:', notes.value.trim()] : [])
     ].join('\n');

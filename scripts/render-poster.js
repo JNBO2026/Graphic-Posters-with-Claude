@@ -1,7 +1,8 @@
 // Usage: node scripts/render-poster.js 01
 // Renders days/NN/poster.html (A3, 1240 x 1754) to:
 //   poster.jpg  2x still (for an animated poster: its first frame)
-//   thumb.jpg   for the wall
+//   thumb.jpg   for the wall when zoomed in
+//   thumb-s.jpg for the wall
 //   poster.mp4  only when the poster is animated
 //
 // Animated posters declare it in their <head>:
@@ -40,7 +41,8 @@ const W = 1240, H = 1754;
   });
   await probe.close();
 
-  for (const [scale, out] of [[2, 'poster.jpg'], [0.9, 'thumb.jpg']]) {
+  // thumb-s.jpg (558 wide) is what the wall loads; thumb.jpg (1116 wide) only when someone zooms in
+  for (const [scale, out] of [[2, 'poster.jpg'], [0.9, 'thumb.jpg'], [0.45, 'thumb-s.jpg']]) {
     const p = await open(scale);
     if (motion) await seek(p, 0);
     await p.screenshot({ path: path.join(dir, out), type: 'jpeg', quality: scale < 1 ? 85 : 92 });
