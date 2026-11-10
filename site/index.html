@@ -263,7 +263,7 @@
         <button class="icon" id="v-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
       <h2 id="v-title"></h2>
       <p class="note" id="v-note"></p>
-      <div class="well"><span class="k">The prompt, as typed</span><pre id="v-prompt"></pre></div>
+      <div class="well"><span class="k">The prompt, inputted in 60 seconds</span><pre id="v-prompt"></pre></div>
       <div class="made" id="v-made-box"><span class="k">How it was made</span><p id="v-made"></p><div class="tools" id="v-tools"></div></div>
       <div class="made" id="v-skills-box" hidden><span class="k">Skills used</span><div class="tools" id="v-skills"></div></div>
       <div class="row">
@@ -465,7 +465,7 @@
       <div class="about-top"><a class="lock" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a>
         <div class="socials mini">${links.replace(/<span>[^<]*<\/span>/g, '')}</div></div>
       <h1>30 posters in 30 minutes.</h1>
-      <p>One poster a day for 30 days. Each one starts as a prompt typed in 60 seconds, goes into Claude Code, and gets posted as is. No redos, no touch-ups. Every prompt is here to copy.</p>
+      <p>One poster a day for 30 days. Each one starts as a prompt inputted in 60 seconds, goes into Claude Code, and gets posted as is. No redos, no touch-ups. Every prompt is here to copy.</p>
       ${links ? `<div class="socials big">${links}</div>` : ''}
     </div>${sign}`;
   $('next-clock').innerHTML = clockHTML('l');
