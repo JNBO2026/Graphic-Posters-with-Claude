@@ -48,7 +48,10 @@ The challenge **has not started**. `days/` holds only `_template/`. Day 01's `st
 - `scripts/build-site.js`: builds `dist/` (site, posters, data, share pages, OG tags).
 - `scripts/publish-site.sh "message"`: pushes `dist/` to the site repo.
 - `scripts/verify-skill.sh URL`: checks a public skill exists before it's credited.
-- `scripts/make-tool-icons.py <simple-icons package>`: regenerates `site/vendor/tool-icons.js` from `scripts/tools.json`.
+- `scripts/make-tool-icons.py`: regenerates `site/vendor/tool-icons.js` from `scripts/tools.json` and `library/logos/`. The site build trims it to the logos in use.
+
+### Logo library
+`library/logos/`: 77 mono SVG logos for every platform, image, video, audio and 3D model brand we might use (Flora's full model list was checked), plus the code tools and socials. Sources LobeHub Icons (MIT) and Simple Icons (CC0); `logos.json` and the README list what each covers. James asked for this to be kept and reused. Still missing, and James has offered to supply them: Moonvalley (Marey), Hyper3D/Deemos (Rodin), Quiver AI (Arrow), Hi3D, Magnific's own mark (Freepik's stands in). Veo, Imagen and Lyria use DeepMind's mark; Seedream and Seedance ByteDance's; Wan Alibaba's.
 - `.github/workflows/release.yml`: a GitHub Release per new day (poster, MP4, how it was made, skills). This is the notification route.
 
 ### Environment
@@ -64,7 +67,7 @@ The challenge **has not started**. `days/` holds only `_template/`. Day 01's `st
 ### Website (site/index.html)
 - **An endless, draggable, zoomable wall** of 30 A3 slots (GSAP 3.13 Draggable + Inertia, vendored). Bento: paper tiles, 10px corners, 2px black seams; four-pointed stars where corners meet. Trackpad pans 1:1; mouse wheel gets a short glide; pinch, ctrl/cmd-scroll, the zoom chip or +/- to zoom (up to a poster at ~86% of the viewport height).
 - **Empty slot tiles: F, Departures** (round two pick). Day number and status ("Opens 11 Nov", "Next, opens", "Starts with day one", "Overdue by"), then one hairline row each for days, hours, minutes, seconds. Countdown to the end of each day's 24 hours: day N is due at day 01 start + N × 24h.
-- **Hover on posted posters: C, ledger card** (round five pick). Title, then rows: Prompt (word count), Made with, Posted. Made with = "Code only"; or the model with its tool's logo ("Flux 1.1 Pro"); "Code + model" when both; "first model +N" for several. `meta.made` overrides with a short label.
+- **Hover on posted posters: C, ledger card** (round five pick). Title, then rows: Prompt (word count), Made with, Tools. Made with is words only: "Code only"; the model ("Flux 1.1 Pro"); "Code + model" for one model plus code; "first model +N" for several. `meta.made` overrides with a short label. Tools (replaced Posted at James's request) is a row of logos, models first, one per maker, up to six then "+N".
 - **Motion posters** autoplay muted on the wall while on screen and pause off screen; labelled by day only.
 - **Poster view**: grows out of the tile; arrows sit in gutters beside the poster; count under it; on phone a full-screen card you can swipe anywhere. Prompt, "How it was made" with inline tool lozenges (logos from Simple Icons, CC0; lettered badge otherwise; no duplicates between inline and list), "Skills used" (public skills only, linked), Copy the prompt (adds "Include @BlameOpal somewhere in the design as a subtle credit for where this prompt came from."), downloads (video + still for motion posters).
 - **Desktop HUD**: the about module bottom left ("30 posters in 30 minutes.", about text, Instagram and LinkedIn pills, "we give a sh*t."), a green "Get notified on GitHub" tab tucked into the bottom edge bottom right, a hint and zoom chip bottom centre. No posted counter, no second clock (removed at James's request).
@@ -91,6 +94,7 @@ The challenge **has not started**. `days/` holds only `_template/`. Day 01's `st
 ## Open items
 - [ ] This repo's About > Website: set to https://thirty-posters-site.vercel.app (James, in GitHub settings).
 - [ ] Real-device checks: video playback, pinch zoom, swipe, the sheet drag, frame rate on a cheap Android.
+- [ ] Missing logos (see the logo library above): James to supply.
 - [ ] Day 01 has not happened. When it does, follow CLAUDE.md exactly.
 
 ## How to get context back fast

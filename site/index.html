@@ -62,10 +62,12 @@
   .o-c .card { gap:0; padding:10px 12px 4px; }
   .o-c .card b { margin-bottom:6px; }
   .o-c .lrow:last-child { box-shadow:none; }
-  .o-c .mw { display:inline-flex; align-items:center; gap:6px; min-width:0; max-width:72%; }
-  .o-c .mw span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .o-c .mw svg, .o-c .mw b { width:14px; height:14px; flex:none; }
-  .o-c .mw b { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:var(--ink); color:var(--paper); font:600 9px/9px 'Instrument Sans'; }
+  .o-c .mw { min-width:0; max-width:68%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .o-c .logos { display:inline-flex; align-items:center; gap:6px; }
+  .o-c .logos i { display:inline-flex; width:14px; height:14px; }
+  .o-c .logos svg, .o-c .logos b { width:14px; height:14px; flex:none; }
+  .o-c .logos b { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:var(--ink); color:var(--paper); font:600 9px/9px 'Instrument Sans'; }
+  .o-c .logos em { font-style:normal; }
   .cell img { transition:transform 450ms var(--ease); }
   @media (hover:hover) { .cell.posted:hover .over, .cell.posted:focus-visible .over { opacity:1; } .cell.posted:hover .over .card, .cell.posted:focus-visible .over .card { transform:none; }
     .cell.posted:hover img, .cell.posted:hover video { transform:scale(1.03); } }
@@ -419,8 +421,18 @@
     chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
     close: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
   };
-  const TI = window.TOOL_ICONS || { tools: {}, paths: {} };
-  const logo = slug => TI.paths[slug] ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TI.paths[slug]}"/></svg>` : '';
+  // Logos come from library/logos via scripts/make-tool-icons.py: icons[slug] = [viewBox, inner svg, evenodd]
+  const TI = window.TOOL_ICONS || { tools: {}, models: {}, icons: {} };
+  const logo = (slug, cls) => { const i = TI.icons[slug]; return i ? `<svg${cls ? ` class="${cls}"` : ''} viewBox="${i[0]}" fill="currentColor"${i[2] ? ' fill-rule="evenodd"' : ''} aria-hidden="true">${i[1]}</svg>` : ''; };
+  const badge = name => `<b aria-hidden="true">${esc(String(name).trim()[0].toUpperCase())}</b>`;
+  // A model word (Flux, Seedream, Veo...) wins over the tool it ran on (Flora), so the hover shows the model's maker
+  const MODEL_WORDS = Object.keys(TI.models || {}).sort((a, b) => b.length - a.length)
+    .map(w => [new RegExp(`(^|[^a-z0-9])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^a-z0-9])`), TI.models[w]]);
+  function slugFor(name) {
+    const [tool, ...rest] = String(name).split(':'), model = rest.join(':').trim().toLowerCase();
+    if (model) for (const [re, slug] of MODEL_WORDS) if (re.test(model)) return slug;
+    return TI.tools[tool.trim().toLowerCase()] || null;
+  }
 
   // The house easing, cubic-bezier(.2,.7,.2,1)
   const bez = (x1, y1, x2, y2) => { const A = (a, b) => 1 - 3 * b + 3 * a, B = (a, b) => 3 * b - 6 * a, C = a => 3 * a;
@@ -499,16 +511,31 @@
   }
   // what a posted poster says on hover
   const words = p => String(p.prompt).trim().split(/\s+/).length;
-  // Made with: code only, the model (with its tool's logo), code plus a model, or the first model plus a count. meta.made overrides it
+  // Made with, in words: code only, the model, code plus a model, or the first model plus a count. meta.made overrides it
+  // A model is "Tool: model", or a generator named on its own (Canva, Midjourney): anything with a logo that isn't code
+  const CODE = new Set(['claudecode', 'claude', 'anthropic', 'html5', 'css3', 'svg', 'javascript', 'greensock', 'threedotjs', 'webgl', 'p5dotjs', 'ffmpeg', 'googlefonts', 'nodedotjs', 'blender', 'github']);
+  const modelsOf = p => (p.tools || []).filter(t => t.includes(':') || (slugFor(t) && !CODE.has(slugFor(t))));
   function madeWith(p) {
-    const models = (p.tools || []).filter(t => t.includes(':')).map(t => ({ tool: t.split(':')[0].trim(), model: t.split(':').slice(1).join(':').trim() }));
-    const codeOnly = /^code only/i.test(p.process || '');
-    const icon = m => { const slug = m && TI.tools[m.tool.toLowerCase()]; return slug && TI.paths[slug] ? logo(slug) : m ? `<b aria-hidden="true">${esc(m.tool[0].toUpperCase())}</b>` : ''; };
-    if (p.made) return { text: p.made, icon: icon(models[0]) };
-    if (codeOnly || !models.length) return { text: codeOnly ? 'Code only' : 'Code', icon: '' };
-    const mixed = /\[\[(HTML|CSS|SVG|JavaScript|Canvas|WebGL|GSAP|Three\.js|p5\.js)/i.test(p.process || '');
-    const first = models[0].model || models[0].tool, more = models.length > 1 ? ` +${models.length - 1}` : '';
-    return { text: (mixed ? 'Code + ' : '') + first + more, icon: icon(models[0]) };
+    if (p.made) return p.made;
+    const models = modelsOf(p), codeOnly = /^code only/i.test(p.process || '');
+    if (codeOnly || !models.length) return codeOnly ? 'Code only' : 'Code';
+    const mixed = models.length === 1 && /\[\[(HTML|CSS|SVG|JavaScript|Canvas|WebGL|GSAP|Three\.js|p5\.js)/i.test(p.process || '');
+    const m = models[0], first = m.split(':').slice(1).join(':').trim() || m.split(':')[0].trim();
+    return (mixed ? 'Code + ' : '') + first + (models.length > 1 ? ` +${models.length - 1}` : '');
+  }
+  // Every logo behind the poster: models first, then the tools. One logo per maker; tools with no logo (Playwright) are left out, a model with no logo gets a letter
+  function logosOf(p) {
+    const names = [...(p.tools || []), ...(String(p.process || '').match(/\[\[[^\]]+\]\]/g) || []).map(x => x.slice(2, -2))];
+    const seen = new Set(), out = [];
+    const gen = n => n.includes(':') || (slugFor(n) && !CODE.has(slugFor(n)));
+    for (const n of [...names.filter(gen), ...names.filter(n => !gen(n))]) {
+      const slug = slugFor(n), key = slug || n.toLowerCase().trim();
+      if (seen.has(key) || (!slug && !n.includes(':'))) continue;
+      seen.add(key); out.push({ name: n.includes(':') ? n.split(':').slice(1).join(':').trim() : n.trim(), slug });
+    }
+    const max = 6, shown = out.slice(0, out.length > max ? max - 1 : max);
+    return shown.map(x => `<i title="${esc(x.name)}">${x.slug && TI.icons[x.slug] ? logo(x.slug) : badge(x.name)}</i>`).join('')
+      + (out.length > shown.length ? `<em>+${out.length - shown.length}</em>` : '');
   }
   const snippet = p => { const w = String(p.prompt).trim().split(/\s+/); return w.slice(0, 12).join(' ') + (w.length > 12 ? '…' : ''); };
   function hoverHTML(p) {
@@ -517,8 +544,8 @@
     if (HOVER === 'b') return `<span class="over o-b"><span class="meta">Day ${n} · ${words(p)} words in 60 seconds</span><q>${esc(snippet(p))}</q></span>`;
     if (HOVER === 'c') return `<span class="over o-c"><span class="card"><b>${esc(p.title)}</b>
       <span class="lrow"><span>Prompt</span><span class="v">${words(p)} words</span></span>
-      <span class="lrow"><span>Made with</span>${(m => `<span class="v mw">${m.icon}<span>${esc(m.text)}</span></span>`)(madeWith(p))}</span>
-      <span class="lrow"><span>Posted</span><span class="v">${shortDate(Date.parse(p.date + 'T12:00:00'))}</span></span></span></span>`;
+      <span class="lrow"><span>Made with</span><span class="v mw">${esc(madeWith(p))}</span></span>
+      <span class="lrow"><span>Tools</span><span class="v logos">${logosOf(p)}</span></span></span></span>`;
     return '';
   }
   function cellHTML(n) {
@@ -655,7 +682,7 @@
 
   // ---------- Get notified: GitHub, plus the socials ----------
   const GH = (S.repo || '#') + '/subscription';
-  const ghIcon = TI.paths.github ? `<svg class="gh-ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TI.paths.github}"/></svg>` : '';
+  const ghIcon = logo('github', 'gh-ic');
   $('gh-btn').href = GH; $('gh-btn').insertAdjacentHTML('afterbegin', ghIcon);
   const socialIcon = (slug, href, label) => href ? `<a href="${esc(href)}" target="_blank" rel="noopener" aria-label="${label}">${logo(slug)}</a>` : '';
 
@@ -745,13 +772,13 @@
 
   // ---------- Tool lozenges ----------
   function lozenge(name) {
-    name = name.trim(); const slug = TI.tools[name.split(':')[0].trim().toLowerCase()];
-    return `<span class="lz">${slug && TI.paths[slug] ? logo(slug) : `<b aria-hidden="true">${esc(name[0].toUpperCase())}</b>`}${esc(name)}</span>`;
+    name = name.trim(); const slug = slugFor(name) || TI.tools[name.split(':')[0].trim().toLowerCase()];
+    return `<span class="lz">${slug && TI.icons[slug] ? logo(slug) : badge(name)}${esc(name)}</span>`;
   }
   const EXT = '<svg class="ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"/></svg>';
   function skillLink(x) {
     const h = /github\.com\/anthropics\//.test(x.url) ? 'claude' : /github\.com/.test(x.url) ? 'github' : null;
-    return `<a class="lz" href="${esc(x.url)}" target="_blank" rel="noopener" title="Get the ${esc(x.name)} skill">${h && TI.paths[h] ? logo(h) : `<b aria-hidden="true">${esc(x.name[0].toUpperCase())}</b>`}${esc(x.name)}${EXT}</a>`;
+    return `<a class="lz" href="${esc(x.url)}" target="_blank" rel="noopener" title="Get the ${esc(x.name)} skill">${h && TI.icons[h] ? logo(h) : badge(x.name)}${esc(x.name)}${EXT}</a>`;
   }
   const tagged = t => String(t).split(/(\[\[[^\]]+\]\])/).map(x => /^\[\[.+\]\]$/.test(x) ? lozenge(x.slice(2, -2)) : esc(x)).join('');
 

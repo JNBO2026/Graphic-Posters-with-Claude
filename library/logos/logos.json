@@ -1,0 +1,555 @@
+{
+  "flora": {
+    "brand": "Flora",
+    "kind": "platform",
+    "covers": "Flora canvas (runs most of the models below)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "figma": {
+    "brand": "Figma",
+    "kind": "platform",
+    "covers": "Figma, Figma image and vector generation",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "canva": {
+    "brand": "Canva",
+    "kind": "platform",
+    "covers": "Canva, Canva image generation",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "adobefirefly": {
+    "brand": "Adobe Firefly",
+    "kind": "image",
+    "covers": "Firefly Image",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "adobe": {
+    "brand": "Adobe",
+    "kind": "company",
+    "covers": "Adobe",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "comfyui": {
+    "brand": "ComfyUI",
+    "kind": "platform",
+    "covers": "ComfyUI workflows",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "replicate": {
+    "brand": "Replicate",
+    "kind": "platform",
+    "covers": "Replicate",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "fal": {
+    "brand": "fal",
+    "kind": "platform",
+    "covers": "fal.ai",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "huggingface": {
+    "brand": "Hugging Face",
+    "kind": "platform",
+    "covers": "Hugging Face models and Spaces",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "civitai": {
+    "brand": "Civitai",
+    "kind": "platform",
+    "covers": "Civitai models and LoRAs",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "flux": {
+    "brand": "FLUX",
+    "kind": "image",
+    "covers": "FLUX 1.1 Pro, FLUX Kontext, FLUX 2, every FLUX model",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "bfl": {
+    "brand": "Black Forest Labs",
+    "kind": "company",
+    "covers": "Maker of FLUX",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "openai": {
+    "brand": "OpenAI",
+    "kind": "company",
+    "covers": "GPT Image, GPT models",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "dalle": {
+    "brand": "DALL\u00b7E",
+    "kind": "image",
+    "covers": "DALL\u00b7E 2 and 3",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "midjourney": {
+    "brand": "Midjourney",
+    "kind": "image",
+    "covers": "Midjourney (not on Flora)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "gemini": {
+    "brand": "Gemini",
+    "kind": "image",
+    "covers": "Gemini, Gemini Omni, Gemini image models",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "nanobanana": {
+    "brand": "Nano Banana",
+    "kind": "image",
+    "covers": "Nano Banana, Nano Banana Pro",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "google": {
+    "brand": "Google",
+    "kind": "company",
+    "covers": "Google",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "deepmind": {
+    "brand": "Google DeepMind",
+    "kind": "company",
+    "covers": "Veo, Imagen, Lyria (no own marks)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "ideogram": {
+    "brand": "Ideogram",
+    "kind": "image",
+    "covers": "Ideogram 3 and every Ideogram model",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "recraft": {
+    "brand": "Recraft",
+    "kind": "image",
+    "covers": "Recraft V3 and vectors",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "krea": {
+    "brand": "Krea",
+    "kind": "image",
+    "covers": "Krea 1, Krea realtime",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "reve": {
+    "brand": "Reve",
+    "kind": "image",
+    "covers": "Reve Image",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "briaai": {
+    "brand": "Bria",
+    "kind": "image",
+    "covers": "Bria image models",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "stability": {
+    "brand": "Stability AI",
+    "kind": "image",
+    "covers": "Stable Diffusion, Stable Audio",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "bytedance": {
+    "brand": "ByteDance",
+    "kind": "company",
+    "covers": "Seedream, Seedance, Seed models (no own marks)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "jimeng": {
+    "brand": "Jimeng",
+    "kind": "image",
+    "covers": "Jimeng (ByteDance)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "doubao": {
+    "brand": "Doubao",
+    "kind": "company",
+    "covers": "Doubao (ByteDance)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "qwen": {
+    "brand": "Qwen",
+    "kind": "image",
+    "covers": "Qwen Image, Qwen Image Edit",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "alibaba": {
+    "brand": "Alibaba",
+    "kind": "company",
+    "covers": "Wan 2.x video and image (no own mark)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "kolors": {
+    "brand": "Kolors",
+    "kind": "image",
+    "covers": "Kolors (Kuaishou)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "grok": {
+    "brand": "Grok",
+    "kind": "image",
+    "covers": "Grok Imagine",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "xai": {
+    "brand": "xAI",
+    "kind": "company",
+    "covers": "Maker of Grok",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "freepik": {
+    "brand": "Freepik",
+    "kind": "company",
+    "covers": "Magnific upscaler (stand-in until Magnific has its own mark here)",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "topazlabs": {
+    "brand": "Topaz Labs",
+    "kind": "image",
+    "covers": "Topaz upscale and enhance",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "runway": {
+    "brand": "Runway",
+    "kind": "video",
+    "covers": "Gen-4, Gen-4.5, Aleph, every Runway model",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "kling": {
+    "brand": "Kling",
+    "kind": "video",
+    "covers": "Kling 2.x video and image",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "kwaikat": {
+    "brand": "Kuaishou",
+    "kind": "company",
+    "covers": "Maker of Kling and Kolors",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "sora": {
+    "brand": "Sora",
+    "kind": "video",
+    "covers": "Sora 2, Sora 2 Pro",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "luma": {
+    "brand": "Luma",
+    "kind": "video",
+    "covers": "Ray 2, Ray 3, Photon",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "hailuo": {
+    "brand": "Hailuo",
+    "kind": "video",
+    "covers": "Hailuo video (MiniMax)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "minimax": {
+    "brand": "MiniMax",
+    "kind": "company",
+    "covers": "MiniMax video, speech and music",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "pika": {
+    "brand": "Pika",
+    "kind": "video",
+    "covers": "Pika (not on Flora)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "vidu": {
+    "brand": "Vidu",
+    "kind": "video",
+    "covers": "Vidu (not on Flora)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "pixverse": {
+    "brand": "PixVerse",
+    "kind": "video",
+    "covers": "PixVerse (not on Flora)",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "hedra": {
+    "brand": "Hedra",
+    "kind": "video",
+    "covers": "Hedra character video",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "haiper": {
+    "brand": "Haiper",
+    "kind": "video",
+    "covers": "Haiper",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "lightricks": {
+    "brand": "Lightricks",
+    "kind": "video",
+    "covers": "LTX Video, LTX-2",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "elevenlabs": {
+    "brand": "ElevenLabs",
+    "kind": "audio",
+    "covers": "Voices, sound effects, music",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "suno": {
+    "brand": "Suno",
+    "kind": "audio",
+    "covers": "Suno music",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "udio": {
+    "brand": "Udio",
+    "kind": "audio",
+    "covers": "Udio music",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "hunyuan": {
+    "brand": "Hunyuan",
+    "kind": "3d",
+    "covers": "Hunyuan3D, HunyuanImage, HunyuanVideo",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "tencent": {
+    "brand": "Tencent",
+    "kind": "company",
+    "covers": "Maker of Hunyuan",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "meshy": {
+    "brand": "Meshy",
+    "kind": "3d",
+    "covers": "Meshy 3D",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "tripo": {
+    "brand": "Tripo",
+    "kind": "3d",
+    "covers": "Tripo 3D",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "meta": {
+    "brand": "Meta",
+    "kind": "company",
+    "covers": "SAM 3D, Segment Anything",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "microsoft": {
+    "brand": "Microsoft",
+    "kind": "company",
+    "covers": "Trellis 3D",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "nvidia": {
+    "brand": "NVIDIA",
+    "kind": "company",
+    "covers": "NVIDIA models",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "claude": {
+    "brand": "Claude",
+    "kind": "model",
+    "covers": "Claude models",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "claudecode": {
+    "brand": "Claude Code",
+    "kind": "code",
+    "covers": "Claude Code",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "anthropic": {
+    "brand": "Anthropic",
+    "kind": "company",
+    "covers": "Anthropic",
+    "source": "LobeHub Icons 1.102.0",
+    "license": "MIT"
+  },
+  "html5": {
+    "brand": "HTML",
+    "kind": "code",
+    "covers": "HTML",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "css3": {
+    "brand": "CSS",
+    "kind": "code",
+    "covers": "CSS",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "svg": {
+    "brand": "SVG",
+    "kind": "code",
+    "covers": "SVG",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "javascript": {
+    "brand": "JavaScript",
+    "kind": "code",
+    "covers": "JavaScript, Canvas",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "greensock": {
+    "brand": "GSAP",
+    "kind": "code",
+    "covers": "GSAP",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "threedotjs": {
+    "brand": "Three.js",
+    "kind": "code",
+    "covers": "Three.js",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "webgl": {
+    "brand": "WebGL",
+    "kind": "code",
+    "covers": "WebGL, shaders",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "p5dotjs": {
+    "brand": "p5.js",
+    "kind": "code",
+    "covers": "p5.js",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "ffmpeg": {
+    "brand": "FFmpeg",
+    "kind": "code",
+    "covers": "FFmpeg",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "googlefonts": {
+    "brand": "Google Fonts",
+    "kind": "code",
+    "covers": "Google Fonts",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "nodedotjs": {
+    "brand": "Node.js",
+    "kind": "code",
+    "covers": "Node.js",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "blender": {
+    "brand": "Blender",
+    "kind": "code",
+    "covers": "Blender",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "github": {
+    "brand": "GitHub",
+    "kind": "social",
+    "covers": "GitHub",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "instagram": {
+    "brand": "Instagram",
+    "kind": "social",
+    "covers": "Instagram",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "linkedin": {
+    "brand": "LinkedIn",
+    "kind": "social",
+    "covers": "LinkedIn",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "x": {
+    "brand": "X",
+    "kind": "social",
+    "covers": "X",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "threads": {
+    "brand": "Threads",
+    "kind": "social",
+    "covers": "Threads",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  },
+  "whatsapp": {
+    "brand": "WhatsApp",
+    "kind": "social",
+    "covers": "WhatsApp",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0 1.0"
+  }
+}
