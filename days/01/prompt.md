@@ -1,0 +1,1 @@
+Everyday for 30 days ill create a poster only using Claude code and my prompts. Rules: 1. Generative AI Can be used. 2. You only get 60 Seconds to do your prompt. 3. You can only answer any question The LLM asks 4. hands off 5. post it as is

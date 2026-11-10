@@ -1,0 +1,244 @@
+/* Blame Opal tokens, built from Figma by tools/build.py. Do not edit by hand. */
+:root {
+  --bo-color-black: #000000;
+  --bo-color-ink-1000: #101010;
+  --bo-color-ink-a68: #101010AD;
+  --bo-color-ink-a60: #10101099;
+  --bo-color-ink-a50: #10101080;
+  --bo-color-ink-a42: #1010106B;
+  --bo-color-ink-a40: #10101066;
+  --bo-color-ink-a24: #1010103D;
+  --bo-color-ink-a12: #1010101F;
+  --bo-color-ink-a06: #1010100F;
+  --bo-color-opal-100: #FAFAF4;
+  --bo-color-opal-200: #EEEEE7;
+  --bo-color-opal-300: #E1E1D9;
+  --bo-color-opal-400: #D3D3CA;
+  --bo-color-opal-a92: #FAFAF4EB;
+  --bo-color-opal-a78: #FAFAF4C7;
+  --bo-color-acid-500: #67FF67;
+  --bo-color-acid-a14: #67FF6724;
+  --bo-color-shadow-a12: #0000001F;
+  --bo-color-shadow-a50: #00000080;
+  --bo-color-shadow-a60: #00000099;
+  --bo-space-0: 0px;
+  --bo-space-px: 2px;
+  --bo-space-1: 4px;
+  --bo-space-2: 8px;
+  --bo-space-3: 12px;
+  --bo-space-4: 16px;
+  --bo-space-5: 20px;
+  --bo-space-6: 24px;
+  --bo-space-8: 32px;
+  --bo-space-9: 36px;
+  --bo-radius-base: 10px;
+  --bo-radius-pill: 1000px;
+  --bo-border-hairline: 2px;
+  --bo-border-focus: 2px;
+  --bo-opacity-soon: 0.5;
+  --bo-opacity-disabled: 0.42;
+  --bo-opacity-hidden: 0;
+  --bo-opacity-full: 1;
+  --bo-dur-fast: 200ms;
+  --bo-dur-base: 250ms;
+  --bo-dur-medium: 300ms;
+  --bo-dur-slow: 600ms;
+  --bo-dur-entry: 560ms;
+  --bo-motion-press-scale: 0.96;
+  --bo-motion-ease: cubic-bezier(.2,.7,.2,1);
+  --bo-motion-ease-loop: ease-in-out;
+  --bo-font-family-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-font-family-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --bo-font-weight-regular: 400;
+  --bo-font-weight-medium: 500;
+  --bo-font-weight-semibold: 600;
+  --bo-font-size-10: 10px;
+  --bo-font-size-12: 12px;
+  --bo-font-size-14: 14px;
+  --bo-font-size-16: 16px;
+  --bo-font-size-18: 18px;
+  --bo-font-size-20: 20px;
+  --bo-font-size-22: 22px;
+  --bo-font-size-26: 26px;
+  --bo-font-size-34: 34px;
+  --bo-font-size-48: 48px;
+  --bo-font-size-56: 56px;
+  --bo-font-size-110: 110px;
+  --bo-color-ink-a65: #101010A6;
+  --bo-dur-open: 450ms;
+  --bo-motion-stagger: 70ms;
+  --bo-motion-rise: 10px;
+  --bo-motion-nudge: 4px;
+  --bo-color-graphite-950: #121212;
+  --bo-color-graphite-900: #1A1A1A;
+  --bo-color-graphite-800: #262626;
+  --bo-color-graphite-a88: #1A1A1AE0;
+  --bo-color-opal-a62: #FAFAF49E;
+  --bo-color-opal-a55: #FAFAF48C;
+  --bo-color-opal-a50: #FAFAF480;
+  --bo-color-opal-a40: #FAFAF466;
+  --bo-color-opal-a38: #FAFAF461;
+  --bo-color-opal-a24: #FAFAF43D;
+  --bo-color-opal-a12: #FAFAF41F;
+  --bo-color-opal-a06: #FAFAF40F;
+  --bo-color-platform-instagram-dark: #0C0F14;
+  --bo-color-bg-ground: #000000;
+  --bo-color-bg-frame: #FAFAF4;
+  --bo-color-surface-tile: #FAFAF4;
+  --bo-color-surface-raised: #EEEEE7;
+  --bo-color-surface-sunken: #E1E1D9;
+  --bo-color-surface-media: #E1E1D9;
+  --bo-color-surface-glass: #FAFAF4EB;
+  --bo-color-surface-inverse: #101010;
+  --bo-color-surface-disabled: #E1E1D9;
+  --bo-color-text-primary: #101010;
+  --bo-color-text-secondary: #101010AD;
+  --bo-color-text-tertiary: #101010A6;
+  --bo-color-text-disabled: #1010106B;
+  --bo-color-text-inverse: #FAFAF4;
+  --bo-color-text-on-accent: #101010;
+  --bo-color-accent-fill: #67FF67;
+  --bo-color-accent-halo: #67FF6724;
+  --bo-line-seam: #000000;
+  --bo-line-hairline: #1010101F;
+  --bo-line-control: #1010103D;
+  --bo-line-control-hover: #10101080;
+  --bo-line-strong: #10101066;
+  --bo-color-focus-ring: #101010;
+  --bo-color-focus-ring-offset: #FAFAF4;
+  --bo-color-scrim: #00000080;
+  --bo-color-state-selected-bg: #101010;
+  --bo-color-state-selected-fg: #FAFAF4;
+  --bo-color-state-disabled-disc: #D3D3CA;
+  --bo-color-state-track: #1010100F;
+  --bo-space-seam: 2px;
+  --bo-space-frame: 24px;
+  --bo-space-tile-pad: 16px;
+  --bo-space-panel-gap: 20px;
+  --bo-space-dock-inset: 12px;
+  --bo-size-control-xs: 24px;
+  --bo-size-control-sm: 28px;
+  --bo-size-control-md: 36px;
+  --bo-size-control-touch: 44px;
+  --bo-size-control-lg: 48px;
+  --bo-size-control-xl: 52px;
+  --bo-size-control-badge: 20px;
+  --bo-size-icon-sm: 12px;
+  --bo-size-icon-md: 16px;
+  --bo-size-icon-lg: 20px;
+  --bo-size-disc-lg: 40px;
+  --bo-size-disc-md: 36px;
+  --bo-size-disc-sm: 32px;
+  --bo-size-dot-md: 8px;
+  --bo-size-dot-sm: 6px;
+  --bo-size-panel: 272px;
+  --bo-size-tile-header: 40px;
+  --bo-size-dock: 124px;
+  --bo-space-tile-expand-clear: 44px;
+  --bo-tile-bg: #FAFAF4;
+  --bo-tile-radius: 10px;
+  --bo-tile-pad: 16px;
+  --bo-tile-header-h: 40px;
+  --bo-expand-size: 28px;
+  --bo-expand-inset: 8px;
+  --bo-expand-bg: #FAFAF4C7;
+  --bo-expand-border: #1010101F;
+  --bo-pill-h: 28px;
+  --bo-pill-px: 12px;
+  --bo-pill-gap: 8px;
+  --bo-pill-bg: #EEEEE7;
+  --bo-pill-fg: #101010AD;
+  --bo-chip-h: 24px;
+  --bo-chip-px: 8px;
+  --bo-chip-border: #1010101F;
+  --bo-chip-fg: #101010AD;
+  --bo-cta-bg: #101010;
+  --bo-cta-fg: #FAFAF4;
+  --bo-cta-disc: #67FF67;
+  --bo-lozenge-border: #1010103D;
+  --bo-lozenge-pressed: #101010;
+  --bo-panel-w: 272px;
+  --bo-panel-gap: 20px;
+  --bo-case-pad: 32px;
+  --bo-text-display-large: 600 64px/64px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-display-large-tracking: -0.035em;
+  --bo-text-display-hero: 600 88px/80px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-display-hero-tracking: -0.055em;
+  --bo-text-display-number: 600 158px/130px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-display-number-tracking: -0.06em;
+  --bo-text-heading-large: 600 44px/44px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-heading-large-tracking: -0.035em;
+  --bo-text-heading-small: 600 28px/28px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-heading-small-tracking: -0.035em;
+  --bo-text-title-lede: 400 20px/26px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-title-lede-tracking: -0.01em;
+  --bo-text-title-strong: 600 18px/18px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-title-strong-tracking: -0.025em;
+  --bo-text-body-large: 400 18px/28px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-body-large-tracking: 0em;
+  --bo-text-body: 400 16px/24px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-body-tracking: 0em;
+  --bo-text-body-small: 400 14px/18px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-body-small-tracking: 0em;
+  --bo-text-ui-button: 600 16px/16px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-ui-button-tracking: 0em;
+  --bo-text-ui-control: 500 14px/14px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-ui-control-tracking: -0.01em;
+  --bo-text-label: 500 14px/16px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-label-tracking: 0em;
+  --bo-text-meta: 500 12px/14px 'Instrument Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bo-text-meta-tracking: 0em;
+}
+
+/* Dark mode (DK2 graphite). Put data-theme="dark" on the page or any frame; only what changes is listed. */
+[data-theme="dark"] {
+  --bo-color-bg-frame: #1A1A1A;
+  --bo-color-surface-tile: #1A1A1A;
+  --bo-color-surface-raised: #262626;
+  --bo-color-surface-sunken: #121212;
+  --bo-color-surface-media: #121212;
+  --bo-color-surface-glass: #1A1A1AE0;
+  --bo-color-surface-inverse: #FAFAF4;
+  --bo-color-surface-disabled: #262626;
+  --bo-color-text-primary: #FAFAF4;
+  --bo-color-text-secondary: #FAFAF49E;
+  --bo-color-text-tertiary: #FAFAF48C;
+  --bo-color-text-disabled: #FAFAF461;
+  --bo-color-text-inverse: #101010;
+  --bo-line-hairline: #FAFAF41F;
+  --bo-line-control: #FAFAF43D;
+  --bo-line-control-hover: #FAFAF480;
+  --bo-line-strong: #FAFAF466;
+  --bo-color-focus-ring: #FAFAF4;
+  --bo-color-focus-ring-offset: #1A1A1A;
+  --bo-color-state-selected-bg: #FAFAF4;
+  --bo-color-state-selected-fg: #101010;
+  --bo-color-state-disabled-disc: #262626;
+  --bo-color-state-track: #FAFAF40F;
+  --bo-tile-bg: #1A1A1A;
+  --bo-expand-border: #FAFAF41F;
+  --bo-pill-bg: #262626;
+  --bo-pill-fg: #FAFAF49E;
+  --bo-chip-border: #FAFAF41F;
+  --bo-chip-fg: #FAFAF49E;
+  --bo-cta-bg: #FAFAF4;
+  --bo-cta-fg: #101010;
+  --bo-lozenge-border: #FAFAF43D;
+  --bo-lozenge-pressed: #FAFAF4;
+}
+
+/* The 14 named text styles. Load assets/fonts/fonts.css first. Sizes are for the site at 1x; never invent one. */
+.bo-text-display-large { font: var(--bo-text-display-large); letter-spacing: var(--bo-text-display-large-tracking); }
+.bo-text-display-hero { font: var(--bo-text-display-hero); letter-spacing: var(--bo-text-display-hero-tracking); }
+.bo-text-display-number { font: var(--bo-text-display-number); letter-spacing: var(--bo-text-display-number-tracking); }
+.bo-text-heading-large { font: var(--bo-text-heading-large); letter-spacing: var(--bo-text-heading-large-tracking); }
+.bo-text-heading-small { font: var(--bo-text-heading-small); letter-spacing: var(--bo-text-heading-small-tracking); }
+.bo-text-title-lede { font: var(--bo-text-title-lede); letter-spacing: var(--bo-text-title-lede-tracking); }
+.bo-text-title-strong { font: var(--bo-text-title-strong); letter-spacing: var(--bo-text-title-strong-tracking); }
+.bo-text-body-large { font: var(--bo-text-body-large); letter-spacing: var(--bo-text-body-large-tracking); }
+.bo-text-body { font: var(--bo-text-body); letter-spacing: var(--bo-text-body-tracking); }
+.bo-text-body-small { font: var(--bo-text-body-small); letter-spacing: var(--bo-text-body-small-tracking); }
+.bo-text-ui-button { font: var(--bo-text-ui-button); letter-spacing: var(--bo-text-ui-button-tracking); }
+.bo-text-ui-control { font: var(--bo-text-ui-control); letter-spacing: var(--bo-text-ui-control-tracking); }
+.bo-text-label { font: var(--bo-text-label); letter-spacing: var(--bo-text-label-tracking); }
+.bo-text-meta { font: var(--bo-text-meta); letter-spacing: var(--bo-text-meta-tracking); }

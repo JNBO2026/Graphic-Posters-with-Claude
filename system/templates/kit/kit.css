@@ -1,0 +1,223 @@
+/* Blame Opal template kit (26 Oct 2026). Load after assets/fonts/fonts.css and tokens/tokens.css.
+   Every colour comes from the semantic tokens, so data-theme="dark" on a frame (or the page) gives the dark version.
+   Do not add colours, sizes or radii here: change the tokens in Figma instead. */
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#2B2B28;font-family:var(--bo-font-family-sans);-webkit-font-smoothing:antialiased;min-height:100vh;padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:24px}
+body.single{padding:0;background:transparent;display:block}
+
+/* preview controls, never exported */
+.kit-bar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font:var(--bo-text-ui-control)}
+.kit-bar button,.kit-bar a{font:inherit;height:28px;padding:0 12px;border-radius:1000px;border:0;background:var(--bo-color-opal-200);color:var(--bo-color-ink-1000);cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
+.kit-bar button.on{background:var(--bo-color-ink-1000);color:var(--bo-color-opal-100)}
+.kit-row{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;align-items:flex-start}
+.kit-cell{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.kit-cell>span{font:var(--bo-text-meta);color:rgba(250,250,244,.65)}
+
+/* theme variables, from the semantic tokens */
+[data-frame]{--g:var(--bo-color-bg-ground);--t:var(--bo-color-surface-tile);--t2:var(--bo-color-surface-raised);--fg:var(--bo-color-text-primary);--fg2:var(--bo-color-text-secondary);
+  --ln:var(--bo-line-hairline);--iv:var(--bo-color-surface-inverse);--ivfg:var(--bo-color-text-inverse);--ivfg2:color-mix(in srgb,var(--bo-color-text-inverse) 68%,transparent);
+  --ivln:color-mix(in srgb,var(--bo-color-text-inverse) 14%,transparent);--gl:var(--bo-color-surface-glass);--acid:var(--bo-color-accent-fill);
+  position:relative;flex:none;overflow:hidden;color:var(--fg);font-family:var(--bo-font-family-sans)}
+
+/* the framed bento */
+.fr{background:var(--g);display:grid;gap:2px}
+.tl{background:var(--t);border-radius:var(--bo-radius-base);padding:12px var(--padx,12px);min-width:0;min-height:0;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden}
+.k{font:var(--bo-text-label);letter-spacing:var(--bo-text-label-tracking);color:var(--fg2)}
+.sec{color:var(--fg2)}
+.ink{background:var(--iv);color:var(--ivfg)}.ink .k,.ink .sec{color:var(--ivfg2)}
+.acid{background:var(--acid);color:var(--bo-color-text-on-accent)}.acid .k{color:var(--bo-color-text-on-accent)}
+.img{padding:0}.img img{width:100%;height:100%;object-fit:cover;display:block}
+.mast,.foot{flex-direction:row;align-items:center;justify-content:space-between;padding:0 var(--padx,12px)}
+.mast{min-height:32px}.foot{min-height:28px}.foot.line{min-height:22px}
+/* deck margin (8 Nov 2026): the footer and the slide's paragraph tile sit on the same 20px margin as every other tile, so the lockup, the page number and the text share one left and right edge */
+.foot.line{padding:0 20px}
+.lock{display:flex;align-items:center;gap:6px;font:600 14px/1 var(--bo-font-family-sans);color:var(--fg)}
+.ink .lock{color:var(--ivfg)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dot{width:8px;height:8px;border-radius:1000px;background:var(--acid);display:inline-block;flex:none}
+.list{display:flex;flex-direction:column}
+.list>div{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:6px 0;border-top:2px solid var(--ln)}
+.list>div:first-child{border-top:0}
+.ink .list>div{border-color:var(--ivln)}
+.ph{border:2px dashed var(--fg2);border-radius:var(--bo-radius-base);display:grid;place-items:center;font:var(--bo-text-meta);color:var(--fg2)}
+.steps{display:flex;gap:6px;flex-wrap:wrap}.steps span{font:var(--bo-text-label);padding:4px 8px;border-radius:1000px;border:2px solid var(--ln)}
+.steps .on{background:var(--acid);border-color:transparent;color:var(--bo-color-text-on-accent)}
+svg{display:block;flex:none}
+
+/* full bleed: FB2, one tile on the move and a bar on the opposite edge */
+.bleed{background:var(--g);border-radius:var(--bo-radius-base)}
+.bleed>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.glass{background:var(--gl);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.float{position:absolute;border-radius:var(--bo-radius-base);display:flex;flex-direction:column;gap:6px;padding:12px}
+.float.tile{background:var(--t)}
+.float.bar{flex-direction:row;align-items:center;justify-content:space-between;padding:0 12px;height:32px}
+
+/* documents, P2: the paper page */
+.paper{background:var(--t);display:flex;flex-direction:column;padding:28px 28px 20px}
+.paper .sec2{padding:12px 0;border-top:2px solid var(--ln);display:grid;grid-template-columns:110px 1fr;gap:12px}
+.paper .stats{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--g);border-radius:var(--bo-radius-base);overflow:hidden;margin:6px 0 12px}
+.paper .stats>div{background:var(--t2);padding:10px;display:flex;flex-direction:column;gap:2px}
+.rows>div{display:grid;grid-template-columns:1fr auto;gap:8px;padding:6px 0;border-top:2px solid var(--ln)}
+.rows>div:first-child{border-top:0}
+/* kv rows: the key in a fixed column, a long value wraps under itself, left aligned, never beside the key. Used by quote, terms and paper */
+.rows.kv>div{grid-template-columns:34% 1fr;gap:16px;text-align:left}
+.rows.kv.wide>div{grid-template-columns:46% 1fr}
+.rows.kv>div>span:last-child{text-wrap:pretty}
+.rows.amt>div>span:last-child{text-align:right}
+
+/* deck: quote and terms (7 Nov 2026). The label at the top, the rows at the foot, hairlines at 12% of the tile's own text colour */
+.qt{justify-content:space-between;padding:20px}
+.qt .rows{--ln:color-mix(in srgb,currentColor 12%,transparent)}
+.qbody{display:flex;flex-direction:column;gap:14px}
+.qprice{display:flex;flex-direction:column;gap:2px}
+[data-frame] .qprice>span:first-child{white-space:nowrap;text-wrap:nowrap}
+
+/* web: the open source card (OC2) */
+.oscard{width:240px;height:240px;border-radius:var(--bo-radius-base);background:var(--t2);padding:12px;display:flex;flex-direction:column}
+.oscard .well{flex:1;border-radius:var(--bo-radius-base);background:var(--t);margin-bottom:10px;position:relative;overflow:hidden}
+.acts{display:flex;gap:6px}.acts span{width:32px;height:32px;border-radius:1000px;background:var(--t);display:grid;place-items:center}
+
+/* motion: rise 10px and fade, 560ms, 70ms apart, the one ease. Reduced motion shows the end state. */
+.anim .tl,.anim .float,.anim .rv{opacity:0;transform:translateY(var(--bo-motion-rise))}
+.anim.play .tl,.anim.play .float,.anim.play .rv{animation:bo-rise var(--bo-dur-entry) var(--bo-motion-ease) forwards;animation-delay:calc(var(--i,0) * var(--bo-motion-stagger) + 200ms)}
+@keyframes bo-rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.anim .tl,.anim .float,.anim .rv{opacity:1;transform:none;animation:none!important}}
+.still .tl,.still .float,.still .rv{opacity:1!important;transform:none!important;animation:none!important}
+
+/* platform zones, shown with ?zones=1, never exported */
+.zone{position:absolute;z-index:5;border:2px dashed rgba(255,59,48,.9);background:rgba(255,59,48,.12);pointer-events:none;display:none}
+.zone b{position:absolute;left:4px;top:2px;font:var(--bo-text-meta);color:#b3261e}
+body.zones .zone{display:block}
+
+/* Edge to edge and Type on the picture (27 Oct 2026). Type on the picture is the one place words sit on a photo without a tile: always on the scrim, always Opal */
+.chipf{flex-direction:row;align-items:center;gap:10px;padding:0 10px;height:28px;border-radius:1000px;white-space:nowrap}
+.float .lock{white-space:nowrap;flex:none}
+.onpic{color:var(--bo-color-opal-100)}.onpic .lock,.onpic .k{color:var(--bo-color-opal-100)}.onpic .k{opacity:.8}
+.scrim{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(16,16,16,.5) 0%,rgba(16,16,16,0) 26%,rgba(16,16,16,0) 38%,rgba(16,16,16,.55) 70%,rgba(16,16,16,.72) 100%)}
+
+/* typography layer (27 Oct 2026, rules in kit/typography.json): kerning and ligatures on, no hyphenation, headlines balanced, body pretty.
+   Leading and tracking come from the .bo-text-* styles and are never set here. Tabular figures in meta, proportional figures in headings. */
+[data-frame]{font-kerning:normal;font-feature-settings:'kern' 1,'liga' 1;text-rendering:optimizeLegibility;hyphens:none;-webkit-hyphens:none}
+[data-frame] [class*="bo-text-display"],[data-frame] [class*="bo-text-heading"],[data-frame] .bo-text-title-strong{text-wrap:balance;font-variant-numeric:proportional-nums}
+[data-frame] .bo-text-body,[data-frame] .bo-text-body-large,[data-frame] .bo-text-body-small,[data-frame] .bo-text-title-lede{text-wrap:pretty}
+[data-frame] .bo-text-meta{font-variant-numeric:tabular-nums}
+
+/* the framed carousel (27 Oct 2026): Instagram posts sit in a rounded frame on Instagram's dark mode colour, so the frame reads as inset in the feed.
+   One radius, as everywhere. The hairline goes round a picture only (FB2, Edge to edge, Type on the picture, Viewfinder), never round the bento */
+.ring{background:var(--bo-color-platform-instagram-dark)}
+.ring>.ringin{position:relative;overflow:hidden;border-radius:var(--bo-radius-base)}
+.ring>.lined::after{content:'';position:absolute;inset:0;border:var(--bo-border-hairline) solid var(--bo-color-opal-100);border-radius:inherit;pointer-events:none;z-index:6}
+
+/* Viewfinder (P1, 27 Oct 2026). Opal for the chrome on the picture. The selection is drawn in acid and is the one place acid repeats: its box, handles and tags */
+.vfmono{font-family:var(--bo-font-family-mono)} /* with .bo-text-meta: sizes and file names only. Tags are Instrument Sans, never capitals */
+.vfb{position:absolute;width:16px;height:16px;border:0 solid var(--bo-color-opal-100);z-index:4}
+.vfb.tl_{left:8px;top:8px;border-width:1.5px 0 0 1.5px}.vfb.tr_{right:8px;top:8px;border-width:1.5px 1.5px 0 0}
+.vfb.bl_{left:8px;bottom:8px;border-width:0 0 1.5px 1.5px}.vfb.br_{right:8px;bottom:8px;border-width:0 1.5px 1.5px 0}
+.vfchip{background:var(--iv);color:var(--ivfg);height:26px}.vfchip .lock{color:var(--ivfg)}
+.vfsel{position:absolute;border:2px solid var(--acid);z-index:3}
+.vfh{position:absolute;width:6px;height:6px;background:var(--acid);transform:translate(-50%,-50%)}
+.vftag{position:absolute;z-index:5;white-space:nowrap;background:var(--acid);color:var(--bo-color-text-on-accent);padding:4px 6px}
+.vfuse{position:absolute;display:flex;gap:6px;align-items:flex-start;max-width:62%;z-index:4}
+.vfuse .tl{padding:8px 10px;gap:4px}
+.vfbo{width:26px;height:26px;border-radius:1000px;background:var(--iv);color:var(--ivfg);display:grid;place-items:center;flex:none}
+.vfbo svg{color:var(--ivfg)}
+.vffoot{position:absolute;left:8px;right:8px;bottom:8px;height:38%;display:grid;grid-template-columns:1.3fr 1fr;gap:6px}
+.vffoot .acid>[class*="bo-text-heading"]{white-space:nowrap}
+.vffoot .tl{padding:12px;gap:4px}
+
+/* Instagram library (picked 27 Oct 2026): Layers, Acid tile and Acid field covers and end frames, Type selection, and the Viewfinder interiors and Stories.
+   One acid per frame besides the selection chrome (box, handles, tags), always with ink on it. Lines 2px, one radius. */
+
+.acid .sec{color:var(--bo-color-text-on-accent)}
+.chipf.acid{background:var(--acid);color:var(--bo-color-text-on-accent)}
+.vfrule{border-top:2px solid var(--ln);padding-top:10px}
+
+/* Layers (cover and end frame) */
+.vfrows{display:flex;flex-direction:column;margin:2px -6px 0}
+.vfrows>div{display:grid;grid-template-columns:18px 1fr auto;align-items:baseline;gap:8px;padding:6px;border-top:2px solid var(--ln)}
+.vfrows>div:first-child,.vfrows>div.acid,.vfrows>div.acid+div{border-top-color:transparent}
+.vfrows>div.acid{border-radius:var(--bo-radius-base)}
+
+/* the cursor with its name tag */
+.vfcur{position:absolute;z-index:5;display:flex;align-items:flex-start;gap:2px;color:var(--bo-color-ink-1000)}
+.vfcur svg{fill:var(--bo-color-opal-100)}
+.vfcurtag{margin-top:16px;background:var(--bo-color-ink-1000);color:var(--bo-color-opal-100);padding:2px 8px;border-radius:1000px;white-space:nowrap}
+
+/* Acid field: the whole frame is acid, ink on it. The selection turns ink */
+.vffield{background:var(--acid);color:var(--bo-color-text-on-accent);display:flex;flex-direction:column;gap:10px;padding:20px 18px;border-radius:var(--bo-radius-base)}
+.vffield .k,.vffield .lock,.vffield .sec{color:var(--bo-color-text-on-accent)}
+.vffield .vfrule{border-color:var(--bo-color-ink-a24)}
+.vfb.ink_{border-color:var(--bo-color-ink-1000)}
+.vffield .vfsel{border-color:var(--bo-color-ink-1000)}.vffield .vfh{background:var(--bo-color-ink-1000)}
+.vffield .vftag{background:var(--bo-color-ink-1000);color:var(--bo-color-opal-100)}
+.vffield .ph{border-color:var(--bo-color-ink-a40);color:var(--bo-color-ink-1000)}
+
+/* Type selection: a big line on ink with one word selected */
+.vfword{background:var(--iv);color:var(--ivfg);display:flex;flex-direction:column;gap:10px;padding:20px 18px;border-radius:var(--bo-radius-base)}
+.vfword .k,.vfword .sec{color:var(--ivfg2)}.vfword .lock{color:var(--ivfg)}
+.vfword .vfrule{border-color:var(--ivln)}
+.vfwfoot{display:flex;flex-direction:column;gap:6px}
+.vfsl{position:relative;display:inline-block}
+.vfsl>.vfsel{position:absolute}
+
+/* Inspector */
+.vfins{position:absolute;right:8px;width:50%;z-index:4;background:var(--t);border-radius:var(--bo-radius-base);padding:12px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.vftabs{display:flex;gap:2px;padding:2px;border-radius:1000px;background:var(--t2);align-self:flex-start}
+.vftabs span{padding:2px 8px;border-radius:1000px;color:var(--fg2)}
+.vftabs .on{background:var(--fg);color:var(--t)}
+.vfsec{display:flex;flex-direction:column;gap:4px;border-top:2px solid var(--ln);padding-top:8px}
+.vfstat{padding:10px;gap:2px;flex:none}
+
+/* Rulers and guides */
+.vfrul{position:absolute;z-index:4;background:var(--gl);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--fg2)}
+.vfrul.h{left:30px;right:8px;height:18px;background-image:linear-gradient(to right,var(--fg2) 2px,transparent 2px),linear-gradient(to right,var(--fg2) 2px,transparent 2px);background-size:5% 4px,25% 10px;background-repeat:repeat-x;background-position:0 100%,0 100%}
+.vfrul.v{left:8px;width:18px;bottom:8px;background-image:linear-gradient(to bottom,var(--fg2) 2px,transparent 2px),linear-gradient(to bottom,var(--fg2) 2px,transparent 2px);background-size:4px 5%,10px 25%;background-repeat:repeat-y;background-position:100% 0,100% 0}
+.vfrul.h span{position:absolute;top:2px;transform:translateX(4px)}
+.vfrul.v span{position:absolute;left:2px;writing-mode:vertical-rl;transform:rotate(180deg) translateX(-2px);margin-top:4px}
+.vfguide{position:absolute;z-index:3;border:0 solid var(--bo-color-opal-a78)}
+.vfguide.v{top:0;bottom:0;border-left-width:2px}.vfguide.h{left:0;right:0;border-top-width:2px}
+.vfmeas{position:absolute;z-index:4;height:0;border-top:2px solid var(--acid)}
+
+/* Before and after */
+.vfbefore{position:absolute;inset:0}
+.vfbefore img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.08)}
+.vfdiv{position:absolute;top:0;bottom:0;z-index:3;border-left:2px solid var(--bo-color-opal-100)}
+.vfdiv::after{content:'';position:absolute;left:-6px;top:50%;width:10px;height:10px;background:var(--bo-color-opal-100);transform:translateY(-50%)}
+
+/* Crop */
+.vfcrop{position:absolute;z-index:3;border:2px solid var(--acid);box-shadow:0 0 0 1000px var(--bo-color-scrim);
+  background-image:linear-gradient(to right,transparent 33.2%,var(--bo-color-opal-a50) 33.2% 33.5%,transparent 33.5% 66.5%,var(--bo-color-opal-a50) 66.5% 66.8%,transparent 66.8%),linear-gradient(to bottom,transparent 33.2%,var(--bo-color-opal-a50) 33.2% 33.5%,transparent 33.5% 66.5%,var(--bo-color-opal-a50) 66.5% 66.8%,transparent 66.8%)}
+.vfcrop .vfb{width:14px;height:14px;border-width:0}
+.vfcrop .vfb.tl_{left:-2px;top:-2px;border-width:4px 0 0 4px}.vfcrop .vfb.tr_{right:-2px;top:-2px;border-width:4px 4px 0 0}
+.vfcrop .vfb.bl_{left:-2px;bottom:-2px;border-width:0 0 4px 4px}.vfcrop .vfb.br_{right:-2px;bottom:-2px;border-width:0 4px 4px 0}
+.vfcropb{max-width:44%;text-align:left}
+
+/* Acid wipe */
+.vfwipe{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;gap:6px;padding:16px}
+
+/* chips and tiles sit above the selection, the crop scrim and the guides */
+.vfr .float,.vfr .vfchip{z-index:6}
+/* Stories: words keep clear of the 16px side edges */
+[data-format="ig-story"].vffield,[data-format="ig-story"].vfword{padding-left:26px;padding-right:26px}
+/* lede emphasis (8 Nov 2026): key phrases in full ink, the rest steps back */
+.em{color:var(--bo-color-text-disabled)}.em .on{color:var(--bo-color-text-primary)}
+/* Cursor carousel (8 Nov 2026): the cursor drawn large, its tag in the cursor's look, alt text as a tooltip, a click, a drag */
+.bcur{position:absolute;z-index:6;display:flex;flex-direction:column;align-items:flex-start;pointer-events:none}
+.bcur svg{flex:none;display:block}
+.bctag{border-radius:1000px;white-space:nowrap}
+.bcfree{z-index:6}
+.bctag.opal{background:var(--bo-color-opal-100);color:var(--bo-color-ink-1000)}
+.bctag.ink{background:var(--bo-color-ink-1000);color:var(--bo-color-opal-100)}
+.calt{position:absolute;z-index:6;width:52%;background:var(--t);color:var(--fg);border-radius:var(--bo-radius-base);padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.vfplain{background:var(--t);color:var(--fg);display:flex;flex-direction:column;gap:10px;padding:20px 18px;border-radius:var(--bo-radius-base)}
+.cbtnrow{display:flex;margin-top:16px}
+.cbtnwrap{position:relative;display:inline-flex}
+.cbtn{background:var(--acid);color:var(--bo-color-text-on-accent);border-radius:1000px;padding:14px 64px 14px 22px}
+.crings{position:absolute;right:28px;top:50%}
+.crings i{position:absolute;border:2px solid var(--fg);border-radius:1000px;transform:translate(-50%,-50%)}
+.crings i:nth-child(1){width:20px;height:20px}.crings i:nth-child(2){width:36px;height:36px;opacity:.6}.crings i:nth-child(3){width:52px;height:52px;opacity:.3}
+.cbtnwrap .bcur{left:calc(100% - 32px)!important;top:calc(50% - 4px)!important}
+.cdrag{display:block;margin-top:64px}
+.cghost{position:relative;color:var(--ivfg2)}
+.cmoved{position:absolute;left:12px;top:-48px;color:var(--ivfg);white-space:nowrap}
+.cmoved .bcur{left:calc(100% + 4px)!important;top:20%!important}
