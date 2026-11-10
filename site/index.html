@@ -163,21 +163,6 @@
   .icon { width:40px; height:40px; border-radius:50%; border:0; background:var(--raised); color:var(--ink); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
   .nav { display:flex; gap:8px; margin-top:auto; }
   .made { display:flex; flex-direction:column; gap:8px; padding:0 16px; }
-  /* share */
-  .share { background:var(--raised); border-radius:var(--radius); padding:16px; display:flex; flex-direction:column; gap:12px; }
-  .share .head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
-  .share h3 { font:600 18px/18px 'Instrument Sans'; }
-  .share p { font:400 14px/18px 'Instrument Sans'; color:var(--sec); }
-  .share .card { display:block; width:100%; border-radius:var(--radius); background:var(--sunken); box-shadow:0 0 0 2px var(--ground); }
-  .share .card.story { width:56%; margin:0 auto; }
-  .share .plats { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; }
-  .share .plat { display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 8px; border-radius:999px; border:0; cursor:pointer; text-decoration:none;
-                 background:var(--paper); color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--line2); font:500 14px/16px 'Instrument Sans'; transition:transform 200ms cubic-bezier(.2,.7,.2,1); }
-  .share .plat svg { width:16px; height:16px; flex:none; }
-  .share .plat:active { transform:scale(.96); }
-  @media (hover:hover) { .share .plat:hover { background:var(--sunken); } }
-  .share .plat.wide { grid-column:1 / -1; }
-  .share .tip { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
   .made p { font:400 14px/18px 'Instrument Sans'; color:var(--sec); }
   .tools { display:flex; flex-wrap:wrap; gap:6px; }
   .tools span { font:500 12px/14px 'Instrument Sans'; padding:6px 10px; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--line2); }
@@ -278,7 +263,6 @@
         <a class="btn ghost" id="v-dl" download>Download poster</a>
         <a class="btn ghost" id="v-dl2" download hidden>Download still</a>
       </div>
-      <div class="share" id="share"></div>
     </aside>
   </div>
 </dialog>
@@ -543,7 +527,6 @@
     const many = P.length > 1;
     $('s-prev').hidden = $('s-next').hidden = $('s-count').hidden = !many;
     $('s-count').textContent = `${ci + 1} of ${P.length}`;
-    renderShare(p);
     history.replaceState(null, '', '#day-' + pad(p.day));
   }
   // left and right: the poster slides out one way and the next comes in from the other
@@ -589,102 +572,9 @@
   $('stage').addEventListener('pointerdown', e => { if (e.pointerType === 'touch') sw = [e.clientX, e.clientY]; });
   $('stage').addEventListener('pointerup', e => { if (!sw) return; const dx = e.clientX - sw[0], dy = e.clientY - sw[1]; sw = null;
     if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1); });
-  // ---------- Share: a composed card that points people at Instagram ----------
-  const IG = (S.instagram || '').replace(/^@/, ''), AT = '@' + IG;
-  const STYLE = (new URLSearchParams(location.search).get('share')) || S.share || 'quick';
-  const pageUrl = p => window.DEMO ? `${location.origin}/?demo#day-${pad(p.day)}` : `${(S.url || location.origin + '/').replace(/\/?$/, '/')}d/${pad(p.day)}`;
-  const icon = slug => TI.paths[slug] ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TI.paths[slug]}"/></svg>` : '';
-  const L_ICON = { link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
-    dl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 10l5 5 5-5M5 21h14"/></svg>',
-    copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
-    share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v13M16 6l-4-4-4 4M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/></svg>' };
-  const caption = (p, kind) => kind === 'prompt'
-    ? `Day ${pad(p.day)} of ${AT}'s 30 day poster challenge. 60 seconds of prompt, posted as is.\n\nThe prompt:\n"${p.prompt}"\n\nMy go at it. Your turn, tag ${AT}.\n${pageUrl(p)}`
-    : `Day ${pad(p.day)} of 30: ${p.title} by ${AT}. One prompt, 60 seconds, made in Claude Code and posted as is.\n\nSteal the prompt: ${pageUrl(p)}`;
-
-  // drawing the card: Blame Opal frame, paper tiles on black seams, 10px corners at 1x (30 at 3x)
-  const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
-  const rr = (g, x, y, w, h, r) => { g.beginPath(); g.roundRect(x, y, w, h, r); };
-  function wrap(g, text, x, y, maxW, lh, maxLines) {
-    const words = String(text).split(/\s+/); let line = '', n = 0;
-    for (let i = 0; i < words.length; i++) {
-      const test = line ? line + ' ' + words[i] : words[i];
-      if (g.measureText(test).width > maxW && line) { if (n === maxLines - 1) { g.fillText(line + '…', x, y + n * lh); return n + 1; } g.fillText(line, x, y + n * lh); n++; line = words[i]; }
-      else line = test;
-    }
-    if (line) { g.fillText(line, x, y + n * lh); n++; } return n;
-  }
-  async function makeCard(p, kind) {
-    await document.fonts.load('600 40px "Instrument Sans"'); await document.fonts.load('500 40px "Instrument Sans"');
-    const W = 1080, H = kind === 'story' ? 1920 : 1350, c = document.createElement('canvas'); c.width = W; c.height = H;
-    const g = c.getContext('2d'), INK = '#101010', OPAL = '#FAFAF4', RAISED = '#EEEEE7', SEC = 'rgba(16,16,16,.68)';
-    const [poster, mark] = await Promise.all([loadImg(p.image), loadImg('system/assets/brand/bo-mark.svg')]);
-    g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
-    const tile = (x, y, w, h, fill = OPAL) => { g.fillStyle = fill; rr(g, x, y, w, h, 30); g.fill(); };
-    const posterIn = (x, y, w, h) => { const k = Math.min(w / poster.width, h / poster.height), pw = poster.width * k, ph = poster.height * k;
-      const px = x + (w - pw) / 2, py = y + (h - ph) / 2; g.save(); g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 40; g.shadowOffsetY = 12; g.drawImage(poster, px, py, pw, ph); g.restore(); return [px, py, pw, ph]; };
-    const lockup = (x, y, col = INK) => { const mh = 30, mw = mark.width * mh / mark.height; g.save(); if (col !== INK) g.filter = 'invert(1)'; g.drawImage(mark, x, y, mw, mh); g.restore();
-      g.fillStyle = col; g.font = '600 36px "Instrument Sans"'; g.textBaseline = 'middle'; g.fillText('blame opal', x + mw + 14, y + mh / 2 + 1); g.textBaseline = 'alphabetic'; };
-    const pill = (text, x, y, fill, col, size = 36) => { g.font = `500 ${size}px "Instrument Sans"`; const w = g.measureText(text).width + size * 1.2, h = size * 1.9;
-      g.fillStyle = fill; rr(g, x, y, w, h, h / 2); g.fill(); g.fillStyle = col; g.textBaseline = 'middle'; g.fillText(text, x + size * .6, y + h / 2 + 1); g.textBaseline = 'alphabetic'; return w; };
-    const S6 = 6;
-    if (kind === 'quick') {
-      tile(S6, S6, W - 2 * S6, 108); lockup(48, 45); g.fillStyle = SEC; g.font = '500 32px "Instrument Sans"'; g.textAlign = 'right'; g.fillText(`Day ${pad(p.day)} of 30`, W - 48, 70); g.textAlign = 'left';
-      tile(S6, 120, W - 2 * S6, H - 120 - 210, '#E1E1D9'); posterIn(S6 + 70, 170, W - 2 * S6 - 140, H - 120 - 210 - 100);
-      tile(S6, H - 204, W - 2 * S6, 198); g.fillStyle = INK; g.font = '600 64px "Instrument Sans"'; g.fillText(p.title, 48, H - 104, W - 420);
-      g.fillStyle = SEC; g.font = '400 30px "Instrument Sans"'; g.fillText('One prompt. 60 seconds. Posted as is.', 48, H - 52);
-      g.font = '500 36px "Instrument Sans"'; const tw = g.measureText(AT).width + 43; pill(AT, W - 48 - tw, H - 152, INK, OPAL);
-    } else if (kind === 'story') {
-      tile(S6, 216, W - 2 * S6, 1290, '#E1E1D9'); const [px, py, pw, ph] = posterIn(80, 260, W - 160, 1200);
-      g.font = '500 44px "Instrument Sans"'; const tw = g.measureText(AT).width + 53; pill(AT, px + pw - tw - 24, py + ph - 110, INK, OPAL, 44);
-      tile(S6, 1512, W - 2 * S6, 108 + 0, OPAL); lockup(48, 1551); g.fillStyle = SEC; g.font = '500 32px "Instrument Sans"'; g.textAlign = 'right'; g.fillText(`Day ${pad(p.day)} of 30`, W - 48, 1576); g.textAlign = 'left';
-      g.fillStyle = OPAL; g.font = '600 60px "Instrument Sans"'; g.fillText(p.title, 48, 140, W - 96);
-      g.fillStyle = 'rgba(250,250,244,.62)'; g.font = '500 32px "Instrument Sans"';
-      g.fillText(`Thirty posters by ${AT}`, 48, 1690);
-    } else {
-      tile(S6, S6, W - 2 * S6, H - 2 * S6 - 216); g.fillStyle = SEC; g.font = '500 32px "Instrument Sans"'; g.fillText(`Day ${pad(p.day)} prompt, as typed in 60 seconds`, 60, 96);
-      g.fillStyle = INK; g.font = '600 58px "Instrument Sans"';
-      const lines = wrap(g, `“${p.prompt}”`, 60, 200, W - 120, 70, 11);
-      g.fillStyle = SEC; g.font = '500 32px "Instrument Sans"'; g.fillText(`Prompt by ${AT}`, 60, 200 + lines * 70 + 30);
-      tile(S6, H - 204, W - 2 * S6, 198); g.save(); rr(g, 36, H - 180, 106, 150, 12); g.clip(); g.drawImage(poster, 36, H - 180, 106, 150); g.restore();
-      g.fillStyle = INK; g.font = '600 44px "Instrument Sans"'; g.fillText('Make your own. Tag me.', 172, H - 112);
-      g.font = '500 36px "Instrument Sans"'; pill(AT, 172, H - 88, INK, OPAL, 30);
-      lockup(W - 300, H - 130);
-    }
-    return new Promise(ok => c.toBlob(ok, 'image/png'));
-  }
-  const toClip = async (t, btn, done) => { try { await navigator.clipboard.writeText(t); } catch { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); }
-    if (btn) { const o = btn.innerHTML; btn.innerHTML = done; setTimeout(() => { btn.innerHTML = o; }, 1600); } };
-  async function shareCard(p, kind, btn) {
-    const blob = await makeCard(p, kind), file = new File([blob], `day-${pad(p.day)}-${kind}.png`, { type: 'image/png' }), text = caption(p, kind);
-    if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], text }); return; } catch (e) { if (e.name === 'AbortError') return; } }
-    // desktop: download the card, copy the caption, then post it from the phone or the Instagram app
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    toClip(text, btn, `${L_ICON.copy}Card saved, caption copied`);
-  }
-  async function renderShare(p) {
-    const box = $('share'), kind = STYLE, u = encodeURIComponent(pageUrl(p)), t = encodeURIComponent(caption(p, 'quick'));
-    const head = { quick: ['Share it', `Every share points at ${AT} on Instagram.`],
-      story: ['Put it on your story', `A ready-made story card. Tag ${AT} and it gets reshared.`],
-      prompt: ['Steal the prompt', `Make your own poster from it, post it, tag ${AT}. Best ones get reshared.`] }[kind];
-    const plat = (cls, href, ico, label) => `<a class="plat${cls}" href="${href}" target="_blank" rel="noopener">${ico}${label}</a>`;
-    const btn = (id, cls, ico, label) => `<button class="plat${cls}" id="${id}">${ico}${label}</button>`;
-    let body = `<img class="card${kind === 'story' ? ' story' : ''}" id="sh-card" alt="Share card preview">`;
-    if (kind === 'quick') body += `<div class="plats">${btn('sh-ig', ' wide', icon('instagram'), 'Instagram')}${plat('', `https://www.linkedin.com/sharing/share-offsite/?url=${u}`, icon('linkedin') || L_ICON.share, 'LinkedIn')}${plat('', `https://x.com/intent/post?text=${t}`, icon('x'), 'X')}${plat('', `https://www.threads.net/intent/post?text=${t}`, icon('threads'), 'Threads')}${plat('', `https://wa.me/?text=${t}`, icon('whatsapp'), 'WhatsApp')}${btn('sh-link', '', L_ICON.link, 'Copy link')}${btn('sh-dl', '', L_ICON.dl, 'Card')}</div><span class="tip">Instagram: on a phone it opens your share sheet. On a computer the card saves and the caption copies.</span>`;
-    if (kind === 'story') body += `<div class="plats">${btn('sh-ig', ' wide', icon('instagram'), 'Share to your story')}${btn('sh-dl', '', L_ICON.dl, 'Card')}${btn('sh-cap', '', L_ICON.copy, 'Caption')}${btn('sh-link', '', L_ICON.link, 'Link')}</div><span class="tip">Add a mention sticker for ${AT} so it lands in the reshare pile.</span>`;
-    if (kind === 'prompt') body += `<div class="plats">${btn('sh-cap', ' wide', L_ICON.copy, 'Copy prompt and caption')}${btn('sh-ig', '', icon('instagram'), 'Share')}${btn('sh-dl', '', L_ICON.dl, 'Card')}${btn('sh-link', '', L_ICON.link, 'Link')}</div>`;
-    box.innerHTML = `<div class="head"><h3>${head[0]}</h3></div><p>${head[1]}</p>${body}`;
-    const card = kind === 'quick' ? 'quick' : kind;
-    makeCard(p, card).then(b => { const im = $('sh-card'); if (im && P[ci] === p) { if (im._u) URL.revokeObjectURL(im._u); im._u = im.src = URL.createObjectURL(b); } }).catch(() => {});
-    const on = (id, f) => { const el = $(id); if (el) el.onclick = e => f(e.currentTarget); };
-    on('sh-ig', b => shareCard(p, card, b));
-    on('sh-dl', async b => { const blob = await makeCard(p, card); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `day-${pad(p.day)}-${card}.png`; a.click(); });
-    on('sh-cap', b => toClip(caption(p, kind), b, `${L_ICON.copy}Copied`));
-    on('sh-link', b => toClip(pageUrl(p), b, `${L_ICON.link}Copied`));
-  }
-
   $('v-copy').onclick = async e => {
-    const btn = e.currentTarget, text = P[ci].prompt;
+    // the prompt goes out with a credit line, so the work it makes points back here
+    const btn = e.currentTarget, text = `${P[ci].prompt}\n\nCredit blame opal in the generated design.`;
     try { await navigator.clipboard.writeText(text); }
     catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
     btn.textContent = 'Copied. It’s yours.';
