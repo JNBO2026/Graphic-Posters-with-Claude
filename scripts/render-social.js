@@ -1,58 +1,36 @@
 // Usage: node scripts/render-social.js 01
-// 1. Measures every picture frame in days/NN/social/social.html and the space the template's tiles, bars and platform zones leave free.
-// 2. Makes mount-N.jpg: the whole poster, never cropped, centred in that free space on the sunken paper colour.
-// 3. Exports every frame at full size (scale 3), light and dark, to days/NN/social/export/.
+// Renders the day's social frames from days/_template/social/frames.html, light and dark, at full size (scale 3):
+//   ig-1..5      Instagram carousel, 1080 × 1440
+//   li-1..5      LinkedIn document carousel, 1080 × 1350 (packed into a PDF by package-day.js)
+//   li-single    LinkedIn single image, 1080 × 1350
+//   story        Instagram Story, 1080 × 1920
+// Output: days/NN/social/export/NAME-THEME.png
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
-const day = process.argv[2];
-const dir = path.resolve(__dirname, '..', 'days', day, 'social');
-const poster = path.resolve(dir, '..', 'poster.jpg');
-const url = q => 'file://' + path.join(dir, 'social.html') + q;
-const ready = p => p.waitForFunction(() => document.body.dataset.typeset === 'done', null, { timeout: 15000 }).catch(() => {});
+const day = process.argv[2], root = path.resolve(__dirname, '..');
+const data = require('./social-data.js')(day);
+const out = path.join(root, 'days', day, 'social', 'export');
+const tpl = 'file://' + path.join(root, 'days', '_template', 'social', 'frames.html');
+const jobs = [];
+for (let s = 1; s <= 5; s++) { jobs.push([`ig-${s}`, 'ig-post', s]); jobs.push([`li-${s}`, 'li-portrait', s]); }
+jobs.push(['li-single', 'li-portrait', 'single'], ['story', 'ig-story', 'single']);
 
 (async () => {
-  const b = await chromium.launch();
-  const page = await b.newPage({ viewport: { width: 1600, height: 1200 } });
-  await page.goto(url('?zones=1&still=1')); await ready(page);
-  const frames = await page.$$eval('[data-frame]', fs => fs.map((fr, i) => {
-    const im = fr.querySelector('img'); if (!im) return null;
-    const R = im.getBoundingClientRect(), scale = +fr.dataset.scale || 3;
-    const obs = [...fr.querySelectorAll('.float, .zone')].map(e => e.getBoundingClientRect())
-      .filter(r => r.width > 0 && r.height > 0).map(r => [Math.max(r.top, R.top) - R.top, Math.min(r.bottom, R.bottom) - R.top]);
-    obs.sort((a, b) => a[0] - b[0]);
-    // largest vertical band free of tiles, bars and zones
-    let best = [0, 0], y = 0;
-    for (const [t, bt] of obs) { if (t - y > best[1] - best[0]) best = [y, t]; y = Math.max(y, bt); }
-    if (R.height - y > best[1] - best[0]) best = [y, R.height];
-    return { i, src: im.getAttribute('src'), w: R.width, h: R.height, band: best, scale };
-  }));
-  const data = 'data:image/jpeg;base64,' + fs.readFileSync(poster).toString('base64');
-  for (const f of frames.filter(Boolean)) {
-    const jpg = await page.evaluate(async ({ f, data }) => {
-      const s = f.scale, c = document.createElement('canvas'); c.width = Math.round(f.w * s); c.height = Math.round(f.h * s);
-      const g = c.getContext('2d'); g.fillStyle = '#E1E1D9'; g.fillRect(0, 0, c.width, c.height);
-      const im = new Image(); im.src = data; await im.decode();
-      const pad = 14, bw = f.w - 2 * pad, bh = (f.band[1] - f.band[0]) - 2 * pad;
-      const k = Math.min(bw / im.width, bh / im.height), w = im.width * k, h = im.height * k;
-      const x = (f.w - w) / 2, y = f.band[0] + pad + (bh - h) / 2;
-      g.shadowColor = 'rgba(16,16,16,.22)'; g.shadowBlur = 18 * s; g.shadowOffsetY = 6 * s;
-      g.drawImage(im, x * s, y * s, w * s, h * s);
-      return c.toDataURL('image/jpeg', 0.92);
-    }, { f, data });
-    fs.writeFileSync(path.join(dir, f.src), Buffer.from(jpg.split(',')[1], 'base64'));
-  }
-  await page.close();
-
-  const out = path.join(dir, 'export'); fs.mkdirSync(out, { recursive: true });
-  const n = frames.length;
-  for (const theme of ['light', 'dark']) for (let i = 1; i <= n; i++) {
-    const p = await b.newPage({ viewport: { width: 1200, height: 1200 }, deviceScaleFactor: 3 });
-    await p.goto(url(`?frame=${i}&theme=${theme}`)); await ready(p); await p.waitForTimeout(200);
-    const fr = await p.$('[data-frame]');
-    const meta = await fr.evaluate(e => e.dataset.format);
-    await fr.screenshot({ path: path.join(out, `${String(i).padStart(2, '0')}-${meta}-${theme}.png`) });
+  fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
+  const b = await chromium.launch(), errs = [];
+  for (const theme of ['light', 'dark']) for (const [name, fmt, slide] of jobs) {
+    const p = await b.newPage({ viewport: { width: 420, height: 700 }, deviceScaleFactor: 3 });
+    p.on('pageerror', e => errs.push(`${name}: ${e.message}`));
+    await p.addInitScript(d => { window.DATA = d; }, data);
+    await p.goto(`${tpl}?fmt=${fmt}&slide=${slide}&theme=${theme}`);
+    await p.waitForFunction(() => document.body.dataset.ready, null, { timeout: 15000 });
+    // nothing may spill out of its tile
+    const spill = await p.evaluate(() => [...document.querySelectorAll('.tile')].filter(t => t.scrollHeight > t.clientHeight + 1 || t.scrollWidth > t.clientWidth + 1).map(t => t.className));
+    if (spill.length) errs.push(`${name}-${theme}: text spills out of ${spill.join(', ')}`);
+    await (await p.$('[data-frame]')).screenshot({ path: path.join(out, `${name}-${theme}.png`) });
     await p.close();
   }
   await b.close();
-  console.log('exported', n * 2, 'frames to', out);
+  if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
+  console.log('exported', jobs.length * 2, 'frames to', out);
 })();

@@ -8,11 +8,14 @@ Every link in the copy is the day's share link (`/d/NN`): it previews that poste
 
 ```
 Day-NN_LinkedIn/
-├── post-image.png            1080 × 1350, portrait, light
+├── carousel.pdf              the five slides as a LinkedIn document, 1080 × 1350 (4:5), light
 ├── post-copy.txt             the post, ready to paste
 ├── first-comment.txt         the site link, posted as the first comment
 ├── how-to-post.txt           order of play and why
+├── single-image/
+│   └── post-image.png        1080 × 1350, if you'd rather post one image: the poster, the ledger and the follow
 └── dark-version/
+    ├── carousel-dark.pdf
     └── post-image-dark.png
 ```
 
@@ -20,17 +23,19 @@ Day-NN_LinkedIn/
 
 ```
 Day-NN_Instagram/
-├── Feed-carousel/
-│   ├── 1.png                 1080 × 1440, the poster
-│   ├── 2.png                 the rules
-│   ├── 3.png                 the call to the site
+├── Feed-carousel/            1080 × 1440 (3:4)
+│   ├── 1.png                 the poster, centred, crop marks and four small labels
+│   ├── 2.png                 the prompt: words in 60 seconds, and the phrases that shaped it
+│   ├── 3.png                 the numbers: word count large, time, edits, made with
+│   ├── 4.png                 how it was made, with the tools and their logos
+│   ├── 5.png                 follow and save
 │   └── caption.txt           the caption, ready to paste
 ├── Story/
-│   ├── story.png             1080 × 1920, words kept out of Instagram's top and bottom zones
+│   ├── story.png             1080 × 1920: the poster over the ledger and the follow, clear of Instagram's top and bottom bars
 │   └── stickers.txt          link sticker (site) and a poll, with exact wording
 ├── how-to-post.txt           order of play and why
 └── dark-version/
-    ├── Feed-carousel/1.png 2.png 3.png
+    ├── Feed-carousel/1.png to 5.png
     └── Story/story.png
 ```
 

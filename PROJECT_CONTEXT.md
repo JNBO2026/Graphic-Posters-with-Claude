@@ -37,7 +37,7 @@ The challenge **has not started**. `days/` holds only `_template/`. Day 01's `st
 | Review page (option picking) | https://thirty-posters-site.vercel.app/review (not linked, noindex) |
 | Per-day share previews | `/d/NN` pages built by `build-site.js`, each with that poster as its link preview |
 | Design system kit | `system/` (copy of the Blame Opal template kit from the Blame Opal Design System MCP). Don't edit |
-| Socials templates | `days/_template/social/social.html` (Blame Opal instagram and linkedin kit) |
+| Social frames | `days/_template/social/frames.html` + `scripts/social-data.js` (layout B, round seven) |
 | Copy templates | `days/_template/copy/*.txt` |
 
 ### Scripts
@@ -80,6 +80,12 @@ The challenge **has not started**. `days/` holds only `_template/`. Day 01's `st
 - **Motion rules**: one easing, cubic-bezier(.2,.7,.2,1); 200ms hovers, 300ms close, 450ms open; transform and opacity only (nothing animates width, height, top or left); stagger only infrequent entrances; 0.96 press.
 - **Performance** (measured, iPhone 13 profile, CPU 4x slower): 14,236 → 5,182 DOM nodes (one text node per rolling digit), clocks only update on screen, render only when the wall moves, nothing ticks in hidden tabs, 558px thumbs with 1116px only when zoomed, no backdrop blur on poster chips, font preloaded. 35 → 51fps dragging, longest task 892 → 334ms. Desktop 60fps.
 - The design options not picked (tiles D and E; phone and hover variants) are still in code behind `?tile=`, `?mobile=`, `?hover=` for reference. Defaults live in `site/site.config.js`.
+
+### Socials (round seven, 11 Nov)
+- James: the poster is the hero, the follow second, the challenge numbers third. Picked **B** (poster over a ledger and an acid follow tile) for single frames.
+- Instagram carousel, five slides at 1080 × 1440: 1 the poster perfectly centred with crop marks and small labels; 2 the prompt's word count and the `keywords` that shaped it; 3 the numbers; 4 how it was made with tool logos; 5 follow and save. Every slide after the first is plain Blame Opal bento.
+- LinkedIn: 4:5 (1080 × 1350) is the tallest a single image renders in the feed, and the same five slides go out as a PDF document carousel. A single 4:5 image is in the zip as a backup. Vendor claims that documents beat images are unsourced, so watch the numbers in the first week.
+- Day 01's LinkedIn post is the launch post: what the challenge is, the goal (how far Claude Code on Opus 5.5 gets on direction alone, which visual treatments it's good at, what it sticks to), and a call for suggestions.
 
 ### Brand and voice
 - Socials are in the Blame Opal system (framed bento, Instrument Sans, one acid #67FF67 per view, sentence case, UK English, no em or en dashes). The **posters** follow the prompt, not the brand.

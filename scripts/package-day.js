@@ -6,8 +6,11 @@ const day = process.argv[2], root = path.resolve(__dirname, '..'), dir = path.jo
 const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync(path.join(root, 'site', 'site.config.js'), 'utf8'), ctx);
 const LINK = `${ctx.window.SITE.url}d/${day}`;
 const exp = path.join(dir, 'social', 'export'), copy = path.join(dir, 'copy');
-const shots = fs.readdirSync(exp).sort();
-const pick = (fmt, theme) => shots.filter(f => f.includes(`-${fmt}-${theme}.png`)).map(f => path.join(exp, f));
+const shot = (name, theme) => { const f = path.join(exp, `${name}-${theme}.png`); if (!fs.existsSync(f)) throw new Error('missing export ' + f); return f; };
+const slides = (fmt, theme) => [1, 2, 3, 4, 5].map(i => shot(`${fmt}-${i}`, theme));
+// LinkedIn document carousel: the five 1080 × 1350 slides as one PDF
+const pdf = (theme) => { const to = path.join(exp, `linkedin-carousel-${theme}.pdf`);
+  execFileSync('python3', ['-I', '-c', 'import sys\nfrom PIL import Image\nims=[Image.open(f).convert("RGB") for f in sys.argv[2:]]\nims[0].save(sys.argv[1], save_all=True, append_images=ims[1:], resolution=72)', to, ...slides('li', theme)]); return to; };
 const text = f => fs.readFileSync(path.join(copy, f), 'utf8').replace(/\{\{LINK\}\}/g, LINK);
 const out = path.join(dir, 'handover'), tmp = path.join(out, '.tmp');
 fs.rmSync(out, { recursive: true, force: true });
@@ -25,21 +28,23 @@ const VIDEO = path.join(dir, 'poster.mp4'), motion = fs.existsSync(VIDEO) ? [['m
 for (const f of fs.readdirSync(copy)) if (/\[TEMPLATE/.test(fs.readFileSync(path.join(copy, f), 'utf8'))) throw new Error(`copy/${f} still has template text`);
 
 pack(`${D}_LinkedIn`, [
-  ['post-image.png', pick('li-portrait', 'light')[0]],
+  ['carousel.pdf', pdf('light')],
   ['post-copy.txt', text('linkedin-post.txt')],
   ['first-comment.txt', text('linkedin-first-comment.txt')],
   ['how-to-post.txt', text('linkedin-how-to-post.txt')],
-  ['dark-version/post-image-dark.png', pick('li-portrait', 'dark')[0]],
+  ['single-image/post-image.png', shot('li-single', 'light')],
+  ['dark-version/carousel-dark.pdf', pdf('dark')],
+  ['dark-version/post-image-dark.png', shot('li-single', 'dark')],
   ...motion,
 ]);
 pack(`${D}_Instagram`, [
-  ...pick('ig-post', 'light').map((f, i) => [`Feed-carousel/${i + 1}.png`, f]),
+  ...slides('ig', 'light').map((f, i) => [`Feed-carousel/${i + 1}.png`, f]),
   ['Feed-carousel/caption.txt', text('instagram-caption.txt')],
-  ['Story/story.png', pick('ig-story', 'light')[0]],
+  ['Story/story.png', shot('story', 'light')],
   ['Story/stickers.txt', text('instagram-story-stickers.txt')],
   ['how-to-post.txt', text('instagram-how-to-post.txt')],
-  ...pick('ig-post', 'dark').map((f, i) => [`dark-version/Feed-carousel/${i + 1}.png`, f]),
-  ['dark-version/Story/story.png', pick('ig-story', 'dark')[0]],
+  ...slides('ig', 'dark').map((f, i) => [`dark-version/Feed-carousel/${i + 1}.png`, f]),
+  ['dark-version/Story/story.png', shot('story', 'dark')],
   ...motion,
 ]);
 pack(`${D}_Poster`, [

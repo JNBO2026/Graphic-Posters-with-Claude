@@ -3,76 +3,69 @@
 <head>
 <meta charset="utf-8">
 <title>Thirty posters socials</title>
-<!-- Thirty posters social frames, v2. One frame per load: ?fmt=ig-post|ig-story|li-portrait &opt=a..d &frame=1..3 &theme=light|dark
-     scripts/render-social.js passes the day's data in as window.DATA. Poster first, socials second, the challenge numbers third. -->
+<!-- Thirty posters social frames. One frame per load:
+     ?fmt=ig-post|li-portrait|ig-story &slide=1..5|single &theme=light|dark
+     Carousel (Instagram 1080 × 1440, LinkedIn document 1080 × 1350): 1 the poster, centred and framed; 2 the words that shaped it;
+     3 the numbers; 4 how it was made; 5 follow and save. Single (LinkedIn image, Story): layout B, the poster over a ledger and the follow tile.
+     scripts/render-social.js passes the day in as window.DATA. Built on the Blame Opal system: framed bento, Instrument Sans, one acid per frame. -->
 <link rel="stylesheet" href="../../../system/assets/fonts/fonts.css">
 <style>
-  :root { --paper:#FAFAF4; --raised:#EEEEE7; --sunken:#E1E1D9; --ink:#101010; --sec:rgba(16,16,16,.68); --line:rgba(16,16,16,.12); --ground:#000; --acid:#67FF67; --glass:rgba(250,250,244,.88); --r:10px; }
-  [data-theme="dark"] { --paper:#1A1A1A; --raised:#262626; --sunken:#121212; --ink:#FAFAF4; --sec:rgba(250,250,244,.62); --line:rgba(250,250,244,.14); --glass:rgba(26,26,26,.86); }
+  :root { --paper:#FAFAF4; --raised:#EEEEE7; --sunken:#E1E1D9; --ink:#101010; --sec:rgba(16,16,16,.68); --line:rgba(16,16,16,.12); --line2:rgba(16,16,16,.24); --ground:#000; --acid:#67FF67; --r:10px; }
+  [data-theme="dark"] { --paper:#1A1A1A; --raised:#262626; --sunken:#121212; --ink:#FAFAF4; --sec:rgba(250,250,244,.62); --line:rgba(250,250,244,.14); --line2:rgba(250,250,244,.28); }
   * { box-sizing:border-box; margin:0; }
   html, body { background:#666; }
   body { font-family:'Instrument Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased; font-kerning:normal; color:var(--ink); padding:20px; }
   .frame { position:relative; background:var(--ground); padding:2px; display:flex; flex-direction:column; gap:2px; overflow:hidden; }
-  .ig-post { width:360px; height:480px; } .ig-story { width:360px; height:640px; } .li-portrait { width:360px; height:450px; }
+  .ig-post { width:360px; height:480px; } .li-portrait { width:360px; height:450px; } .ig-story { width:360px; height:640px; }
   .tile { background:var(--paper); border-radius:var(--r); position:relative; overflow:hidden; }
   .row { display:flex; gap:2px; }
-  .poster { flex:1; min-height:0; background:var(--sunken); display:flex; align-items:center; justify-content:center; padding:14px; }
-  .poster img { max-width:100%; max-height:100%; display:block; box-shadow:0 6px 18px rgba(0,0,0,.24); }
+  .grow { flex:1; min-height:0; }
   .lab { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
-  .lbl { font:500 14px/16px 'Instrument Sans'; }
   .num { font-variant-numeric:tabular-nums; }
   .ico { width:16px; height:16px; flex:none; fill:currentColor; display:block; }
+  .lu { width:20px; height:20px; flex:none; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
   .lock { display:inline-flex; align-items:center; gap:6px; font:600 14px/16px 'Instrument Sans'; }
   .lock svg { height:12px; width:auto; fill:currentColor; }
-  .acid { background:var(--acid); color:#101010; }
-  .acid .lab { color:rgba(16,16,16,.68); }
+  .acid { background:var(--acid); color:#101010; } .acid .lab { color:rgba(16,16,16,.68); }
+  .foot { padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
+  .pad { padding:16px; }
+  .h-l { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.02em; text-wrap:balance; }
+  .h-s { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; text-wrap:balance; }
+  .body { font:400 16px/24px 'Instrument Sans'; color:var(--sec); text-wrap:pretty; }
+  .body.sm { font:400 14px/18px 'Instrument Sans'; }
 
-  /* the follow block: handle with both platforms */
+  /* slide 1: the poster, centred, with crop marks and four small labels on its edges */
+  .stage { flex:1; background:var(--sunken); position:relative; }
+  .stage img { position:absolute; display:block; box-shadow:0 4px 14px rgba(0,0,0,.18); }
+  .mark { position:absolute; background:var(--ink); opacity:.55; }
+  .corner { position:absolute; font:500 12px/14px 'Instrument Sans'; color:var(--sec); white-space:nowrap; }
+  .corner b { color:var(--ink); font-weight:600; }
+
+  /* slide 2: keyword pills */
+  .kws { display:flex; flex-wrap:wrap; gap:6px; align-content:flex-start; }
+  .kw { font:500 14px/16px 'Instrument Sans'; padding:7px 12px; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--line2); }
+
+  /* slide 3: numbers */
+  .big { font:600 158px/130px 'Instrument Sans'; letter-spacing:-.04em; font-variant-numeric:tabular-nums; margin-left:-6px; }
+  .stat { flex:1; padding:12px; display:flex; flex-direction:column; justify-content:space-between; gap:12px; }
+  .stat .v { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; font-variant-numeric:tabular-nums; }
+
+  /* slide 4: tools */
+  .tl { display:inline-flex; align-items:center; gap:6px; font:500 14px/16px 'Instrument Sans'; padding:6px 10px 6px 8px; border-radius:999px; background:var(--raised); }
+  .tl svg { width:16px; height:16px; flex:none; }
+
+  /* single (layout B): ledger and follow */
+  .poster { flex:1; min-height:0; background:var(--sunken); display:flex; align-items:center; justify-content:center; padding:14px; }
+  .poster img { max-width:100%; max-height:100%; display:block; box-shadow:0 6px 18px rgba(0,0,0,.24); }
   .follow { display:flex; flex-direction:column; justify-content:space-between; gap:8px; padding:12px; }
   .follow .h { font:600 18px/18px 'Instrument Sans'; letter-spacing:-.01em; }
-  .follow .plats { display:flex; align-items:center; gap:8px; }
-
-  /* the ledger: hairline rows, label left, value right */
+  .plats { display:flex; align-items:center; gap:8px; }
   .ledger { padding:4px 12px; display:flex; flex-direction:column; justify-content:center; }
-  .ledger .lr { display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; box-shadow:inset 0 -1px 0 var(--line); font:500 12px/14px 'Instrument Sans'; }
-  .ledger .lr:last-child { box-shadow:none; }
-  .ledger .lr span:first-child { color:var(--sec); }
-
-  /* option A: edge to edge, glass chip and caption */
-  .poster.o-a { padding:52px 18px 72px; }
-  .ig-story .poster.o-a { padding:76px 18px 112px; }
-  .glass { position:absolute; background:var(--glass); backdrop-filter:blur(12px); border-radius:var(--r); }
-  .chip { left:10px; top:10px; padding:8px 10px; }
-  .cap { left:10px; right:10px; bottom:10px; padding:8px 8px 8px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
-  .cap .stats { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
-  .cap .stats b { font-weight:600; color:var(--ink); }
-  .pill { display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:999px; font:600 14px/14px 'Instrument Sans'; }
-
-  /* option C: three numbers */
-  .nums .n { flex:1; padding:10px 12px; display:flex; flex-direction:column; gap:6px; }
-  .nums .big { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
-  .nums .big small { font:500 14px/16px 'Instrument Sans'; letter-spacing:0; color:var(--sec); margin-left:2px; }
-  .bar { padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
-
-  /* option D: thirty cells */
-  .prog { padding:12px; display:flex; flex-direction:column; gap:10px; }
-  .cells { display:grid; grid-template-columns:repeat(30, 1fr); gap:2px; }
-  .cells i { aspect-ratio:1 / 2.4; border-radius:2px; box-shadow:inset 0 0 0 1px var(--line); }
-  .cells i.on { background:var(--ink); box-shadow:none; }
-  .prog .t { display:flex; justify-content:space-between; align-items:baseline; font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
-  .prog .t b { color:var(--ink); font-weight:600; }
-
-  /* shared frames 2 and 3 */
-  .detail { flex:1; background:var(--sunken); background-repeat:no-repeat; }
-  .end { flex:1; padding:16px; display:flex; flex-direction:column; justify-content:space-between; }
-  .end h2 { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.02em; }
-  .end h2, .end p { text-wrap:balance; }
-  .end p { font:400 16px/24px 'Instrument Sans'; color:var(--sec); max-width:260px; }
-  /* story: keep Instagram's top and bottom bars clear */
-  .ig-story .poster:not(.o-a) { padding-top:40px; }
-  .ig-story .frame > .row:last-child > .tile, .ig-story > .row:last-child > .tile { padding-bottom:40px; }
-  .ig-story .cap { bottom:44px; } .ig-story .chip { top:30px; }
-  .ig-story > .row:first-child > .tile { padding-top:32px; }
+  .lr { display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; box-shadow:inset 0 -1px 0 var(--line); font:500 12px/14px 'Instrument Sans'; }
+  .lr:last-child { box-shadow:none; } .lr span:first-child { color:var(--sec); }
+  /* story: Instagram covers the top 72 px and bottom 96 px of 1920, so nothing that reads sits there */
+  .ig-story .poster { padding-top:36px; }
+  .ig-story .row.last > .tile { padding-bottom:40px; }
 </style>
 </head>
 <body>
@@ -80,48 +73,68 @@
 <script>
 (async () => {
   const Q = new URLSearchParams(location.search), D = window.DATA;
-  const fmt = Q.get('fmt') || 'ig-post', opt = Q.get('opt') || 'b', frame = +(Q.get('frame') || 1);
+  const fmt = Q.get('fmt') || 'ig-post', slide = Q.get('slide') || '1', N = 5;
   document.documentElement.dataset.theme = Q.get('theme') === 'dark' ? 'dark' : 'light';
-  const pad = n => String(n).padStart(2, '0');
+  const pad = n => String(n).padStart(2, '0'), esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const svg = k => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${D.icons[k]}</svg>`;
+  const LU = { follow: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>', save: '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>' };
+  const lucide = k => `<svg class="lu" viewBox="0 0 24 24" aria-hidden="true">${LU[k]}</svg>`;
   const lock = `<span class="lock"><svg viewBox="${D.mark.vb}">${D.mark.body}</svg>blame opal</span>`;
   const day = `Day ${pad(D.day)} of ${D.total}`;
-  const poster = `<div class="tile poster"><img src="${D.poster}" alt=""></div>`;
+  const foot = n => `<div class="row"><div class="tile foot grow">${lock}<span class="lab num">Thirty posters · ${n} / ${N}</span></div></div>`;
   const plats = `<span class="plats">${svg('instagram')}${svg('linkedin')}</span>`;
-  const follow = (cls = 'acid') => `<div class="tile follow ${cls}" style="flex:1"><span class="lab">Follow all 30</span><span class="h">@blameopal</span>${plats}</div>`;
-  const ledger = `<div class="tile ledger" style="flex:1.5"><div class="lr"><span>${day}</span><span class="num">${D.date}</span></div><div class="lr"><span>Prompt</span><span class="num">${D.words} words</span></div><div class="lr"><span>Time to prompt</span><span class="num">60 seconds</span></div><div class="lr"><span>Made with</span><span>${D.made}</span></div></div>`;
   let html = '';
-  if (frame === 1) {
-    if (opt === 'a') html = `<div class="tile poster o-a" >
-        <img src="${D.poster}" alt=""><span class="glass chip">${lock}</span>
-        <div class="glass cap"><span class="stats"><b>${day} · ${D.made}</b><br>${D.words} words in 60 seconds</span><span class="pill acid">${svg('instagram')}@blameopal</span></div></div>`;
-    if (opt === 'b') html = poster + `<div class="row" style="height:${fmt === 'ig-story' ? 148 : 112}px">${ledger}${follow()}</div>`;
-    if (opt === 'c') html = poster + `<div class="row nums">
-        <div class="tile n"><span class="lab">Day</span><span class="big">${pad(D.day)}<small>/${D.total}</small></span></div>
-        <div class="tile n"><span class="lab">Words</span><span class="big">${D.words}</span></div>
-        <div class="tile n"><span class="lab">Seconds</span><span class="big">60</span></div></div>
-        <div class="row"><div class="tile bar" style="flex:1">${lock}<span class="pill acid">${svg('instagram')}@blameopal</span></div></div>`;
-    if (opt === 'd') html = `<div class="row"><div class="tile bar" style="flex:1">${lock}<span class="lab">${D.made}</span></div></div>` + poster +
-        `<div class="row"><div class="tile prog" style="flex:1.6"><div class="cells">${Array.from({ length: D.total }, (_, i) => `<i class="${i < D.day ? 'on' : ''}"></i>`).join('')}</div>
-        <div class="t"><b>${day}</b><span class="num">${D.words} words in 60 s</span></div></div>${follow()}</div>`;
+
+  if (slide === 'single') {
+    html = `<div class="tile poster"><img src="${D.poster}" alt=""></div>
+      <div class="row last" style="height:${fmt === 'ig-story' ? 152 : 112}px">
+        <div class="tile ledger" style="flex:1.5"><div class="lr"><span>${day}</span><span class="num">${D.date}</span></div><div class="lr"><span>Prompt</span><span class="num">${D.words} words</span></div><div class="lr"><span>Time to prompt</span><span class="num">60 seconds</span></div><div class="lr"><span>Made with</span><span>${esc(D.made)}</span></div></div>
+        <div class="tile follow acid" style="flex:1"><span class="lab">Follow all 30</span><span class="h">@blameopal</span>${plats}</div></div>`;
+  } else if (slide === '1') {
+    html = `<div class="tile stage" id="stage"><img id="pimg" src="${D.poster}" alt=""></div>`;
+  } else if (slide === '2') {
+    html = `<div class="tile pad"><span class="lab">The prompt</span><p class="h-s" style="margin-top:10px">${D.words} words in 60 seconds. ${D.keywords.length} did the work.</p></div>
+      <div class="tile pad grow"><span class="lab">What shaped the poster</span><div class="kws" style="margin-top:12px">${D.keywords.map(k => `<span class="kw">${esc(k)}</span>`).join('')}</div></div>` + foot(2);
+  } else if (slide === '3') {
+    html = `<div class="tile pad grow" style="display:flex;flex-direction:column;justify-content:space-between"><span class="lab">${day}</span><div><div class="big">${D.words}</div><p class="h-s" style="margin-top:8px">words, typed in one minute.</p></div></div>
+      <div class="row" style="height:96px"><div class="tile stat"><span class="lab">Time</span><span class="v">60 s</span></div><div class="tile stat"><span class="lab">Edits after</span><span class="v">0</span></div><div class="tile stat"><span class="lab">Made with</span><span class="v" style="font-size:18px;line-height:18px">${esc(D.made)}</span></div></div>` + foot(3);
+  } else if (slide === '4') {
+    html = `<div class="tile pad grow" style="display:flex;flex-direction:column;gap:12px"><span class="lab">How it was made</span><p class="body" id="proc">${esc(D.process)}</p></div>
+      <div class="tile pad" style="padding-top:12px;padding-bottom:12px"><div class="kws">${D.tools.map(t => `<span class="tl">${t.svg}${esc(t.label)}</span>`).join('')}</div></div>` + foot(4);
+  } else if (slide === '5') {
+    html = `<div class="tile pad grow" style="display:flex;flex-direction:column;justify-content:space-between"><span class="lab">${day} · ${D.words} words in 60 seconds</span>
+        <div><p class="h-l">Follow for all 30.</p><p class="body" style="margin-top:12px">One prompt, 60 seconds, no edits. Every prompt is on the wall, free to copy. Link in bio.</p></div></div>
+      <div class="row" style="height:104px"><div class="tile follow acid" style="flex:1">${lucide('follow')}<div><span class="lab">Follow</span><div class="h" style="margin-top:4px">@blameopal</div></div></div>
+        <div class="tile follow" style="flex:1">${lucide('save')}<div><span class="lab">Save it</span><div class="h" style="margin-top:4px">For the prompt</div></div></div></div>` + foot(5);
   }
-  if (frame === 2) { // a close up of the poster: the hero keeps going
-    const c = D.crop;
-    html = `<div class="tile detail" id="det" ></div>
-      <div class="row"><div class="tile bar" style="flex:1"><span class="lbl">Up close</span><span class="lab num">${day}</span></div></div>`;
-  }
-  if (frame === 3) html = `<div class="tile end" ><span class="lab">${day} · ${D.words} words in 60 seconds</span>
-      <div><h2>Steal the prompt.</h2><p style="margin-top:12px">Every prompt is on the wall, free to copy. Link in bio.</p></div>${lock}</div>
-      <div class="row" style="height:96px">${follow()}<div class="tile follow" style="flex:1"><span class="lab">Tomorrow</span><span class="h">Day ${pad(Math.min(D.day + 1, D.total))}</span><span class="lab">60 seconds, no edits</span></div></div>`;
   document.getElementById('out').innerHTML = `<div class="frame ${fmt}" data-frame data-format="${fmt}">${html}</div>`;
+  await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+
+  // slide 1: the poster exactly centred, the same margin left and right, with crop marks and labels sitting on its edges
+  const st = document.getElementById('stage');
+  if (st) {
+    const W = st.clientWidth, H = st.clientHeight, side = 44, top = 52;
+    let w = W - 2 * side, h = Math.round(w * 1.4142); if (h > H - 2 * top) { h = H - 2 * top; w = Math.round(h / 1.4142); }
+    w -= w % 2; h -= h % 2; const x = Math.round((W - w) / 2), y = Math.round((H - h) / 2);
+    Object.assign(document.getElementById('pimg').style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });
+    const g = 6, L = 10, add = (l, t, ww, hh) => st.insertAdjacentHTML('beforeend', `<i class="mark" style="left:${l}px;top:${t}px;width:${ww}px;height:${hh}px"></i>`);
+    for (const [cx, cy, dx, dy] of [[x, y, -1, -1], [x + w, y, 1, -1], [x, y + h, -1, 1], [x + w, y + h, 1, 1]]) {
+      add(dx < 0 ? cx - g - L : cx + g, cy - .5, L, 1); add(cx - .5, dy < 0 ? cy - g - L : cy + g, 1, L); }
+    const lab = (html, css) => st.insertAdjacentHTML('beforeend', `<span class="corner" style="${css}">${html}</span>`);
+    const ty = Math.round((y - 14) / 2);
+    lab(`<b>${day}</b>`, `left:${x}px;top:${ty}px`);
+    lab(lock, `right:${W - x - w}px;top:${ty - 1}px;color:var(--ink)`);
+    lab(`${D.words} words in 60 seconds`, `left:${x}px;bottom:${ty}px`);
+    lab(`1 / ${N}`, `right:${W - x - w}px;bottom:${ty}px`);
+  }
+  // long write-ups step down to body small so they always fit
+  const proc = document.getElementById('proc');
+  if (proc && proc.parentElement.scrollHeight > proc.parentElement.clientHeight) proc.classList.add('sm');
   // the frame's own outer corners are square, every other corner keeps the 10px radius
   const F = document.querySelector('.frame').getBoundingClientRect();
-  document.querySelectorAll('.frame .tile').forEach(t => { const r = t.getBoundingClientRect(), L = r.left - F.left < 4, R = F.right - r.right < 4, T = r.top - F.top < 4, B = F.bottom - r.bottom < 4;
-    t.style.borderRadius = [T && L, T && R, B && R, B && L].map(sq => sq ? '0' : 'var(--r)').join(' '); });
-  const det = document.getElementById('det');
-  if (det) { const r = det.getBoundingClientRect(), c = D.crop, k = r.width / c.w; // crop width in poster px maps to the tile width
-    Object.assign(det.style, { backgroundImage: `url(${D.poster})`, backgroundSize: `${D.pw * k}px auto`, backgroundPosition: `${-c.x * k}px ${-c.y * k}px` }); }
-  await document.fonts.ready; await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  document.querySelectorAll('.frame .tile').forEach(t => { const r = t.getBoundingClientRect(), Lf = r.left - F.left < 4, R = F.right - r.right < 4, T = r.top - F.top < 4, B = F.bottom - r.bottom < 4;
+    t.style.borderRadius = [T && Lf, T && R, B && R, B && Lf].map(sq => sq ? '0' : 'var(--r)').join(' '); });
+  await document.fonts.ready;
   document.body.dataset.ready = '1';
 })();
 </script>

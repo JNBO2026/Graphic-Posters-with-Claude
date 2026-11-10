@@ -1,5 +1,5 @@
-1. New post. Upload post-image.png (1080 × 1350, portrait takes up the most feed space).
+1. New post, then add a document. Upload carousel.pdf (five slides, 1080 × 1350, portrait takes up the most feed space). Give the document a title: Day NN of 30.
 2. Paste post-copy.txt. Check the first two lines show before "see more".
 3. Post it, then straight away add first-comment.txt as the first comment. Links in the post itself get less reach, links in a comment don't.
 4. Reply to every comment in the first hour. That’s when LinkedIn decides how far it goes.
-Dark version is in dark-version/ if you’d rather.
+If you’d rather post one image, single-image/post-image.png is the same poster with the day’s numbers and the follow. Dark versions of both are in dark-version/.
