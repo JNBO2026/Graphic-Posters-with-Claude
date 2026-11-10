@@ -13,6 +13,8 @@ window.SITE = {
   // hover on a posted poster (desktop): 'a' title card, 'b' prompt snippet, 'c' ledger card, 'd' cursor only
   hover: 'c',
   total: 30,
+  // keywords in the prompt: 'a' highlighter, 'b' fade the rest, 'c' footnotes, 'd' list under the prompt
+  kw: 'b',
   // The schedule starts when day 01 is posted, not when it was prompted (James posts it 7am 11 Nov). Day N is due start + N x 24h
   start: '2026-11-11T07:00:00Z'
 };
