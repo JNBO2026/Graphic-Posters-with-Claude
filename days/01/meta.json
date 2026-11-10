@@ -5,5 +5,48 @@
   "title": "Day one.",
   "note": "Day one set in Bauhaus pixels, washed in a Japanese gradient and roughed up like a brush.",
   "process": "Code only, no generative model. [[Claude Code]] built the letters as square, quarter circle and triangle pixels on a 17 by 25 grid inside a 100 px margin, coloured each from a gradient of five traditional Japanese colours mixed in OKLab, then painted brush strokes and heavy grain over them in [[Canvas]]. The labels are set in [[Google Fonts]], JetBrains Mono and Noto Sans JP.",
-  "tools": ["Claude Code", "Canvas", "Google Fonts", "Playwright"]
+  "tools": [
+    "Claude Code",
+    "Canvas",
+    "Google Fonts",
+    "Playwright"
+  ],
+  "keywords": [
+    {
+      "text": "the words day one",
+      "did": "The only words on the poster, DAY over ONE"
+    },
+    {
+      "text": "bold condensed",
+      "did": "Letters 5 pixels wide and 10 tall, with two-pixel stems"
+    },
+    {
+      "text": "bow house",
+      "did": "Every pixel is a square, a quarter circle or a triangle"
+    },
+    {
+      "text": "made out of pixels",
+      "did": "A 17 by 25 grid of 58 px pixels"
+    },
+    {
+      "text": "Japanese gradients",
+      "did": "Five traditional colours, Konjō to Yamabuki, one flat colour per pixel"
+    },
+    {
+      "text": "no more than 100 pixels margin",
+      "did": "Measured: everything sits exactly 100 px in"
+    },
+    {
+      "text": "aggressive noise texture",
+      "did": "Heavy grain, bristle lines and a few thousand brush strokes"
+    },
+    {
+      "text": "anchored",
+      "did": "Every label starts on a column or sits on a margin line"
+    },
+    {
+      "text": "other pieces of information",
+      "did": "一日目 in the header, the five colours named in the footer, the grid size"
+    }
+  ]
 }

@@ -48,25 +48,22 @@
 <header class="tile">
   <span class="lock"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</span>
   <h1>Thirty posters: review</h1>
-  <p>Round five. Each frame is the real site with example data, so hover and click inside them. Pick a hover style, add any notes, then copy your selections and paste them back to Claude.</p>
+  <p>Round six. Each frame is the live site with day one in it, so tap and scroll inside them. Pick one, add any notes, then copy your selections and paste them back to Claude.</p>
 </header>
 
 <section class="tile">
-  <span class="k">Decided</span><h2>Tiles F, phone L</h2>
-  <p>Departures tiles, and the logo with a burger on a floating bar at the bottom. Motion posters now play on their own and are labelled just by day. The posted counter and the second clock are gone from desktop; Get notified on GitHub is a tab tucked into the bottom edge.</p>
-  <div class="opts decided">
-    <div class="opt on"><div class="t"><b>F + L</b><small>Phone</small></div><div class="frame phone"><iframe loading="lazy" title="Phone" data-w="390" data-h="844" data-src="./?demo&tile=f&mobile=l"></iframe></div></div>
-  </div>
+  <span class="k">Decided</span><h2>Tiles F, phone L, hover C, magnifier</h2>
+  <p>Departures tiles, the logo and burger bar on phone, the ledger card on hover, and click to zoom in the poster view on desktop.</p>
 </section>
 
-<section class="tile" data-q="hover">
-  <span class="k">Question</span><h2>What shows when you hover a poster</h2>
-  <p>Desktop only. Four levels, from a small title card to nothing at all. Hover the posters inside each frame.</p>
+<section class="tile" data-q="kw">
+  <span class="k">Question</span><h2>Showing which words shaped the poster</h2>
+  <p>Day one's real prompt, with the nine phrases that drove the design. Each frame opens on the poster: scroll down inside it to the prompt, and tap the marked words in A and B. Copying the prompt still copies it plain.</p>
   <div class="opts">
-    <div class="opt" data-v="A"><div class="t"><b>A</b><small>Title card</small></div><small>A small paper card rises from the bottom: the day and the title. Nothing else.</small><div class="frame desk"><iframe loading="lazy" title="Hover A" data-w="1440" data-h="900" data-src="./?demo&hover=a"></iframe></div><button class="btn ghost pick">Pick A</button></div>
-    <div class="opt" data-v="B"><div class="t"><b>B</b><small>Prompt snippet</small></div><small>The first dozen words of the prompt as a pull quote, with how many words were typed in the 60 seconds. The prompt is the hook.</small><div class="frame desk"><iframe loading="lazy" title="Hover B" data-w="1440" data-h="900" data-src="./?demo&hover=b"></iframe></div><button class="btn ghost pick">Pick B</button></div>
-    <div class="opt" data-v="C"><div class="t"><b>C</b><small>Ledger card</small></div><small>The title, then three ruled rows: prompt length in words, made with (code only or the model), and the date posted. Matches the Departures tiles.</small><div class="frame desk"><iframe loading="lazy" title="Hover C" data-w="1440" data-h="900" data-src="./?demo&hover=c"></iframe></div><button class="btn ghost pick">Pick C</button></div>
-    <div class="opt" data-v="D"><div class="t"><b>D</b><small>Cursor only</small></div><small>Nothing over the poster at all. The blame opal cursor carries the day and the title. The poster stays clean.</small><div class="frame desk"><iframe loading="lazy" title="Hover D" data-w="1440" data-h="900" data-src="./?demo&hover=d"></iframe></div><button class="btn ghost pick">Pick D</button></div>
+    <div class="opt" data-v="A"><div class="t"><b>A</b><small>Highlighter</small></div><small>The key phrases are inverted like a marker pen. Tap or hover one and a line under the prompt says what it did, and the phrase turns green.</small><div class="frame phone"><iframe loading="lazy" title="Keywords A" data-w="390" data-h="844" data-src="./?kw=a#day-01"></iframe></div><a class="btn ghost" href="./?kw=a#day-01" target="_blank" rel="noopener">Open A full screen</a><button class="btn ghost pick">Pick A</button></div>
+    <div class="opt" data-v="B"><div class="t"><b>B</b><small>Fade the rest</small></div><small>Everything else drops back to grey so the key phrases read on their own, almost like a second, shorter prompt. Tap one for what it did.</small><div class="frame phone"><iframe loading="lazy" title="Keywords B" data-w="390" data-h="844" data-src="./?kw=b#day-01"></iframe></div><a class="btn ghost" href="./?kw=b#day-01" target="_blank" rel="noopener">Open B full screen</a><button class="btn ghost pick">Pick B</button></div>
+    <div class="opt" data-v="C"><div class="t"><b>C</b><small>Footnotes</small></div><small>Key phrases are underlined with small numbers, and numbered notes under the prompt say what each one did. Everything visible at once, no tapping.</small><div class="frame phone"><iframe loading="lazy" title="Keywords C" data-w="390" data-h="844" data-src="./?kw=c#day-01"></iframe></div><a class="btn ghost" href="./?kw=c#day-01" target="_blank" rel="noopener">Open C full screen</a><button class="btn ghost pick">Pick C</button></div>
+    <div class="opt" data-v="D"><div class="t"><b>D</b><small>What it picked up</small></div><small>The prompt stays exactly as typed. Under it, a ruled list in the Departures style: the phrase in quotes on the left, what it did on the right.</small><div class="frame phone"><iframe loading="lazy" title="Keywords D" data-w="390" data-h="844" data-src="./?kw=d#day-01"></iframe></div><a class="btn ghost" href="./?kw=d#day-01" target="_blank" rel="noopener">Open D full screen</a><button class="btn ghost pick">Pick D</button></div>
   </div>
 </section>
 
@@ -82,10 +79,10 @@
 
 <script>
 (() => {
-  const pick = { hover: '' };
-  let store = {}; try { store = JSON.parse(localStorage.getItem('tp-review-5') || '{}'); } catch {}
+  const pick = { kw: '' };
+  let store = {}; try { store = JSON.parse(localStorage.getItem('tp-review-6') || '{}'); } catch {}
   const notes = document.getElementById('notes');
-  const save = () => { try { localStorage.setItem('tp-review-5', JSON.stringify({ ...pick, notes: notes.value })); } catch {} };
+  const save = () => { try { localStorage.setItem('tp-review-6', JSON.stringify({ ...pick, notes: notes.value })); } catch {} };
   const fit = () => document.querySelectorAll('.frame').forEach(fr => { const f = fr.querySelector('iframe'), w = +f.dataset.w, h = +f.dataset.h;
     f.style.width = w + 'px'; f.style.height = h + 'px'; f.style.transform = `scale(${fr.clientWidth / w})`; });
   addEventListener('resize', fit); fit();
@@ -95,13 +92,13 @@
   function paint() {
     document.querySelectorAll('[data-q]').forEach(sec => sec.querySelectorAll('.opt').forEach(o => {
       const on = pick[sec.dataset.q] === o.dataset.v; o.classList.toggle('on', on); o.querySelector('.pick').textContent = on ? `Picked ${o.dataset.v}` : `Pick ${o.dataset.v}`; }));
-    document.getElementById('sum').innerHTML = `Tiles <strong>F</strong> · Phone <strong>L</strong> · Hover <strong>${pick.hover || 'not picked'}</strong>`;
+    document.getElementById('sum').innerHTML = `Keywords <strong>${pick.kw || 'not picked'}</strong>`;
   }
-  pick.hover = store.hover || ''; notes.value = store.notes || '';
+  pick.kw = store.kw || ''; notes.value = store.notes || '';
   notes.addEventListener('input', save);
   paint();
   document.getElementById('copy').onclick = async () => {
-    const text = ['Thirty posters review, round five', `Hover: ${pick.hover || 'not picked'}`, ...(notes.value.trim() ? ['Notes:', notes.value.trim()] : [])].join('\n');
+    const text = ['Thirty posters review, round six', `Keywords: ${pick.kw || 'not picked'}`, ...(notes.value.trim() ? ['Notes:', notes.value.trim()] : [])].join('\n');
     try { await navigator.clipboard.writeText(text); }
     catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
     const btn = document.getElementById('copy'); btn.textContent = 'Copied. Paste it to Claude';
