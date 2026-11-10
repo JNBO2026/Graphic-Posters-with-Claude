@@ -30,7 +30,7 @@ The day number comes from his message. The date is today's date when he sends it
 5. `days/NN/copy/`: the six files in `days/_template/copy/`, every word rewritten for the day, `{{LINK}}` left as is (the packager fills it in). Load the `james-tone-of-voice` and `blame-opal` skills first and run the Blame Opal `check` tool on the copy. UK English, no em or en dashes, no emoji, `we give a sh*t.` only as a sign-off. Each platform's shape is in the template: LinkedIn hooks before "see more", link in the first comment, ends on a question; Instagram hooks on line one, asks for the save, niche hashtags; Story is stickers only.
 6. `scripts/build-day.sh NN`: renders the poster and the socials (light and dark), packs the zips, builds the site into `dist/`. Then look at `poster.jpg` and every export: no clipped, overlapping or badly wrapped type. Fix and rerun if anything's off.
 7. Commit and push this repo (the GitHub Release goes out on its own).
-8. Publish the site: `scripts/publish-site.sh "Day NN: Title"` (needs the site repo cloned, see below). Vercel deploys on push.
+8. Publish the site: `scripts/publish-site.sh "Day NN: Title"` (needs the site repo cloned, see below). Vercel deploys on push. Then check it's live: `curl -s https://thirty-posters-site.vercel.app/data/posters.js` should list day NN (allow up to a minute for the deploy; poll with a Monitor until-loop, not sleep).
 
 ## The website
 Source is `site/` (page, `site.config.js`, `vercel.json`). `scripts/build-site.js` builds it into `dist/` with the posters, `data/posters.js`, `feed.xml` and the share tags. `dist/` is pushed to the separate site repo, which Vercel deploys.
