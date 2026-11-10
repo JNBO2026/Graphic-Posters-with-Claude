@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Thirty posters socials</title>
+<!-- Thirty posters social frames, v2. One frame per load: ?fmt=ig-post|ig-story|li-portrait &opt=a..d &frame=1..3 &theme=light|dark
+     scripts/render-social.js passes the day's data in as window.DATA. Poster first, socials second, the challenge numbers third. -->
+<link rel="stylesheet" href="../../../system/assets/fonts/fonts.css">
+<style>
+  :root { --paper:#FAFAF4; --raised:#EEEEE7; --sunken:#E1E1D9; --ink:#101010; --sec:rgba(16,16,16,.68); --line:rgba(16,16,16,.12); --ground:#000; --acid:#67FF67; --glass:rgba(250,250,244,.88); --r:10px; }
+  [data-theme="dark"] { --paper:#1A1A1A; --raised:#262626; --sunken:#121212; --ink:#FAFAF4; --sec:rgba(250,250,244,.62); --line:rgba(250,250,244,.14); --glass:rgba(26,26,26,.86); }
+  * { box-sizing:border-box; margin:0; }
+  html, body { background:#666; }
+  body { font-family:'Instrument Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased; font-kerning:normal; color:var(--ink); padding:20px; }
+  .frame { position:relative; background:var(--ground); padding:2px; display:flex; flex-direction:column; gap:2px; overflow:hidden; }
+  .ig-post { width:360px; height:480px; } .ig-story { width:360px; height:640px; } .li-portrait { width:360px; height:450px; }
+  .tile { background:var(--paper); border-radius:var(--r); position:relative; overflow:hidden; }
+  .row { display:flex; gap:2px; }
+  .poster { flex:1; min-height:0; background:var(--sunken); display:flex; align-items:center; justify-content:center; padding:14px; }
+  .poster img { max-width:100%; max-height:100%; display:block; box-shadow:0 6px 18px rgba(0,0,0,.24); }
+  .lab { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  .lbl { font:500 14px/16px 'Instrument Sans'; }
+  .num { font-variant-numeric:tabular-nums; }
+  .ico { width:16px; height:16px; flex:none; fill:currentColor; display:block; }
+  .lock { display:inline-flex; align-items:center; gap:6px; font:600 14px/16px 'Instrument Sans'; }
+  .lock svg { height:12px; width:auto; fill:currentColor; }
+  .acid { background:var(--acid); color:#101010; }
+  .acid .lab { color:rgba(16,16,16,.68); }
+
+  /* the follow block: handle with both platforms */
+  .follow { display:flex; flex-direction:column; justify-content:space-between; gap:8px; padding:12px; }
+  .follow .h { font:600 18px/18px 'Instrument Sans'; letter-spacing:-.01em; }
+  .follow .plats { display:flex; align-items:center; gap:8px; }
+
+  /* the ledger: hairline rows, label left, value right */
+  .ledger { padding:4px 12px; display:flex; flex-direction:column; justify-content:center; }
+  .ledger .lr { display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; box-shadow:inset 0 -1px 0 var(--line); font:500 12px/14px 'Instrument Sans'; }
+  .ledger .lr:last-child { box-shadow:none; }
+  .ledger .lr span:first-child { color:var(--sec); }
+
+  /* option A: edge to edge, glass chip and caption */
+  .poster.o-a { padding:52px 18px 72px; }
+  .ig-story .poster.o-a { padding:76px 18px 112px; }
+  .glass { position:absolute; background:var(--glass); backdrop-filter:blur(12px); border-radius:var(--r); }
+  .chip { left:10px; top:10px; padding:8px 10px; }
+  .cap { left:10px; right:10px; bottom:10px; padding:8px 8px 8px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .cap .stats { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  .cap .stats b { font-weight:600; color:var(--ink); }
+  .pill { display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:999px; font:600 14px/14px 'Instrument Sans'; }
+
+  /* option C: three numbers */
+  .nums .n { flex:1; padding:10px 12px; display:flex; flex-direction:column; gap:6px; }
+  .nums .big { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
+  .nums .big small { font:500 14px/16px 'Instrument Sans'; letter-spacing:0; color:var(--sec); margin-left:2px; }
+  .bar { padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
+
+  /* option D: thirty cells */
+  .prog { padding:12px; display:flex; flex-direction:column; gap:10px; }
+  .cells { display:grid; grid-template-columns:repeat(30, 1fr); gap:2px; }
+  .cells i { aspect-ratio:1 / 2.4; border-radius:2px; box-shadow:inset 0 0 0 1px var(--line); }
+  .cells i.on { background:var(--ink); box-shadow:none; }
+  .prog .t { display:flex; justify-content:space-between; align-items:baseline; font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  .prog .t b { color:var(--ink); font-weight:600; }
+
+  /* shared frames 2 and 3 */
+  .detail { flex:1; background:var(--sunken); background-repeat:no-repeat; }
+  .end { flex:1; padding:16px; display:flex; flex-direction:column; justify-content:space-between; }
+  .end h2 { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.02em; }
+  .end h2, .end p { text-wrap:balance; }
+  .end p { font:400 16px/24px 'Instrument Sans'; color:var(--sec); max-width:260px; }
+  /* story: keep Instagram's top and bottom bars clear */
+  .ig-story .poster:not(.o-a) { padding-top:40px; }
+  .ig-story .frame > .row:last-child > .tile, .ig-story > .row:last-child > .tile { padding-bottom:40px; }
+  .ig-story .cap { bottom:44px; } .ig-story .chip { top:30px; }
+  .ig-story > .row:first-child > .tile { padding-top:32px; }
+</style>
+</head>
+<body>
+<div id="out"></div>
+<script>
+(async () => {
+  const Q = new URLSearchParams(location.search), D = window.DATA;
+  const fmt = Q.get('fmt') || 'ig-post', opt = Q.get('opt') || 'b', frame = +(Q.get('frame') || 1);
+  document.documentElement.dataset.theme = Q.get('theme') === 'dark' ? 'dark' : 'light';
+  const pad = n => String(n).padStart(2, '0');
+  const svg = k => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${D.icons[k]}</svg>`;
+  const lock = `<span class="lock"><svg viewBox="${D.mark.vb}">${D.mark.body}</svg>blame opal</span>`;
+  const day = `Day ${pad(D.day)} of ${D.total}`;
+  const poster = `<div class="tile poster"><img src="${D.poster}" alt=""></div>`;
+  const plats = `<span class="plats">${svg('instagram')}${svg('linkedin')}</span>`;
+  const follow = (cls = 'acid') => `<div class="tile follow ${cls}" style="flex:1"><span class="lab">Follow all 30</span><span class="h">@blameopal</span>${plats}</div>`;
+  const ledger = `<div class="tile ledger" style="flex:1.5"><div class="lr"><span>${day}</span><span class="num">${D.date}</span></div><div class="lr"><span>Prompt</span><span class="num">${D.words} words</span></div><div class="lr"><span>Time to prompt</span><span class="num">60 seconds</span></div><div class="lr"><span>Made with</span><span>${D.made}</span></div></div>`;
+  let html = '';
+  if (frame === 1) {
+    if (opt === 'a') html = `<div class="tile poster o-a" >
+        <img src="${D.poster}" alt=""><span class="glass chip">${lock}</span>
+        <div class="glass cap"><span class="stats"><b>${day} · ${D.made}</b><br>${D.words} words in 60 seconds</span><span class="pill acid">${svg('instagram')}@blameopal</span></div></div>`;
+    if (opt === 'b') html = poster + `<div class="row" style="height:${fmt === 'ig-story' ? 148 : 112}px">${ledger}${follow()}</div>`;
+    if (opt === 'c') html = poster + `<div class="row nums">
+        <div class="tile n"><span class="lab">Day</span><span class="big">${pad(D.day)}<small>/${D.total}</small></span></div>
+        <div class="tile n"><span class="lab">Words</span><span class="big">${D.words}</span></div>
+        <div class="tile n"><span class="lab">Seconds</span><span class="big">60</span></div></div>
+        <div class="row"><div class="tile bar" style="flex:1">${lock}<span class="pill acid">${svg('instagram')}@blameopal</span></div></div>`;
+    if (opt === 'd') html = `<div class="row"><div class="tile bar" style="flex:1">${lock}<span class="lab">${D.made}</span></div></div>` + poster +
+        `<div class="row"><div class="tile prog" style="flex:1.6"><div class="cells">${Array.from({ length: D.total }, (_, i) => `<i class="${i < D.day ? 'on' : ''}"></i>`).join('')}</div>
+        <div class="t"><b>${day}</b><span class="num">${D.words} words in 60 s</span></div></div>${follow()}</div>`;
+  }
+  if (frame === 2) { // a close up of the poster: the hero keeps going
+    const c = D.crop;
+    html = `<div class="tile detail" id="det" ></div>
+      <div class="row"><div class="tile bar" style="flex:1"><span class="lbl">Up close</span><span class="lab num">${day}</span></div></div>`;
+  }
+  if (frame === 3) html = `<div class="tile end" ><span class="lab">${day} · ${D.words} words in 60 seconds</span>
+      <div><h2>Steal the prompt.</h2><p style="margin-top:12px">Every prompt is on the wall, free to copy. Link in bio.</p></div>${lock}</div>
+      <div class="row" style="height:96px">${follow()}<div class="tile follow" style="flex:1"><span class="lab">Tomorrow</span><span class="h">Day ${pad(Math.min(D.day + 1, D.total))}</span><span class="lab">60 seconds, no edits</span></div></div>`;
+  document.getElementById('out').innerHTML = `<div class="frame ${fmt}" data-frame data-format="${fmt}">${html}</div>`;
+  // the frame's own outer corners are square, every other corner keeps the 10px radius
+  const F = document.querySelector('.frame').getBoundingClientRect();
+  document.querySelectorAll('.frame .tile').forEach(t => { const r = t.getBoundingClientRect(), L = r.left - F.left < 4, R = F.right - r.right < 4, T = r.top - F.top < 4, B = F.bottom - r.bottom < 4;
+    t.style.borderRadius = [T && L, T && R, B && R, B && L].map(sq => sq ? '0' : 'var(--r)').join(' '); });
+  const det = document.getElementById('det');
+  if (det) { const r = det.getBoundingClientRect(), c = D.crop, k = r.width / c.w; // crop width in poster px maps to the tile width
+    Object.assign(det.style, { backgroundImage: `url(${D.poster})`, backgroundSize: `${D.pw * k}px auto`, backgroundPosition: `${-c.x * k}px ${-c.y * k}px` }); }
+  await document.fonts.ready; await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  document.body.dataset.ready = '1';
+})();
+</script>
+</body>
+</html>

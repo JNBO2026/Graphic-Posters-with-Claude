@@ -42,29 +42,42 @@
   .sum { font:500 14px/20px 'Instrument Sans'; color:var(--sec); }
   .sum strong { color:var(--ink); font-weight:600; }
   @media (max-width:900px) { .opts, .opts.decided { grid-template-columns:1fr; } h1 { font:600 28px/28px 'Instrument Sans'; } .tile { padding:16px; } }
+  .opts.one { grid-template-columns:minmax(0, 1fr); } .opts.one > .opt { min-width:0; }
+  .trio { display:flex; gap:12px; align-items:flex-start; overflow-x:auto; }
+  .trio figure { margin:0; flex:none; display:flex; flex-direction:column; gap:6px; }
+  .trio img { display:block; height:420px; width:auto; border-radius:4px; }
+  .trio figcaption { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  .seg { display:flex; gap:8px; } .seg .on { background:var(--ink); color:var(--paper); box-shadow:none; }
+  @media (max-width:900px) { .trio img { height:300px; } }
 </style>
 </head>
 <body>
 <header class="tile">
   <span class="lock"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</span>
   <h1>Thirty posters: review</h1>
-  <p>Round six. Each frame is the live site with day one in it, so tap and scroll inside them. Pick one, add any notes, then copy your selections and paste them back to Claude.</p>
+  <p>Round seven: the social posts. Pick one, add any notes, then copy your selections and paste them back to Claude.</p>
 </header>
 
 <section class="tile">
-  <span class="k">Decided</span><h2>Tiles F, phone L, hover C, magnifier</h2>
-  <p>Departures tiles, the logo and burger bar on phone, the ledger card on hover, and click to zoom in the poster view on desktop.</p>
+  <span class="k">Decided</span><h2>Site: tiles F, phone L, hover C, magnifier, keywords B</h2>
 </section>
 
-<section class="tile" data-q="kw">
-  <span class="k">Question</span><h2>Showing which words shaped the poster</h2>
-  <p>Day one's real prompt, with the nine phrases that drove the design. Each frame opens on the poster: scroll down inside it to the prompt, and tap the marked words in A and B. Copying the prompt still copies it plain.</p>
-  <div class="opts">
-    <div class="opt" data-v="A"><div class="t"><b>A</b><small>Highlighter</small></div><small>The key phrases are inverted like a marker pen. Tap or hover one and a line under the prompt says what it did, and the phrase turns green.</small><div class="frame phone"><iframe loading="lazy" title="Keywords A" data-w="390" data-h="844" data-src="./?kw=a#day-01"></iframe></div><a class="btn ghost" href="./?kw=a#day-01" target="_blank" rel="noopener">Open A full screen</a><button class="btn ghost pick">Pick A</button></div>
-    <div class="opt" data-v="B"><div class="t"><b>B</b><small>Fade the rest</small></div><small>Everything else drops back to grey so the key phrases read on their own, almost like a second, shorter prompt. Tap one for what it did.</small><div class="frame phone"><iframe loading="lazy" title="Keywords B" data-w="390" data-h="844" data-src="./?kw=b#day-01"></iframe></div><a class="btn ghost" href="./?kw=b#day-01" target="_blank" rel="noopener">Open B full screen</a><button class="btn ghost pick">Pick B</button></div>
-    <div class="opt" data-v="C"><div class="t"><b>C</b><small>Footnotes</small></div><small>Key phrases are underlined with small numbers, and numbered notes under the prompt say what each one did. Everything visible at once, no tapping.</small><div class="frame phone"><iframe loading="lazy" title="Keywords C" data-w="390" data-h="844" data-src="./?kw=c#day-01"></iframe></div><a class="btn ghost" href="./?kw=c#day-01" target="_blank" rel="noopener">Open C full screen</a><button class="btn ghost pick">Pick C</button></div>
-    <div class="opt" data-v="D"><div class="t"><b>D</b><small>What it picked up</small></div><small>The prompt stays exactly as typed. Under it, a ruled list in the Departures style: the phrase in quotes on the left, what it did on the right.</small><div class="frame phone"><iframe loading="lazy" title="Keywords D" data-w="390" data-h="844" data-src="./?kw=d#day-01"></iframe></div><a class="btn ghost" href="./?kw=d#day-01" target="_blank" rel="noopener">Open D full screen</a><button class="btn ghost pick">Pick D</button></div>
+<section class="tile" data-q="social">
+  <span class="k">Question</span><h2>How the social posts are laid out</h2>
+  <p>The poster first, your handle second, the challenge numbers third. All four use the Blame Opal system, with one acid per frame on the follow, and come in light and dark. Shown with day one.</p>
+  <div class="seg" role="group" aria-label="Theme"><button class="btn ghost on" data-theme-btn="light">Light</button><button class="btn ghost" data-theme-btn="dark">Dark</button></div>
+  <div class="opts one">
+    <div class="opt" data-v="A"><div class="t"><b>A</b><small>Edge to edge</small></div><small>The poster fills the frame on the sunken paper. A small glass lockup top left, one glass caption along the bottom: the day, the words and time, and the handle as the green pill. Most poster, least furniture.</small><div class="trio"><figure><img data-name="a-ig-post" alt="Option A, Instagram post" loading="lazy"><figcaption>Instagram post</figcaption></figure><figure><img data-name="a-ig-story" alt="Option A, Story" loading="lazy"><figcaption>Story</figcaption></figure><figure><img data-name="a-li-portrait" alt="Option A, LinkedIn" loading="lazy"><figcaption>LinkedIn</figcaption></figure></div><button class="btn ghost pick">Pick A</button></div>
+    <div class="opt" data-v="B"><div class="t"><b>B</b><small>Ledger and follow</small></div><small>The poster takes most of the frame. Underneath, a ledger tile with four hairline rows (day, prompt words, time, made with) beside a green follow tile with both platforms. Matches the hover card on the site.</small><div class="trio"><figure><img data-name="b-ig-post" alt="Option B, Instagram post" loading="lazy"><figcaption>Instagram post</figcaption></figure><figure><img data-name="b-ig-story" alt="Option B, Story" loading="lazy"><figcaption>Story</figcaption></figure><figure><img data-name="b-li-portrait" alt="Option B, LinkedIn" loading="lazy"><figcaption>LinkedIn</figcaption></figure></div><button class="btn ghost pick">Pick B</button></div>
+    <div class="opt" data-v="C"><div class="t"><b>C</b><small>Big numbers</small></div><small>The poster, then three number tiles: day, words, seconds, set large like the countdown. A bar underneath with the lockup and the handle pill. The numbers become the hook.</small><div class="trio"><figure><img data-name="c-ig-post" alt="Option C, Instagram post" loading="lazy"><figcaption>Instagram post</figcaption></figure><figure><img data-name="c-ig-story" alt="Option C, Story" loading="lazy"><figcaption>Story</figcaption></figure><figure><img data-name="c-li-portrait" alt="Option C, LinkedIn" loading="lazy"><figcaption>LinkedIn</figcaption></figure></div><button class="btn ghost pick">Pick C</button></div>
+    <div class="opt" data-v="D"><div class="t"><b>D</b><small>Thirty cells</small></div><small>A slim masthead, the poster, then a row of 30 cells that fill in as the days go, with the green follow tile beside it. Shows progress across the series at a glance.</small><div class="trio"><figure><img data-name="d-ig-post" alt="Option D, Instagram post" loading="lazy"><figcaption>Instagram post</figcaption></figure><figure><img data-name="d-ig-story" alt="Option D, Story" loading="lazy"><figcaption>Story</figcaption></figure><figure><img data-name="d-li-portrait" alt="Option D, LinkedIn" loading="lazy"><figcaption>LinkedIn</figcaption></figure></div><button class="btn ghost pick">Pick D</button></div>
   </div>
+</section>
+
+<section class="tile">
+  <span class="k">Same for every option</span><h2>Carousel frames 2 and 3</h2>
+  <p>Frame 2 is a close up of the poster so the hero carries on. Frame 3 is the end card: steal the prompt, follow, and what's next.</p>
+  <div class="trio"><figure><img data-name="f2" alt="Frame 2" loading="lazy"><figcaption>Frame 2, up close</figcaption></figure><figure><img data-name="f3" alt="Frame 3" loading="lazy"><figcaption>Frame 3, end card</figcaption></figure></div>
 </section>
 
 <section class="tile">
@@ -79,10 +92,10 @@
 
 <script>
 (() => {
-  const pick = { kw: '' };
-  let store = {}; try { store = JSON.parse(localStorage.getItem('tp-review-6') || '{}'); } catch {}
+  const pick = { social: '' };
+  let store = {}; try { store = JSON.parse(localStorage.getItem('tp-review-7') || '{}'); } catch {}
   const notes = document.getElementById('notes');
-  const save = () => { try { localStorage.setItem('tp-review-6', JSON.stringify({ ...pick, notes: notes.value })); } catch {} };
+  const save = () => { try { localStorage.setItem('tp-review-7', JSON.stringify({ ...pick, notes: notes.value })); } catch {} };
   const fit = () => document.querySelectorAll('.frame').forEach(fr => { const f = fr.querySelector('iframe'), w = +f.dataset.w, h = +f.dataset.h;
     f.style.width = w + 'px'; f.style.height = h + 'px'; f.style.transform = `scale(${fr.clientWidth / w})`; });
   addEventListener('resize', fit); fit();
@@ -92,13 +105,17 @@
   function paint() {
     document.querySelectorAll('[data-q]').forEach(sec => sec.querySelectorAll('.opt').forEach(o => {
       const on = pick[sec.dataset.q] === o.dataset.v; o.classList.toggle('on', on); o.querySelector('.pick').textContent = on ? `Picked ${o.dataset.v}` : `Pick ${o.dataset.v}`; }));
-    document.getElementById('sum').innerHTML = `Keywords <strong>${pick.kw || 'not picked'}</strong>`;
+    document.getElementById('sum').innerHTML = `Socials <strong>${pick.social || 'not picked'}</strong>`;
   }
-  pick.kw = store.kw || ''; notes.value = store.notes || '';
+  pick.social = store.social || ''; notes.value = store.notes || '';
   notes.addEventListener('input', save);
   paint();
+  let theme = 'light';
+  const imgs = () => document.querySelectorAll('img[data-name]').forEach(i => { i.src = `review7/${i.dataset.name}-${theme}.jpg`; });
+  document.querySelectorAll('[data-theme-btn]').forEach(b => b.onclick = () => { theme = b.dataset.themeBtn; document.querySelectorAll('[data-theme-btn]').forEach(x => x.classList.toggle('on', x === b)); imgs(); });
+  imgs();
   document.getElementById('copy').onclick = async () => {
-    const text = ['Thirty posters review, round six', `Keywords: ${pick.kw || 'not picked'}`, ...(notes.value.trim() ? ['Notes:', notes.value.trim()] : [])].join('\n');
+    const text = ['Thirty posters review, round seven', `Socials: ${pick.social || 'not picked'}`, ...(notes.value.trim() ? ['Notes:', notes.value.trim()] : [])].join('\n');
     try { await navigator.clipboard.writeText(text); }
     catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
     const btn = document.getElementById('copy'); btn.textContent = 'Copied. Paste it to Claude';
