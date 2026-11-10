@@ -40,7 +40,8 @@ The day number comes from his message. The date is today's date when he sends it
 ## The website
 Source is `site/` (page, `site.config.js`, `vercel.json`, `vendor/` GSAP 3.13). `scripts/build-site.js` builds it into `dist/` with the posters, `data/posters.js` and the share tags. The page is an endless draggable wall (GSAP Draggable + Inertia) with a live digital countdown on every empty slot, the Blame Opal cursor and glass HUD, all on the house easing cubic-bezier(.2,.7,.2,1) and the system durations. `dist/` is pushed to the separate site repo, which Vercel deploys.
 - `site/site.config.js` holds the live URL. Change it there only.
-- Notifications: "Watch on GitHub" only (each day's GitHub Release notifies watchers). No email, no RSS: James decided against both.
+- Notifications: a "Remind me" panel. First a calendar subscription (`remind.ics`, built by `build-site.js` from day 01's `started_at`: one event per day, calendars re-check it every few hours), then follow on Instagram and LinkedIn (`site.config.js`), then Watch on GitHub (each day's Release notifies watchers). No email, no RSS.
+- Design options still open (James to pick): empty slot tiles `tile: 'a' | 'b' | 'c'` and phone layout `mobile: 'a' | 'b' | 'c'` in `site.config.js`. `?tile=` and `?mobile=` preview them.
 
 ## Setup status
 - [x] Site repo: `JNBO2026/thirty-posters-site` (private), deploys from `main`. In a new session, if `../thirty-posters-site` is missing: `add_repo` it with push access, then `git clone https://github.com/JNBO2026/thirty-posters-site ../thirty-posters-site`. Do this before the day starts, not mid-timer.

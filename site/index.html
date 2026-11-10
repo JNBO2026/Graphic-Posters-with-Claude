@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Thirty Posters</title>
-<meta name="description" content="30 days, 30 posters, 60 seconds of prompting each. Every prompt free to copy.">
+<meta name="description" content="30 posters in 30 minutes. One prompt a day, inputted in 60 seconds, made in Claude Code and posted as is. Every prompt free to copy.">
 <!-- og:start -->
 <!-- og:end -->
 <link rel="stylesheet" href="system/assets/fonts/fonts.css">
 <style>
-  /* Blame Opal: one ink, three papers, one acid. Light hairline bento on a black ground. */
+  /* Blame Opal: one ink, three papers, one acid. Hairline bento on a black ground. Even numbers only. */
   :root {
     --paper:#FAFAF4; --raised:#EEEEE7; --sunken:#E1E1D9; --ink:#101010; --on-ink:#FAFAF4;
     --sec:#101010AD; --line:#1010101F; --line2:#1010103D; --glass:#FAFAF4EB; --acid:#67FF67; --ground:#000;
-    --mark:none; --radius:10px;
+    --mark:none; --radius:10px; --ease:cubic-bezier(.2,.7,.2,1);
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
     --paper:#1A1A1A; --raised:#262626; --sunken:#121212; --ink:#FAFAF4; --on-ink:#101010;
@@ -24,15 +24,16 @@
 
   * { box-sizing:border-box; margin:0; padding:0; }
   [hidden] { display:none !important; }
+  html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   html, body { height:100%; overflow:hidden; overscroll-behavior:none; }
-  body { background:var(--ground); color:var(--ink); font-family:'Instrument Sans', system-ui, sans-serif;
-         font-kerning:normal; -webkit-font-smoothing:antialiased; }
+  body { background:var(--ground); color:var(--ink); font-family:'Instrument Sans', system-ui, sans-serif; font-kerning:normal; -webkit-font-smoothing:antialiased; }
   a { color:inherit; }
+  button { font:inherit; color:inherit; }
   .k { font:500 14px/16px 'Instrument Sans'; color:var(--sec); }
   .meta { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
-  button { font:inherit; color:inherit; }
+  .num { font-variant-numeric:tabular-nums; }
 
-  /* ---------- The canvas: an endless wall of A3 slots, no gaps ---------- */
+  /* ---------- The wall: an endless bento of A3 slots ---------- */
   #canvas { position:fixed; inset:0; overflow:hidden; cursor:grab; touch-action:none; }
   #world { position:absolute; left:0; top:0; transform-origin:0 0; will-change:transform; }
   #canvas.drag { cursor:grabbing; }
@@ -41,177 +42,226 @@
   .cell { position:relative; width:var(--tw); height:var(--th); overflow:hidden; border:0; padding:0; text-align:left;
           background:var(--paper); border-radius:var(--radius); display:block; isolation:isolate; }
   .cell img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; user-select:none; }
-  .cell .in { position:absolute; inset:0; padding:12px; display:flex; flex-direction:column; justify-content:space-between; }
-  .cell .top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  .cell .big { font:600 64px/64px 'Instrument Sans'; color:var(--line2); letter-spacing:-.01em; }
-  .cell .note { font:400 14px/18px 'Instrument Sans'; color:var(--sec); }
-  .cell.next { background:var(--raised); }
-  .cell.next .big { color:var(--ink); }
-  .dot { width:8px; height:8px; border-radius:50%; background:currentColor; display:inline-block; }
-  .cell.next .dot { animation:pulse 1.2s ease-in-out infinite alternate; }
-  @keyframes pulse { from { opacity:1 } to { opacity:.25 } }
-  /* posted poster hover */
+  .cell video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; }
+  .cell:focus-visible { outline:2px solid var(--ink); outline-offset:-4px; }
+  .cell .chip { position:absolute; left:8px; top:8px; display:inline-flex; align-items:center; gap:4px; padding:4px 8px; border-radius:999px; background:var(--glass);
+                backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); font:500 12px/14px 'Instrument Sans'; color:var(--ink); }
+  .cell .chip svg { width:10px; height:10px; }
   .cell .over { position:absolute; inset:0; padding:12px; display:flex; flex-direction:column; justify-content:flex-end; gap:6px;
-                background:linear-gradient(to top, rgba(16,16,16,.92), rgba(16,16,16,.6) 50%, rgba(16,16,16,0)); color:#FAFAF4; opacity:0;
-                transition:opacity 200ms cubic-bezier(.2,.7,.2,1); }
+                background:linear-gradient(to top, rgba(16,16,16,.92), rgba(16,16,16,.6) 50%, rgba(16,16,16,0)); color:#FAFAF4; opacity:0; transition:opacity 200ms var(--ease); }
   .cell .over .meta { color:#FAFAF49E; }
   .cell .over b { font:600 18px/18px 'Instrument Sans'; }
   .cell .over span.p { font:400 14px/18px 'Instrument Sans'; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
-  .cell .chip { position:absolute; left:8px; top:8px; padding:4px 8px; border-radius:999px; background:var(--glass);
-                backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); font:500 12px/14px 'Instrument Sans'; color:var(--ink); }
   @media (hover:hover) { .cell.posted:hover .over, .cell.posted:focus-visible .over { opacity:1; } }
-  .cell:focus-visible { outline:2px solid var(--ink); outline-offset:-4px; }
 
-  /* ---------- Digital clocks: every digit rolls ---------- */
-  .clock { display:flex; align-items:flex-start; gap:4px; font-variant-numeric:tabular-nums; }
-  .clock .grp { display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
-  .clock .ds { display:flex; }
-  .clock .dg { display:inline-block; width:.62em; height:1em; overflow:hidden; line-height:1em; text-align:center; }
-  .clock .col { display:flex; flex-direction:column; transition:transform 250ms cubic-bezier(.2,.7,.2,1); }
-  .clock .col i { font-style:normal; height:1em; }
-  .clock .sep { line-height:1em; opacity:.4; }
-  .clock .u { font:500 12px/14px 'Instrument Sans'; opacity:.62; }
-  .clock.s { font:600 20px/20px 'Instrument Sans'; }
-  .clock.m { font:600 28px/28px 'Instrument Sans'; }
-  .clock.l { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.01em; }
+  /* empty slots: one layout, three treatments (tile-a, tile-b, tile-c on <html>) */
+  .slot .in { position:absolute; inset:0; padding:16px; display:flex; flex-direction:column; justify-content:space-between; }
+  .slot .head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .slot .dayno { font:600 64px/56px 'Instrument Sans'; letter-spacing:-.02em; color:var(--line2); font-variant-numeric:tabular-nums; }
+  .slot .lbl { font:500 14px/16px 'Instrument Sans'; color:var(--sec); }
+  .slot .foot { display:flex; flex-direction:column; gap:8px; }
+  .slot.next { background:var(--raised); }
+  .slot.next .dayno { color:var(--ink); }
+  .pulse { width:8px; height:8px; border-radius:50%; background:var(--ink); flex:none; margin-top:4px; animation:pulse 1.2s ease-in-out infinite alternate; }
+  @keyframes pulse { from { opacity:1 } to { opacity:.24 } }
+  .bar { position:relative; height:2px; border-radius:2px; background:var(--line); overflow:hidden; }
+  .bar i { position:absolute; inset:0; background:var(--ink); transform-origin:0 50%; transform:scaleX(0); transition:transform 450ms var(--ease); }
 
-  /* ---------- HUD: framed bento on glass ---------- */
+  /* rolling digits */
+  .roll { display:inline-flex; align-items:baseline; font-variant-numeric:tabular-nums; }
+  .dg { display:inline-block; width:.6em; height:1em; overflow:hidden; line-height:1em; text-align:center; }
+  .col { display:flex; flex-direction:column; transition:transform 250ms var(--ease); }
+  .col i { font-style:normal; height:1em; }
+
+  /* A: inline units, 24d 17h 59m 55s */
+  .ck-a { display:flex; align-items:baseline; gap:8px; font:600 20px/20px 'Instrument Sans'; }
+  .ck-a .u { font:500 14px/14px 'Instrument Sans'; color:var(--sec); margin-left:2px; }
+  .ck-a .g { display:inline-flex; align-items:baseline; }
+  /* B: grid clock with a unit row, seconds as a bar */
+  .ck-b { display:grid; grid-template-columns:repeat(var(--n), auto); justify-content:start; column-gap:12px; row-gap:6px; }
+  .ck-b .roll { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; }
+  .ck-b .u { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  /* C: words, then a live clock only on the next one */
+  .ck-c { font:600 18px/22px 'Instrument Sans'; }
+  .ck-c .live { display:block; margin-top:4px; font:600 28px/28px 'Instrument Sans'; }
+  .sep { opacity:.32; padding:0 1px; }
+
+  /* ---------- HUD: framed bento ---------- */
   .hud { position:fixed; z-index:5; }
   .glass { background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
-  .chiprow { display:flex; align-items:center; gap:12px; padding:10px 16px; border-radius:999px; box-shadow:0 0 0 2px var(--ground); }
-  .lock { display:flex; align-items:center; gap:8px; font:600 16px/16px 'Instrument Sans'; text-decoration:none; }
+  .ring { box-shadow:0 0 0 2px var(--ground); }
+  .chiprow { display:flex; align-items:center; gap:12px; padding:10px 16px; border-radius:999px; }
+  .lock { display:inline-flex; align-items:center; gap:8px; font:600 16px/16px 'Instrument Sans'; text-decoration:none; color:var(--ink); }
   .lock img { height:14px; width:auto; filter:var(--mark); }
+  .tile { background:var(--paper); border-radius:var(--radius); padding:16px; display:flex; flex-direction:column; gap:12px; }
+  .hud .tile { box-shadow:0 0 0 2px var(--ground); }
   .hud.tr { top:16px; right:16px; }
   .prog { display:flex; gap:2px; }
   .prog i { width:4px; height:14px; border-radius:2px; background:var(--line2); }
   .prog i.on { background:var(--ink); }
-  .tile { background:var(--paper); border-radius:var(--radius); padding:16px; display:flex; flex-direction:column; gap:12px; }
-  .hud .tile { box-shadow:0 0 0 2px var(--ground); }
-  .hud.bl { left:16px; bottom:16px; width:340px; display:flex; flex-direction:column; gap:2px; }
-  .hud.bl h1 { font:600 28px/28px 'Instrument Sans'; text-wrap:balance; }
-  .hud.bl p { font:400 14px/18px 'Instrument Sans'; color:var(--sec); }
-  .about-top { display:flex; align-items:center; gap:12px; }
+  .hud.bl { left:16px; bottom:16px; width:344px; display:flex; flex-direction:column; gap:2px; }
+  .hud.bl h1 { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; text-wrap:balance; }
+  .hud.bl p { font:400 14px/20px 'Instrument Sans'; color:var(--sec); }
+  .hud.br { right:16px; bottom:16px; width:344px; }
   .socials { display:flex; gap:8px; flex-wrap:wrap; }
-  .socials.mini { display:none; gap:6px; }
-  .socials a { display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:var(--ink); border-radius:999px; padding:10px 16px;
-               box-shadow:inset 0 0 0 1.5px var(--line2); font:500 14px/16px 'Instrument Sans'; transition:background 200ms cubic-bezier(.2,.7,.2,1); }
-  .socials.mini a { padding:8px; }
-  .socials svg { width:16px; height:16px; flex:none; }
-  @media (hover:hover) { .socials a:hover { background:var(--raised); } }
-  .hud.br { right:16px; bottom:16px; width:340px; }
-  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .pill { display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:var(--ink); border-radius:999px; padding:10px 16px; border:0; cursor:pointer; background:transparent;
+          box-shadow:inset 0 0 0 1.5px var(--line2); font:500 14px/16px 'Instrument Sans'; transition:background 200ms var(--ease), transform 200ms var(--ease); }
+  .pill svg { width:16px; height:16px; flex:none; }
+  .pill:active { transform:scale(.96); }
+  @media (hover:hover) { .pill:hover { background:var(--raised); } }
+  .sign { font:500 12px/14px 'Instrument Sans'; color:var(--sec); flex-direction:row !important; align-items:center; justify-content:space-between; }
+  .ast { width:16px; height:16px; color:var(--ink); }
   .btn { font:500 16px/16px 'Instrument Sans'; border-radius:999px; padding:14px 20px; border:0; cursor:pointer; text-decoration:none;
-         display:inline-flex; align-items:center; justify-content:center; gap:8px; white-space:nowrap; transition:transform 200ms cubic-bezier(.2,.7,.2,1); }
+         display:inline-flex; align-items:center; justify-content:center; gap:8px; white-space:nowrap; transition:transform 200ms var(--ease); }
+  .btn svg { width:16px; height:16px; flex:none; }
   .btn:active { transform:scale(.96); }
   .btn.go { background:var(--acid); color:#101010; }
   .btn.ghost { background:transparent; color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--line2); }
-  .btn .arr { transition:transform 200ms cubic-bezier(.2,.7,.2,1); }
-  @media (hover:hover) { .btn:hover .arr { transform:translateX(3px); } }
-  .hint { left:50%; bottom:76px; transform:translateX(-50%); padding:10px 16px; border-radius:999px; font:500 14px/16px 'Instrument Sans'; pointer-events:none; }
-  .sign { font:500 12px/14px 'Instrument Sans'; color:var(--sec); flex-direction:row !important; align-items:center; justify-content:space-between; }
-  .ast { width:16px; height:16px; color:var(--ink); }
-
-  /* ---------- The cursor: the blame opal pointer, doing something ---------- */
-  #cur { position:fixed; left:0; top:0; z-index:20; pointer-events:none; display:none; }
-  @media (hover:hover) and (pointer:fine) { #cur { display:block; } }
-  #cur svg { display:block; transform-origin:16.66% 16.66%; color:var(--ink); }
-  #cur .tag { position:absolute; left:22px; top:24px; padding:4px 10px; border-radius:999px; white-space:nowrap;
-              background:var(--ink); color:var(--on-ink); font:500 12px/14px 'Instrument Sans'; }
-  #cur.off { opacity:0; }
-  #cur.inv svg { color:var(--on-ink); }
-  #cur.inv .tag { background:var(--on-ink); color:var(--ink); }
-
-  /* ---------- Intro: sixty seconds ---------- */
-  #intro { position:fixed; inset:0; z-index:30; background:var(--ink); color:var(--on-ink); display:flex; flex-direction:column;
-           align-items:center; justify-content:center; gap:16px; }
-  #intro .n { font:600 158px/130px 'Instrument Sans'; font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
-  #intro .k { color:color-mix(in srgb, var(--on-ink) 62%, transparent); }
-
-  /* ---------- The preview: opens from the poster you clicked ---------- */
-  dialog { border:0; padding:0; background:transparent; max-width:none; max-height:none; width:100vw; height:100dvh; color:var(--ink); }
-  dialog::backdrop { background:rgba(0,0,0,.88); }
-  .sheet { width:100%; height:100%; display:grid; grid-template-columns:minmax(0,1fr) 400px; gap:2px; background:var(--ground); }
-  .stage { display:flex; align-items:center; justify-content:center; padding:32px; background:var(--sunken); min-height:0; }
-  .stage { position:relative; touch-action:pan-y; }
-  .stage img, .stage video { max-width:100%; max-height:100%; aspect-ratio:1 / 1.4142; object-fit:contain; display:block; box-shadow:0 24px 64px rgba(0,0,0,.28); background:var(--paper); }
-  .arrow { position:absolute; top:50%; margin-top:-28px; width:56px; height:56px; border-radius:50%; border:0; cursor:pointer; z-index:2;
-           display:flex; align-items:center; justify-content:center; color:var(--ink); background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-           box-shadow:0 0 0 2px var(--ground); transition:transform 200ms cubic-bezier(.2,.7,.2,1); }
-  .arrow.l { left:24px; } .arrow.r { right:24px; }
-  @media (hover:hover) { .arrow.l:hover { transform:translateX(-3px); } .arrow.r:hover { transform:translateX(3px); } }
-  .arrow:active { transform:scale(.96); }
-  .stage .count { position:absolute; left:50%; bottom:16px; transform:translateX(-50%); padding:6px 12px; border-radius:999px; font:500 12px/14px 'Instrument Sans';
-                  background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 0 0 2px var(--ground); }
-  /* tool lozenges: tagged like a mention */
-  .lz { display:inline-flex; align-items:center; gap:6px; vertical-align:-3px; padding:2px 8px 2px 4px; margin:1px 0; border-radius:999px; white-space:nowrap;
-        background:var(--raised); box-shadow:inset 0 0 0 1.5px var(--line2); font:500 12px/16px 'Instrument Sans'; color:var(--ink); }
-  .lz svg, .lz b { width:16px; height:16px; flex:none; }
-  a.lz { text-decoration:none; transition:background 200ms cubic-bezier(.2,.7,.2,1); }
-  @media (hover:hover) { a.lz:hover { background:var(--paper); } a.lz:hover .ext { transform:translate(2px,-2px); } }
-  .lz .ext { width:12px; height:12px; padding:0; transition:transform 200ms cubic-bezier(.2,.7,.2,1); }
-  .lz svg { padding:2px; }
-  .lz b { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:var(--ink); color:var(--on-ink); font:600 10px/10px 'Instrument Sans'; }
-  .made p { line-height:22px !important; }
-  /* motion posters on the wall */
-  .cell video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; }
-  .chip svg { width:10px; height:10px; vertical-align:-1px; margin-left:4px; }
-  /* zoom */
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  /* the next poster clock, big */
+  .bigclock { display:grid; grid-template-columns:repeat(4, auto); justify-content:start; column-gap:16px; row-gap:6px; }
+  .bigclock .roll { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.01em; }
+  .bigclock .u { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  .hint { left:50%; bottom:76px; transform:translateX(-50%); padding:10px 16px; border-radius:999px; font:500 14px/16px 'Instrument Sans'; pointer-events:none; white-space:nowrap; }
   .zoom { left:50%; bottom:16px; transform:translateX(-50%); padding:4px; gap:2px; }
   .zoom button { width:36px; height:36px; border-radius:50%; border:0; background:transparent; color:var(--ink); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
   .zoom button.pct { width:auto; padding:0 10px; border-radius:999px; font:500 14px/16px 'Instrument Sans'; font-variant-numeric:tabular-nums; }
   @media (hover:hover) { .zoom button:hover { background:var(--raised); } }
-  .zoom button:active { transform:scale(.96); }
+  .demo { left:50%; top:16px; transform:translateX(-50%); padding:8px 14px; border-radius:999px; font:500 12px/14px 'Instrument Sans'; white-space:nowrap; }
+
+  /* ---------- Remind me: the sheet ---------- */
+  #remind { position:fixed; inset:0; z-index:25; display:none; }
+  #remind.on { display:block; }
+  #remind .scrim { position:absolute; inset:0; background:rgba(0,0,0,.48); }
+  #remind .panel { position:absolute; right:16px; bottom:16px; width:376px; max-height:calc(100dvh - 32px); overflow:auto; display:flex; flex-direction:column; gap:2px; border-radius:12px; }
+  #remind h2 { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; }
+  #remind p { font:400 14px/20px 'Instrument Sans'; color:var(--sec); text-wrap:pretty; }
+  #remind .panel > .tile { box-shadow:0 0 0 2px var(--ground); }
+  .opt { display:grid; grid-template-columns:40px 1fr 16px; align-items:center; gap:12px; padding:12px; border-radius:var(--radius); text-decoration:none; color:var(--ink);
+         transition:background 200ms var(--ease); }
+  @media (hover:hover) { .opt:hover { background:var(--raised); } }
+  .opt .ic { width:40px; height:40px; border-radius:50%; background:var(--raised); display:flex; align-items:center; justify-content:center; }
+  .opt .ic svg { width:18px; height:18px; }
+  .opt.primary .ic { background:var(--acid); color:#101010; }
+  .opt b { display:block; font:600 16px/20px 'Instrument Sans'; }
+  .opt small { display:block; font:400 14px/18px 'Instrument Sans'; color:var(--sec); }
+  .opt .chev { width:16px; height:16px; color:var(--sec); }
+  .opt + .opt { margin-top:2px; }
+  .small-link { font:500 12px/14px 'Instrument Sans'; color:var(--sec); padding:0 12px 4px 64px; }
+
+  /* ---------- The cursor ---------- */
+  #cur { position:fixed; left:0; top:0; z-index:20; pointer-events:none; display:none; }
+  @media (hover:hover) and (pointer:fine) { #cur { display:block; } }
+  #cur svg { display:block; transform-origin:16.66% 16.66%; color:var(--ink); }
+  #cur .tag { position:absolute; left:22px; top:24px; padding:4px 10px; border-radius:999px; white-space:nowrap; background:var(--ink); color:var(--on-ink); font:500 12px/14px 'Instrument Sans'; }
+  #cur.off { opacity:0; }
+  #cur.inv svg { color:var(--on-ink); }
+  #cur.inv .tag { background:var(--on-ink); color:var(--ink); }
+
+  /* ---------- Intro ---------- */
+  #intro { position:fixed; inset:0; z-index:30; background:var(--ink); color:var(--on-ink); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
+  #intro .n { font:600 158px/130px 'Instrument Sans'; font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
+  #intro .k { color:color-mix(in srgb, var(--on-ink) 62%, transparent); }
+
+  /* ---------- The poster view ---------- */
+  dialog { border:0; padding:0; background:transparent; max-width:none; max-height:none; width:100vw; height:100dvh; color:var(--ink); overflow:hidden; }
+  dialog::backdrop { background:rgba(0,0,0,.88); }
+  .sheet { width:100%; height:100%; display:grid; grid-template-columns:minmax(0,1fr) 400px; gap:2px; background:var(--ground); }
+  .stage { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:32px 104px; background:var(--sunken); min-height:0; }
+  .media { min-height:0; flex:1; display:flex; align-items:center; justify-content:center; width:100%; }
+  .media img, .media video { max-width:100%; max-height:100%; aspect-ratio:1 / 1.4142; object-fit:contain; display:block; box-shadow:0 24px 64px rgba(0,0,0,.28); background:var(--paper); }
+  .arrow { position:absolute; top:50%; margin-top:-24px; width:48px; height:48px; border-radius:50%; border:0; cursor:pointer; z-index:2;
+           display:flex; align-items:center; justify-content:center; color:var(--ink); background:var(--paper); box-shadow:0 0 0 2px var(--ground);
+           transition:transform 200ms var(--ease); }
+  .arrow.l { left:28px; } .arrow.r { right:28px; }
+  @media (hover:hover) { .arrow.l:hover { transform:translateX(-3px); } .arrow.r:hover { transform:translateX(3px); } }
+  .arrow:active { transform:scale(.96); }
+  .count { font:500 12px/14px 'Instrument Sans'; color:var(--sec); font-variant-numeric:tabular-nums; }
+  .dots { display:none; gap:6px; }
+  .dots i { width:6px; height:6px; border-radius:50%; background:var(--line2); transition:background 200ms var(--ease), width 200ms var(--ease); }
+  .dots i.on { width:18px; border-radius:3px; background:var(--ink); }
   .side { background:var(--paper); display:flex; flex-direction:column; gap:24px; padding:24px; overflow:auto; }
-  .side .top { display:flex; justify-content:space-between; align-items:center; }
-  .side h2 { font:600 44px/44px 'Instrument Sans'; text-wrap:balance; }
+  .side .top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .side h2 { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.01em; text-wrap:balance; }
   .side .note { font:400 16px/24px 'Instrument Sans'; color:var(--sec); }
   .well { background:var(--raised); border-radius:var(--radius); padding:16px; display:flex; flex-direction:column; gap:12px; }
   .well pre { font:400 16px/24px 'Instrument Sans'; white-space:pre-wrap; word-wrap:break-word; }
-  .icon { width:40px; height:40px; border-radius:50%; border:0; background:var(--raised); color:var(--ink); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
-  .nav { display:flex; gap:8px; margin-top:auto; }
-  .made { display:flex; flex-direction:column; gap:8px; padding:0 16px; }
-  .made p { font:400 14px/18px 'Instrument Sans'; color:var(--sec); }
+  .icon { width:40px; height:40px; border-radius:50%; border:0; background:var(--raised); color:var(--ink); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; flex:none; }
+  .made { display:flex; flex-direction:column; gap:12px; }
+  .made p { font:400 14px/24px 'Instrument Sans'; color:var(--sec); }
   .tools { display:flex; flex-wrap:wrap; gap:6px; }
-  .tools span { font:500 12px/14px 'Instrument Sans'; padding:6px 10px; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--line2); }
-  .demo { left:50%; top:16px; transform:translateX(-50%); padding:10px 16px; border-radius:999px; font:500 14px/16px 'Instrument Sans'; box-shadow:0 0 0 2px var(--ground); }
-  @media (max-width:760px) { .demo { top:108px; padding:6px 12px; font:500 12px/14px 'Instrument Sans'; white-space:nowrap; } }
+  .actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:auto; }
+  .actions .btn.go { grid-column:1 / -1; }
+  .actions .btn.full { grid-column:1 / -1; }
+  /* tool lozenges: one size everywhere, inline or listed */
+  .lz { display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px 0 3px; vertical-align:middle; border-radius:999px; white-space:nowrap;
+        background:var(--raised); box-shadow:inset 0 0 0 1.5px var(--line2); font:500 12px/14px 'Instrument Sans'; color:var(--ink); text-decoration:none; }
+  .lz svg, .lz b { width:16px; height:16px; flex:none; }
+  .lz svg { padding:2px; }
+  .lz b { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:var(--ink); color:var(--on-ink); font:600 10px/10px 'Instrument Sans'; }
+  .lz .ext { width:12px; height:12px; padding:0; transition:transform 200ms var(--ease); }
+  a.lz { transition:background 200ms var(--ease); }
+  @media (hover:hover) { a.lz:hover { background:var(--paper); } a.lz:hover .ext { transform:translate(2px,-2px); } }
   .fly { position:fixed; z-index:40; object-fit:cover; pointer-events:none; }
 
   /* ---------- Phone ---------- */
   @media (max-width:760px) {
-    .hud.tr { display:none; }
-    .chiprow { padding:8px 12px; gap:8px; }
-    .hud.bl { top:12px; left:12px; right:12px; bottom:auto; width:auto; }
-    .hud.bl .tile { padding:12px; gap:8px; }
-    .hud.bl h1 { font:600 20px/20px 'Instrument Sans'; }
-    .hud.bl p, .hud.bl .sign { display:none !important; }
-    .hud.bl .about-top { justify-content:space-between; }
-    .hud.bl .socials.big { display:none; }
-    .hud.bl .socials.mini { display:flex; }
-    .hud.br { left:12px; right:12px; bottom:12px; width:auto; }
-    .hud.br .tile { display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px 12px; padding:12px; }
-    .hud.br .tile .k { grid-column:1; }
-    .hud.br #next-clock { grid-column:1; }
-    .hud.br .btn { grid-column:2; grid-row:1 / span 2; }
-    .hud.br .clock.l { font:600 20px/20px 'Instrument Sans'; }
-    .hud.br .clock .u { display:none; }
-    .hud.br .lede { display:none; }
-    .hint { bottom:112px; }
-    .sheet { grid-template-columns:1fr; height:auto; min-height:100%; }
-    dialog { overflow:auto; }
-    .stage { padding:16px; }
-    .stage img, .stage video { max-height:70dvh; }
-    .arrow { width:44px; height:44px; margin-top:-22px; } .arrow.l { left:12px; } .arrow.r { right:12px; }
-    .zoom { display:none !important; }
-    .side h2 { font:600 28px/28px 'Instrument Sans'; }
+    .hud.tr, .hud.bl, .hud.br, .zoom { display:none !important; }
+    .hint { bottom:104px; font:500 12px/14px 'Instrument Sans'; padding:8px 12px; }
+    .demo { top:12px; }
+    .slot .in { padding:10px; }
+    .slot .dayno { font:600 40px/36px 'Instrument Sans'; }
+    .slot .lbl { font:500 12px/14px 'Instrument Sans'; }
+    .ck-a { font:600 14px/14px 'Instrument Sans'; gap:4px; }
+    .ck-a .u { font:500 11px/11px 'Instrument Sans'; margin-left:1px; }
+    .ck-b { column-gap:6px; }
+    .ck-b .roll { font:600 18px/18px 'Instrument Sans'; }
+    .ck-b .u { font:500 10px/12px 'Instrument Sans'; }
+    .ck-c { font:600 14px/18px 'Instrument Sans'; }
+    .ck-c .live { font:600 18px/18px 'Instrument Sans'; }
     #intro .n { font:600 88px/80px 'Instrument Sans'; }
-    .cell .big { font:600 44px/44px 'Instrument Sans'; }
-    .cell .in { padding:10px; }
-    .clock { gap:2px; }
-    .clock.s { font:600 14px/14px 'Instrument Sans'; }
-    .clock.m { font:600 16px/16px 'Instrument Sans'; }
-    .clock .u { font:500 10px/12px 'Instrument Sans'; }
-    .cell .note { font:400 12px/14px 'Instrument Sans'; }
+    /* the poster view becomes full screen cards: swipe anywhere */
+    dialog { overflow:auto; overscroll-behavior:contain; }
+    .sheet { display:block; height:auto; min-height:100%; background:var(--paper); touch-action:pan-y; will-change:transform; }
+    .stage { padding:16px 16px 12px; gap:12px; }
+    .media img, .media video { max-height:64dvh; }
+    .arrow, .count { display:none; }
+    .dots { display:flex; }
+    .side { padding:20px 16px 32px; gap:20px; overflow:visible; }
+    .side h2 { font:600 28px/28px 'Instrument Sans'; }
+    #v-close { width:44px; height:44px; }
+    #remind .panel { left:8px; right:8px; bottom:8px; width:auto; max-height:calc(100dvh - 64px); }
+  }
+
+  /* ---------- Phone layouts: mobile-a island, mobile-b peek sheet, mobile-c header and bar ---------- */
+  .m { display:none; }
+  @media (max-width:760px) {
+    .m { display:flex; }
+    .m-island { position:fixed; z-index:6; left:12px; right:12px; bottom:12px; align-items:center; gap:10px; padding:6px; border-radius:999px; }
+    .m-island .bo { width:44px; height:44px; border-radius:50%; border:0; background:var(--paper); display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; }
+    .m-island .bo img { height:12px; filter:var(--mark); }
+    .m-island .mid { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+    .m-island .mid .k { font:500 12px/14px 'Instrument Sans'; }
+    .m-island .mid .roll { font:600 20px/20px 'Instrument Sans'; }
+    .bell { width:48px; height:48px; border-radius:50%; border:0; background:var(--acid); color:#101010; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; }
+    .bell svg { width:20px; height:20px; }
+    .m-peek { position:fixed; z-index:6; left:8px; right:8px; bottom:8px; flex-direction:column; gap:12px; padding:10px 16px 16px; border-radius:12px; }
+    .m-peek .grab { align-self:center; width:36px; height:4px; border-radius:2px; background:var(--line2); }
+    .m-peek .r1 { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .m-peek h1 { font:600 20px/22px 'Instrument Sans'; letter-spacing:-.01em; }
+    .m-peek .roll { font:600 18px/18px 'Instrument Sans'; }
+    .m-peek [data-next-clock] { white-space:nowrap; flex:none; }
+    html.mobile-b .hint, html.mobile-c .hint { display:none; }
+    .m-head { position:fixed; z-index:6; top:12px; left:12px; padding:8px 12px 8px 10px; gap:8px; border-radius:999px; }
+    .m-head .lock { font:600 14px/14px 'Instrument Sans'; }
+    .m-head .lock img { height:12px; }
+    .m-head .k { font:500 12px/14px 'Instrument Sans'; }
+    .m-bar { position:fixed; z-index:6; left:12px; right:12px; bottom:12px; flex-direction:row; align-items:center; justify-content:space-between; gap:12px; padding:12px 12px 12px 16px; border-radius:12px; }
+    .m-bar .k { font:500 12px/14px 'Instrument Sans'; }
+    .m-bar .roll { font:600 20px/20px 'Instrument Sans'; }
+    .m-bar .btn { padding:12px 16px; font:500 14px/16px 'Instrument Sans'; }
+    html.mobile-a .m:not(.m-island), html.mobile-b .m:not(.m-peek), html.mobile-c .m:not(.m-head):not(.m-bar) { display:none !important; }
+    html.mobile-c .demo { top:60px; }
   }
 </style>
 </head>
@@ -219,27 +269,45 @@
 <main id="canvas" aria-label="All 30 posters. Drag or scroll to explore, pinch or use + and - to zoom, click a poster to open it."><div id="world"></div></main>
 <div id="proxy" hidden></div>
 
-<div class="hud tr glass chiprow">
-  <span class="k" id="count"></span>
+<div class="hud tr glass chiprow ring">
+  <span class="k num" id="count"></span>
   <span class="prog" id="prog" aria-hidden="true"></span>
 </div>
-
-<aside class="hud bl" id="latest"></aside>
-
-<aside class="hud br">
+<aside class="hud bl" id="about" aria-label="About the challenge"></aside>
+<aside class="hud br" aria-label="Next poster">
   <div class="tile">
     <span class="k" id="next-k"></span>
     <div id="next-clock"></div>
-    <p class="lede k" id="next-note"></p>
-    <a class="btn go" id="gh" href="#" target="_blank" rel="noopener">Watch on GitHub <span class="arr">→</span></a>
+    <button class="btn go" id="remind-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>Remind me when it drops</button>
   </div>
 </aside>
-
-<div class="hud hint glass" id="hint">Drag or scroll to explore. Pinch to zoom.</div>
-<div class="hud zoom glass chiprow" role="group" aria-label="Zoom">
+<div class="hud hint glass ring" id="hint">Drag or scroll to explore. Pinch to zoom.</div>
+<div class="hud zoom glass chiprow ring" role="group" aria-label="Zoom">
   <button id="z-out" aria-label="Zoom out"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
   <button class="pct" id="z-pct" aria-label="Reset zoom">100%</button>
   <button id="z-in" aria-label="Zoom in"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg></button>
+</div>
+
+<!-- phone layouts -->
+<div class="m m-island glass ring" role="region" aria-label="Next poster">
+  <button class="bo" data-open="about" aria-label="About the challenge"><img src="system/assets/brand/bo-mark.svg" alt=""></button>
+  <div class="mid"><span class="k" data-next-k></span><span data-next-clock></span></div>
+  <button class="bell" data-open="remind" aria-label="Remind me when the next poster drops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></button>
+</div>
+<div class="m m-peek tile ring" role="button" tabindex="0" data-open="about" aria-label="About the challenge and reminders">
+  <span class="grab" aria-hidden="true"></span>
+  <div class="r1"><span class="lock"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</span><span class="k" data-next-k></span></div>
+  <div class="r1"><h1>30 posters in 30 minutes.</h1><span data-next-clock></span></div>
+</div>
+<div class="m m-head glass chiprow ring" role="button" tabindex="0" data-open="about" aria-label="About the challenge"><span class="lock"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</span><span class="k">30 posters in 30 minutes</span></div>
+<div class="m m-bar tile ring">
+  <div style="display:flex;flex-direction:column;gap:4px;min-width:0"><span class="k" data-next-k></span><span data-next-clock></span></div>
+  <button class="btn go" data-open="remind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>Remind me</button>
+</div>
+
+<div id="remind" role="dialog" aria-modal="true" aria-label="Get the next one">
+  <div class="scrim" data-close></div>
+  <div class="panel" id="remind-panel"></div>
 </div>
 
 <div id="cur" aria-hidden="true">
@@ -247,26 +315,26 @@
   <span class="tag" id="cur-tag">Drag</span>
 </div>
 
-<div id="intro" aria-hidden="true"><span class="n" id="intro-n">60</span><span class="k">seconds to write the prompt</span></div>
+<div id="intro" aria-hidden="true"><span class="n" id="intro-n">60</span><span class="k">seconds to input the prompt</span></div>
 
-<dialog id="view" aria-label="Poster preview">
-  <div class="sheet">
+<dialog id="view" aria-label="Poster">
+  <div class="sheet" id="sheet">
     <div class="stage" id="stage">
       <button class="arrow l" id="s-prev" aria-label="Previous poster"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-      <img id="v-img" alt="">
-      <video id="v-vid" playsinline muted loop controls preload="metadata" hidden></video>
-      <button class="arrow r" id="s-next" aria-label="Next poster"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+      <div class="media"><img id="v-img" alt=""><video id="v-vid" playsinline muted loop autoplay preload="auto" disablepictureinpicture disableremoteplayback hidden></video></div>
       <span class="count" id="s-count"></span>
+      <span class="dots" id="s-dots" aria-hidden="true"></span>
+      <button class="arrow r" id="s-next" aria-label="Next poster"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
     </div>
     <aside class="side">
-      <div class="top"><span class="k" id="v-day"></span>
+      <div class="top"><span class="k num" id="v-day"></span>
         <button class="icon" id="v-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
       <h2 id="v-title"></h2>
       <p class="note" id="v-note"></p>
       <div class="well"><span class="k">The prompt, inputted in 60 seconds</span><pre id="v-prompt"></pre></div>
       <div class="made" id="v-made-box"><span class="k">How it was made</span><p id="v-made"></p><div class="tools" id="v-tools"></div></div>
       <div class="made" id="v-skills-box" hidden><span class="k">Skills used</span><div class="tools" id="v-skills"></div></div>
-      <div class="row">
+      <div class="actions">
         <button class="btn go" id="v-copy">Copy the prompt</button>
         <a class="btn ghost" id="v-dl" download>Download poster</a>
         <a class="btn ghost" id="v-dl2" download hidden>Download still</a>
@@ -286,6 +354,10 @@
 (() => {
   gsap.registerPlugin(Draggable, InertiaPlugin);
   const S = window.SITE || {}, TOTAL = S.total || 30, DAY = 864e5, COLS = 6, ROWS = Math.ceil(TOTAL / COLS);
+  const Q = new URLSearchParams(location.search);
+  const TILE = /^[abc]$/.test(Q.get('tile')) ? Q.get('tile') : (S.tile || 'a');
+  const MOBILE = /^[abc]$/.test(Q.get('mobile')) ? Q.get('mobile') : (S.mobile || 'a');
+  document.documentElement.classList.add('tile-' + TILE, 'mobile-' + MOBILE);
   const P = (window.POSTERS || []).slice().sort((a, b) => a.day - b.day);
   const byDay = Object.fromEntries(P.map(p => [p.day, p]));
   const L = P[P.length - 1];
@@ -294,34 +366,69 @@
     p.dark = l / 64 < 110; } catch {} }; im.src = p.thumb; });
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
-  const $ = id => document.getElementById(id);
+  const phone = () => innerWidth <= 760;
+  const $ = id => document.getElementById(id), $$ = s => [...document.querySelectorAll(s)];
   const pad = n => String(n).padStart(2, '0');
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
   const fmtDate = d => new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+  const ICON = {
+    bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>',
+    cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>',
+    chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
+    close: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+  };
+  const TI = window.TOOL_ICONS || { tools: {}, paths: {} };
+  const logo = slug => TI.paths[slug] ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TI.paths[slug]}"/></svg>` : '';
 
-  // The house easing, cubic-bezier(.2,.7,.2,1), as a GSAP ease
+  // The house easing, cubic-bezier(.2,.7,.2,1)
   const bez = (x1, y1, x2, y2) => { const A = (a, b) => 1 - 3 * b + 3 * a, B = (a, b) => 3 * b - 6 * a, C = a => 3 * a;
     const f = (t, a, b) => ((A(a, b) * t + B(a, b)) * t + C(a)) * t, d = (t, a, b) => 3 * A(a, b) * t * t + 2 * B(a, b) * t + C(a);
     return x => { if (x <= 0 || x >= 1) return x; let t = x; for (let i = 0; i < 8; i++) { const s = d(t, x1, x2); if (!s) break; t -= (f(t, x1, x2) - x) / s; } return f(t, y1, y2); }; };
   const E = bez(.2, .7, .2, 1);
   gsap.defaults({ ease: E, duration: .45 });
 
-  // The schedule: day 1 starts when the first prompt lands, then one every 24 hours
+  // The schedule: day 1 starts when the first prompt lands, each day is due 24 hours after the one before
   const start = S.start ? Date.parse(S.start) : (byDay[1] && byDay[1].started_at ? Date.parse(byDay[1].started_at) : null);
   const due = n => start + n * DAY;
   const nextDay = P.length < TOTAL ? (L ? L.day + 1 : 1) : null;
-  const minuteLoop = now => '000000' + pad(59 - Math.floor(now / 1000) % 60);
+  const parts = ms => { const s = Math.max(0, Math.floor(Math.abs(ms) / 1000)); return { d: Math.min(99, Math.floor(s / 86400)), h: Math.floor(s / 3600) % 24, m: Math.floor(s / 60) % 60, s: s % 60 }; };
+  const minuteLoop = now => ({ d: 0, h: 0, m: 0, s: 59 - Math.floor(now / 1000) % 60 });
 
-  // ---------- Digital clocks ----------
-  const digit = () => `<span class="dg"><span class="col">${[0,1,2,3,4,5,6,7,8,9].map(n => `<i>${n}</i>`).join('')}</span></span>`;
-  function clockHTML(size, units = true) {
-    const g = u => `<span class="grp"><span class="ds">${digit()}${digit()}</span>${units ? `<span class="u">${u}</span>` : ''}</span>`;
-    return `<span class="clock ${size}" aria-hidden="true">${g('days')}<span class="sep">:</span>${g('hrs')}<span class="sep">:</span>${g('mins')}<span class="sep">:</span>${g('secs')}</span>`;
-  }
-  const split = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return [Math.min(99, Math.floor(s / 86400)), Math.floor(s / 3600) % 24, Math.floor(s / 60) % 60, s % 60].map(pad).join(''); };
-  function setClock(el, str) {
+  // ---------- Rolling digits ----------
+  const roll = n => `<span class="roll" aria-hidden="true">${Array.from({ length: n }, () => `<span class="dg"><span class="col">${[0,1,2,3,4,5,6,7,8,9].map(x => `<i>${x}</i>`).join('')}</span></span>`).join('')}</span>`;
+  function setRoll(el, str) { // str: digits only, one per .dg
     if (!el || el._last === str) return; el._last = str;
-    (el._cols || (el._cols = [...el.querySelectorAll('.col')])).forEach((c, i) => { c.style.transform = `translateY(${-(+str[i])}em)`; });
+    (el._cols || (el._cols = [...el.querySelectorAll('.col')])).forEach((c, i) => { c.style.transform = `translateY(${-(+str[i] || 0)}em)`; });
+  }
+  // the big clock: days, hours, minutes, seconds, units in sentence case under each pair
+  const bigClockHTML = () => `<span class="bigclock">${['d','h','m','s'].map(k => `<span data-k="${k}">${roll(2)}</span>`).join('')}${['Days','Hrs','Mins','Secs'].map(u => `<span class="u">${u}</span>`).join('')}</span>`;
+  const setBig = (el, t) => ['d','h','m','s'].forEach(k => setRoll(el.querySelector(`[data-k="${k}"] .roll`), pad(t[k])));
+  // the compact clock for phone bars: 01:17:59:55
+  const smallClockHTML = () => `<span class="num">${['d','h','m','s'].map((k, i) => `${i ? '<span class="sep">:</span>' : ''}<span data-k="${k}">${roll(2)}</span>`).join('')}</span>`;
+
+  // ---------- Empty slot tiles: three treatments ----------
+  function slotHTML(n, isNext) {
+    const head = TILE === 'b'
+      ? `<div class="head"><span class="lbl">Day ${pad(n)}${isNext ? ' · Next' : ''}</span>${isNext ? '<i class="pulse"></i>' : ''}</div>`
+      : `<div class="head"><span class="dayno">${pad(n)}</span>${isNext ? '<i class="pulse"></i>' : ''}</div>`;
+    let foot;
+    if (TILE === 'a') foot = `<span class="lbl" data-msg></span><span class="ck-a">${['d','h','m','s'].map(k => `<span class="g" data-k="${k}">${roll(2)}<span class="u">${k}</span></span>`).join('')}</span>`;
+    if (TILE === 'b') foot = `<span class="lbl" data-msg></span><span class="ck-b" style="--n:3">${['d','h','m'].map(k => `<span data-k="${k}">${roll(2)}</span>`).join('')}${['Days','Hrs','Mins'].map(u => `<span class="u">${u}</span>`).join('')}</span><span class="bar"><i data-sec></i></span>`;
+    if (TILE === 'c') foot = `<span class="lbl" data-msg></span><span class="ck-c"><span data-words></span>${isNext ? `<span class="live num">${['h','m','s'].map((k, i) => `${i ? '<span class="sep">:</span>' : ''}<span data-k="${k}">${roll(2)}</span>`).join('')}</span>` : ''}</span><span class="bar"><i data-prog></i></span>`;
+    return `<div class="cell slot${isNext ? ' next' : ''}" data-day="${n}" role="img" aria-label="Day ${pad(n)}, not posted yet"><div class="in">${head}<div class="foot">${foot}</div></div></div>`;
+  }
+  function updateSlot(s, now) {
+    const pre = start === null, ms = pre ? s.n * DAY : due(s.n) - now, t = parts(ms), late = !pre && ms < 0;
+    const msg = pre ? 'Starts with day one' : late ? 'Overdue by' : 'Due in';
+    if (s.msg.textContent !== msg) s.msg.textContent = msg;
+    ['d','h','m','s'].forEach(k => { const r = s.el.querySelector(`[data-k="${k}"] .roll`); if (r) setRoll(r, pad(t[k])); });
+    if (TILE === 'b') { const b = s.el.querySelector('[data-sec]'); if (b) b.style.transform = `scaleX(${pre ? 0 : (60 - t.s) / 60})`; }
+    if (TILE === 'c') {
+      const w = s.el.querySelector('[data-words]'), txt = pre ? `${s.n} ${s.n === 1 ? 'day' : 'days'} after day one starts` : late ? 'Running late' : t.d >= 1 ? `${t.d + (t.h || t.m || t.s ? 1 : 0)} days` : 'Today';
+      if (w.textContent !== txt) w.textContent = txt;
+      const b = s.el.querySelector('[data-prog]'); if (b) b.style.transform = `scaleX(${pre ? 0 : Math.min(1, Math.max(0, (now - start) / (due(s.n) - start)))})`;
+    }
   }
 
   // ---------- The wall ----------
@@ -337,13 +444,9 @@
   function cellHTML(n) {
     const p = byDay[n];
     if (p) return `<button class="cell posted" data-day="${n}" aria-label="Day ${pad(n)}, ${esc(p.title)}. Open poster and prompt">
-      <img src="${p.thumb}" alt="" draggable="false"><span class="chip">Day ${pad(n)}${p.video ? ' · Motion<svg viewBox="0 0 24 24"><path fill="currentColor" d="M7 4.5v15l12-7.5z"/></svg>' : ''}</span>
+      <img src="${p.thumb}" alt="" draggable="false"><span class="chip">Day ${pad(n)}${p.video ? ' · Motion<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12-7.5z"/></svg>' : ''}</span>
       <span class="over"><span class="meta">Day ${pad(n)} · ${fmtDate(p.date)}</span><b>${esc(p.title)}</b><span class="p">${esc(p.prompt)}</span></span></button>`;
-    const isNext = n === nextDay;
-    return `<div class="cell slot${isNext ? ' next' : ''}" data-day="${n}" role="img" aria-label="Day ${pad(n)}, not posted yet">
-      <div class="in"><div class="top"><span class="meta">Day ${pad(n)}${isNext ? ' · next' : ''}</span>${isNext ? '<i class="dot"></i>' : ''}</div>
-      <span class="big">${pad(n)}</span>
-      <div style="display:flex;flex-direction:column;gap:8px"><span class="note" data-msg></span>${clockHTML(isNext ? 'm' : 's')}</div></div></div>`;
+    return slotHTML(n, n === nextDay);
   }
   function build() {
     sizes();
@@ -355,7 +458,7 @@
       if (i || j) { b.setAttribute('aria-hidden', 'true'); b.querySelectorAll('button').forEach(x => x.tabIndex = -1); }
       world.appendChild(b); blocks.push({ el: b, i, j, sx: gsap.quickSetter(b, 'x', 'px'), sy: gsap.quickSetter(b, 'y', 'px') });
     }
-    slots = [...canvas.querySelectorAll('.slot')].map(el => ({ el, n: +el.dataset.day, clock: el.querySelector('.clock'), msg: el.querySelector('[data-msg]') }));
+    slots = [...canvas.querySelectorAll('.slot')].map(el => ({ el, n: +el.dataset.day, msg: el.querySelector('[data-msg]') }));
   }
   function render() {
     const z = Z.z, x = gsap.getProperty(proxy, 'x') / z, y = gsap.getProperty(proxy, 'y') / z;
@@ -364,12 +467,11 @@
     blocks.forEach(b => { b.sx(wx(b.i * BW + x)); b.sy(wy(b.j * BH + y)); });
   }
   build();
-  // Start centred on the newest thing: the latest poster, or the next slot
   const focusDay = L ? L.day : 1;
-  gsap.set(proxy, { x: innerWidth / 2 - ((focusDay - 1) % COLS + .5) * TW, y: innerHeight / 2 - (Math.floor((focusDay - 1) / COLS) + .5) * TH });
+  gsap.set(proxy, { x: innerWidth / 2 - ((focusDay - 1) % COLS + .5) * (TW + 2), y: innerHeight / 2 - (Math.floor((focusDay - 1) / COLS) + .5) * (TH + 2) });
   render();
   gsap.ticker.add(render);
-  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { build(); tick(true); if (Z.z > zmax()) zoomTo(zmax(), innerWidth / 2, innerHeight / 2, 0); }, 200); });
+  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { build(); tick(); if (Z.z > zmax()) zoomTo(zmax(), innerWidth / 2, innerHeight / 2, 0); }, 200); });
 
   // Drag and throw
   const drag = Draggable.create(proxy, {
@@ -379,24 +481,22 @@
     onRelease() { canvas.classList.remove('drag'); },
     onClick(e) { const c = e.target.closest && e.target.closest('.cell.posted'); if (c) open(+c.dataset.day, c); }
   })[0];
-  // Zoom: pinch, ctrl or cmd and scroll, the buttons, or + and -. Up to a poster filling most of the screen height
+  // Zoom
   const zmax = () => Math.max(2, Math.round(innerHeight * .86 / TH * 100) / 100);
   function zoomTo(z2, sx = innerWidth / 2, sy = innerHeight / 2, dur = .3) {
     z2 = gsap.utils.clamp(1, zmax(), z2); const z = Z.z, px = gsap.getProperty(proxy, 'x'), py = gsap.getProperty(proxy, 'y');
     const k = z2 / z; $('z-pct').textContent = Math.round(z2 * 100) + '%';
     gsap.killTweensOf(proxy); gsap.killTweensOf(Z);
     if (!dur || reduce) { gsap.set(proxy, { x: sx + (px - sx) * k, y: sy + (py - sy) * k }); Z.z = z2; drag.update(); return; }
-    // keep the point under the pointer still while the scale changes
     gsap.to(Z, { z: z2, duration: dur, onUpdate() { const kk = Z.z / z; gsap.set(proxy, { x: sx + (px - sx) * kk, y: sy + (py - sy) * kk }); drag.update(); } });
   }
   $('z-in').onclick = () => zoomTo(Z.z * 1.4);
   $('z-out').onclick = () => zoomTo(Z.z / 1.4);
   $('z-pct').onclick = () => zoomTo(1);
   addEventListener('keydown', e => {
-    if (dlg.open || /input|textarea/i.test(e.target.tagName)) return;
+    if (dlg.open || remindOpen() || /input|textarea/i.test(e.target.tagName)) return;
     if (e.key === '+' || e.key === '=') zoomTo(Z.z * 1.4); else if (e.key === '-' || e.key === '_') zoomTo(Z.z / 1.4); else if (e.key === '0') zoomTo(1);
   });
-  // two finger pinch on touch screens
   const pts = new Map(); let pinch = null;
   canvas.addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') return; pts.set(e.pointerId, [e.clientX, e.clientY]);
     if (pts.size === 2) { drag.disable(); const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: Z.z }; hideHint(); } });
@@ -404,11 +504,14 @@
     if (pinch && pts.size === 2) { const [a, b] = [...pts.values()]; zoomTo(pinch.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch.d, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2, 0); } });
   const lift = e => { pts.delete(e.pointerId); if (pts.size < 2 && pinch) { pinch = null; drag.enable(); } };
   canvas.addEventListener('pointerup', lift); canvas.addEventListener('pointercancel', lift);
-
+  // Scroll: a trackpad moves the wall one to one with your fingers; a mouse wheel's big steps get a short glide
   canvas.addEventListener('wheel', e => {
     e.preventDefault(); hideHint();
     if (e.ctrlKey || e.metaKey) { zoomTo(Z.z * Math.exp(-e.deltaY * .01), e.clientX, e.clientY, 0); return; }
-    gsap.to(proxy, { x: `-=${e.deltaX}`, y: `-=${e.deltaY}`, duration: .6, overwrite: 'auto', onUpdate: () => drag.update() });
+    const k = e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1, dx = e.deltaX * k, dy = e.deltaY * k;
+    const notched = e.deltaMode !== 0 || (dx === 0 && Math.abs(dy) >= 50 && Number.isInteger(dy));
+    if (notched && !reduce) gsap.to(proxy, { x: `-=${dx}`, y: `-=${dy}`, duration: .24, ease: 'power2.out', overwrite: 'auto', onUpdate: () => drag.update() });
+    else { gsap.killTweensOf(proxy); gsap.set(proxy, { x: gsap.getProperty(proxy, 'x') - dx, y: gsap.getProperty(proxy, 'y') - dy }); drag.update(); }
   }, { passive: false });
   canvas.addEventListener('focusin', e => {
     const c = e.target.closest('.cell'); if (!c) return; const r = c.getBoundingClientRect();
@@ -424,7 +527,7 @@
   let hinted = false;
   function hideHint() { if (hinted) return; hinted = true; gsap.to('#hint', { autoAlpha: 0, duration: .3 }); }
 
-  // ---------- The cursor: says what it's pointing at ----------
+  // ---------- The cursor ----------
   const cur = $('cur'), tagEl = $('cur-tag');
   const qx = gsap.quickTo(cur, 'x', { duration: .2, ease: E }), qy = gsap.quickTo(cur, 'y', { duration: .2, ease: E });
   function curTag(t) { if (tagEl.textContent === t) return; tagEl.textContent = t; if (!reduce) gsap.fromTo(tagEl, { scale: .92 }, { scale: 1, duration: .2 }); }
@@ -439,7 +542,7 @@
     addEventListener('pointermove', e => {
       qx(e.clientX - 5); qy(e.clientY - 5);
       const onCanvas = !!(e.target.closest && e.target.closest('#canvas'));
-      cur.classList.toggle('off', !onCanvas || dlg.open);
+      cur.classList.toggle('off', !onCanvas || dlg.open || remindOpen());
       if (!onCanvas || canvas.classList.contains('drag')) return;
       const c = e.target.closest('.cell');
       cur.classList.toggle('inv', !!(c && c.classList.contains('posted') && (byDay[+c.dataset.day] || {}).dark));
@@ -450,102 +553,125 @@
     document.documentElement.addEventListener('mouseleave', () => cur.classList.add('off'));
   }
 
-  // ---------- The HUD ----------
-  if (window.DEMO) { const d = document.createElement('div'); d.className = 'hud demo glass'; d.textContent = 'Preview with example data'; document.body.appendChild(d); }
+  // ---------- About and the HUD ----------
+  if (window.DEMO) { const d = document.createElement('div'); d.className = 'hud demo glass ring'; d.textContent = 'Preview with example data'; document.body.appendChild(d); }
   $('count').textContent = `${pad(P.length)} of ${TOTAL} posted`;
   $('prog').innerHTML = Array.from({ length: TOTAL }, (_, i) => `<i class="${byDay[i + 1] ? 'on' : ''}"></i>`).join('');
-  $('gh').href = (S.repo || '#') + '/subscription';
   const ast = `<svg class="ast" viewBox="64 64 48 48" aria-hidden="true"><path fill="currentColor" d="M93.1626 112H82.821V100.486L74.6795 108.629L67.3703 101.319L75.5117 93.1758H64V82.8324H75.5117L67.3703 74.6813L74.6877 67.3709L82.8292 75.5138V64H93.1708V75.5138L101.312 67.3709L108.63 74.6813L100.488 82.8242H112V93.1676H100.488L108.63 101.31L101.312 108.621L93.1708 100.478V111.992L93.1626 112ZM84.848 109.972H91.1437V95.5989L101.304 105.761L105.762 101.302L95.6018 91.1401H109.973V84.8434H95.6018L105.762 74.6813L101.304 70.2225L91.1437 80.3846V66.0192H84.848V80.3929L74.6877 70.2308L70.2297 74.6896L80.3901 84.8517H66.0189V91.1483H80.3901L70.2297 101.31L74.6877 105.769L84.848 95.6071V109.981V109.972Z"/></svg>`;
-  const sign = `<div class="tile sign">${ast}<span>we give a sh*t.</span></div>`;
-  // the bottom-left module: what the challenge is, and where to follow it
-  const TIx = window.TOOL_ICONS || { paths: {} };
-  const social = (slug, href, label) => href ? `<a href="${esc(href)}" target="_blank" rel="noopener" aria-label="${label}"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TIx.paths[slug] || ''}"/></svg><span>${label}</span></a>` : '';
-  const links = [social('instagram', S.instagram, 'Instagram'), social('linkedin', S.linkedin, 'LinkedIn')].join('');
-  $('latest').innerHTML = `<div class="tile">
-      <div class="about-top"><a class="lock" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a>
-        <div class="socials mini">${links.replace(/<span>[^<]*<\/span>/g, '')}</div></div>
-      <h1>30 posters in 30 minutes.</h1>
-      <p>One poster a day for 30 days. Each one starts as a prompt inputted in 60 seconds, goes into Claude Code, and gets posted as is. No redos, no touch-ups. Every prompt is here to copy.</p>
-      ${links ? `<div class="socials big">${links}</div>` : ''}
-    </div>${sign}`;
-  $('next-clock').innerHTML = clockHTML('l');
-  const nextClock = $('next-clock').firstElementChild;
+  const ABOUT = 'One poster a day for 30 days. Each one starts as a prompt inputted in 60 seconds, goes into Claude Code, and gets posted as is. No redos, no touch-ups. Every prompt is here to copy.';
+  const socialPill = (slug, href, label) => href ? `<a class="pill" href="${esc(href)}" target="_blank" rel="noopener">${logo(slug)}${label}</a>` : '';
+  const socials = [socialPill('instagram', S.instagram, 'Instagram'), socialPill('linkedin', S.linkedin, 'LinkedIn')].join('');
+  $('about').innerHTML = `<div class="tile"><a class="lock" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a>
+      <h1>30 posters in 30 minutes.</h1><p>${ABOUT}</p>${socials ? `<div class="socials">${socials}</div>` : ''}</div>
+    <div class="tile sign">${ast}<span>we give a sh*t.</span></div>`;
+  $('next-clock').innerHTML = bigClockHTML();
+  $$('[data-next-clock]').forEach(el => { el.innerHTML = smallClockHTML(); });
 
-  // One tick a second drives every clock on the wall
+  // ---------- Remind me: the funnel ----------
+  // calendar subscription first (free, works on every phone, keeps itself up to date), then the follows, then GitHub
+  const site = (S.url || location.origin + '/').replace(/\/?$/, '/'), host = site.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const webcal = `webcal://${host}/remind.ics`, gcal = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal)}`;
+  const opt = (href, ic, title, sub, primary) => `<a class="opt${primary ? ' primary' : ''}" href="${esc(href)}"${/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : ''}><span class="ic">${ic}</span><span><b>${title}</b><small>${sub}</small></span>${ICON.chev}</a>`;
+  function remindHTML(withAbout) {
+    return `${withAbout ? `<div class="tile"><span class="lock"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</span><h2>30 posters in 30 minutes.</h2><p>${ABOUT}</p></div>` : ''}
+      <div class="tile">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div style="display:flex;flex-direction:column;gap:8px">${withAbout ? '<span class="k">Get the next one</span>' : '<h2>Get the next one.</h2>'}
+          <p>A new poster drops every 24 hours until day 30.</p></div><button class="icon" data-close aria-label="Close">${ICON.close}</button></div>
+        <div>
+          ${opt(webcal, ICON.cal, 'Add every drop to your calendar', 'One reminder a day. Updates itself.', true)}
+          <a class="small-link" href="${gcal}" target="_blank" rel="noopener">Google Calendar? Use this link instead</a>
+          ${S.instagram ? opt(S.instagram, logo('instagram'), 'Follow on Instagram', 'Every poster, as it lands') : ''}
+          ${S.linkedin ? opt(S.linkedin, logo('linkedin'), 'Follow on LinkedIn', 'The thinking behind each one') : ''}
+          ${opt((S.repo || '#') + '/subscription', ICON.eye, 'Watch on GitHub', 'Choose Custom, then Releases')}
+        </div>
+      </div>
+      <div class="tile sign">${ast}<span>we give a sh*t.</span></div>`;
+  }
+  const RM = $('remind'), remindOpen = () => RM.classList.contains('on');
+  let lastFocus = null;
+  function openRemind(withAbout) {
+    lastFocus = document.activeElement; $('remind-panel').innerHTML = remindHTML(withAbout); RM.classList.add('on'); cur.classList.add('off');
+    RM.querySelectorAll('[data-close]').forEach(b => b.onclick = closeRemind);
+    if (!reduce) { gsap.fromTo('#remind .scrim', { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }); gsap.fromTo('#remind .panel > *', { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .45, stagger: .07 }); }
+    const f = RM.querySelector('.opt'); if (f) f.focus({ preventScroll: true });
+  }
+  function closeRemind() {
+    if (!remindOpen()) return;
+    const done = () => { RM.classList.remove('on'); if (lastFocus) lastFocus.focus({ preventScroll: true }); };
+    if (reduce) return done();
+    gsap.to('#remind .panel > *', { autoAlpha: 0, y: 10, duration: .2, stagger: .035 }); gsap.to('#remind .scrim', { autoAlpha: 0, duration: .3, onComplete: done });
+  }
+  $('remind-open').onclick = () => openRemind(false);
+  $$('[data-open]').forEach(el => { const go = () => openRemind(el.dataset.open === 'about' || MOBILE !== 'c');
+    el.addEventListener('click', go); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && remindOpen()) closeRemind(); });
+
+  // One tick a second drives every clock
+  const nextEls = $$('[data-next-k]'), nextSmall = $$('[data-next-clock]');
+  function setNext(label, t) {
+    $('next-k').textContent = label; nextEls.forEach(el => { if (el.textContent !== label) el.textContent = label; });
+    setBig($('next-clock'), t);
+    nextSmall.forEach(el => ['d','h','m','s'].forEach(k => setRoll(el.querySelector(`[data-k="${k}"] .roll`), pad(t[k]))));
+  }
   function tick() {
     const now = Date.now();
-    if (nextDay === null) { $('next-k').textContent = 'All 30 posted'; $('next-note').textContent = 'That’s the lot. Thanks for watching.'; setClock(nextClock, '00000000'); }
-    else if (start === null) {
-      $('next-k').textContent = 'Day 01 starts any minute';
-      $('next-note').textContent = 'Every prompt gets 60 seconds. This is what that feels like.';
-      setClock(nextClock, minuteLoop(now));
-    } else {
-      const ms = due(nextDay) - now;
-      $('next-k').textContent = ms >= 0 ? `Day ${pad(nextDay)} is due in` : `Day ${pad(nextDay)} is overdue by`;
-      $('next-note').textContent = ms >= 0 ? 'Watch the repo and it comes to you.' : 'Blame the prompt.';
-      setClock(nextClock, split(Math.abs(ms)));
-    }
-    slots.forEach(s => {
-      let str, msg;
-      if (start === null) { str = split(s.n * DAY); msg = 'Starts with day one'; }
-      else { const ms = due(s.n) - now; str = split(Math.abs(ms)); msg = ms >= 0 ? 'Due in' : 'Overdue by'; }
-      setClock(s.clock, str); if (s.msg.textContent !== msg) s.msg.textContent = msg;
-    });
+    if (nextDay === null) setNext('All 30 posted', { d: 0, h: 0, m: 0, s: 0 });
+    else if (start === null) setNext('Day 01 starts any minute', minuteLoop(now));
+    else { const ms = due(nextDay) - now; setNext(ms >= 0 ? `Day ${pad(nextDay)} is due in` : `Day ${pad(nextDay)} is overdue by`, parts(ms)); }
+    slots.forEach(s => updateSlot(s, now));
   }
   tick(); setInterval(tick, 1000);
 
-  // ---------- Tool lozenges: tagged like a mention ----------
-  const TI = window.TOOL_ICONS || { tools: {}, paths: {} };
+  // ---------- Tool lozenges ----------
   function lozenge(name) {
     name = name.trim(); const slug = TI.tools[name.split(':')[0].trim().toLowerCase()];
-    const icon = slug && TI.paths[slug] ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TI.paths[slug]}"/></svg>`
-      : `<b aria-hidden="true">${esc(name[0].toUpperCase())}</b>`;
-    return `<span class="lz">${icon}${esc(name)}</span>`;
+    return `<span class="lz">${slug && TI.paths[slug] ? logo(slug) : `<b aria-hidden="true">${esc(name[0].toUpperCase())}</b>`}${esc(name)}</span>`;
   }
   const EXT = '<svg class="ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"/></svg>';
   function skillLink(x) {
-    const host = /github\.com\/anthropics\//.test(x.url) ? 'claude' : /github\.com/.test(x.url) ? 'github' : null;
-    const icon = host && TI.paths[host] ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TI.paths[host]}"/></svg>` : `<b aria-hidden="true">${esc(x.name[0].toUpperCase())}</b>`;
-    return `<a class="lz" href="${esc(x.url)}" target="_blank" rel="noopener" title="Get the ${esc(x.name)} skill">${icon}${esc(x.name)}${EXT}</a>`;
+    const h = /github\.com\/anthropics\//.test(x.url) ? 'claude' : /github\.com/.test(x.url) ? 'github' : null;
+    return `<a class="lz" href="${esc(x.url)}" target="_blank" rel="noopener" title="Get the ${esc(x.name)} skill">${h && TI.paths[h] ? logo(h) : `<b aria-hidden="true">${esc(x.name[0].toUpperCase())}</b>`}${esc(x.name)}${EXT}</a>`;
   }
-  // [[Name]] in the write-up becomes a lozenge, everything else is plain text
   const tagged = t => String(t).split(/(\[\[[^\]]+\]\])/).map(x => /^\[\[.+\]\]$/.test(x) ? lozenge(x.slice(2, -2)) : esc(x)).join('');
 
-  // ---------- The preview ----------
-  const dlg = $('view'), vimg = $('v-img'), vvid = $('v-vid'); let ci = 0;
+  // ---------- The poster view ----------
+  const dlg = $('view'), sheet = $('sheet'), vimg = $('v-img'), vvid = $('v-vid'); let ci = 0;
   const media = () => P[ci].video ? vvid : vimg;
   function fill(i) {
     ci = (i + P.length) % P.length; const p = P[ci];
     gsap.set([vimg, vvid], { clearProps: 'opacity,visibility,transform' });
     vimg.alt = `Day ${pad(p.day)} poster, ${p.title}`;
-    if (p.video) { vimg.hidden = true; vvid.hidden = false; vvid.poster = p.image; if (vvid.getAttribute('src') !== p.video) vvid.src = p.video; vvid.play().catch(() => {}); }
+    if (p.video) { vimg.hidden = true; vvid.hidden = false; vvid.poster = p.image; vvid.setAttribute('aria-label', `Day ${pad(p.day)} poster, ${p.title}, animated`);
+      if (vvid.getAttribute('src') !== p.video) vvid.src = p.video; vvid.muted = true; vvid.play().catch(() => {}); }
     else { vvid.pause(); vvid.hidden = true; vvid.removeAttribute('src'); vimg.hidden = false; vimg.src = p.image; }
     $('v-day').textContent = `Day ${pad(p.day)} of ${TOTAL} · ${fmtDate(p.date)}`;
-    $('v-title').textContent = p.title; $('v-note').textContent = p.note || '';
+    $('v-title').textContent = p.title; $('v-note').textContent = p.note || ''; $('v-note').hidden = !p.note;
     $('v-made').innerHTML = p.process ? tagged(p.process) : ''; $('v-made-box').hidden = !p.process;
-    // the list under the write-up only adds tools the text hasn't already tagged
     const key = n => n.trim().toLowerCase(), base = n => key(n).split(':')[0].trim();
-    const inline = [...String(p.process || '').matchAll(/\[\[([^\]]+)\]\]/g)].map(m => m[1]);
-    const seen = new Set(inline.flatMap(n => [key(n), base(n)]));
+    const seen = new Set([...String(p.process || '').matchAll(/\[\[([^\]]+)\]\]/g)].flatMap(m => [key(m[1]), base(m[1])]));
     const extra = (p.tools || []).filter(t => !seen.has(key(t)) && !seen.has(base(t)));
     $('v-tools').innerHTML = extra.map(lozenge).join(''); $('v-tools').hidden = !extra.length;
-    // public skills only, each linked to its source
     const sk = (p.skills || []).filter(x => x && x.url);
     $('v-skills').innerHTML = sk.map(skillLink).join(''); $('v-skills-box').hidden = !sk.length;
     $('v-prompt').textContent = p.prompt; $('v-copy').textContent = 'Copy the prompt';
     $('v-dl').href = p.video || p.image; $('v-dl').textContent = p.video ? 'Download video' : 'Download poster';
-    $('v-dl2').hidden = !p.video; $('v-dl2').href = p.image;
+    $('v-dl2').hidden = !p.video; $('v-dl2').href = p.image; $('v-dl').classList.toggle('full', !p.video);
     const many = P.length > 1;
-    $('s-prev').hidden = $('s-next').hidden = $('s-count').hidden = !many;
+    $('s-prev').hidden = $('s-next').hidden = $('s-count').hidden = $('s-dots').hidden = !many;
     $('s-count').textContent = `${ci + 1} of ${P.length}`;
-    history.replaceState(null, '', '#day-' + pad(p.day));
+    $('s-dots').innerHTML = P.map((_, k) => `<i class="${k === ci ? 'on' : ''}"></i>`).join('');
+    history.replaceState(null, '', location.search + '#day-' + pad(p.day));
   }
-  // left and right: the poster slides out one way and the next comes in from the other
   let moving = false;
-  function step(d) {
-    if (P.length < 2 || moving) return;
-    if (reduce) return fill(ci + d);
+  function step(d, fromX = 0) {
+    if (P.length < 2 || moving) { if (fromX) gsap.to(sheet, { x: 0, duration: .3 }); return; }
+    if (reduce) { gsap.set(sheet, { x: 0 }); return fill(ci + d); }
     moving = true;
+    if (phone()) { // full screen cards: this one leaves, the next one comes in from the side
+      gsap.to(sheet, { x: -innerWidth * d, duration: .24, ease: 'power2.in', onComplete: () => {
+        fill(ci + d); dlg.scrollTop = 0; gsap.fromTo(sheet, { x: innerWidth * d }, { x: 0, duration: .45, onComplete: () => { moving = false; } }); } });
+      return;
+    }
     gsap.to([media(), ...dlg.querySelectorAll('.side > *')], { autoAlpha: 0, x: -24 * d, duration: .2, onComplete: () => {
       fill(ci + d);
       gsap.fromTo(media(), { autoAlpha: 0, x: 24 * d }, { autoAlpha: 1, x: 0, duration: .3, onComplete: () => { moving = false; } });
@@ -554,37 +680,37 @@
   }
   function open(day, fromEl) {
     const i = P.findIndex(p => p.day === day); if (i < 0) return;
-    fill(i); if (!dlg.open) dlg.showModal(); cur.classList.add('off');
+    fill(i); if (!dlg.open) dlg.showModal(); dlg.scrollTop = 0; gsap.set(sheet, { x: 0 }); cur.classList.add('off');
     if (reduce) return;
     const m = media(); gsap.set(m, { x: 0 });
     gsap.fromTo(dlg.querySelectorAll('.side > *'), { autoAlpha: 0, x: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .56, stagger: .07 });
     const src = fromEl && fromEl.querySelector('img');
     if (!src) { gsap.fromTo(m, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .45 }); return; }
-    // the poster grows out of the tile you clicked
     const a = src.getBoundingClientRect();
     gsap.set(m, { autoAlpha: 0 });
     const go = () => { const b = m.getBoundingClientRect();
       const fly = document.createElement('img'); fly.src = src.src; fly.className = 'fly';
       Object.assign(fly.style, { left: a.left + 'px', top: a.top + 'px', width: a.width + 'px', height: a.height + 'px' });
       dlg.appendChild(fly);
-      gsap.to(fly, { left: b.left, top: b.top, width: b.width, height: b.height, duration: .45,
-        onComplete: () => { gsap.set(m, { autoAlpha: 1 }); fly.remove(); } }); };
+      gsap.to(fly, { left: b.left, top: b.top, width: b.width, height: b.height, duration: .45, onComplete: () => { gsap.set(m, { autoAlpha: 1 }); fly.remove(); } }); };
     if (m === vvid) requestAnimationFrame(go);
     else vimg.complete && vimg.naturalWidth ? requestAnimationFrame(go) : vimg.addEventListener('load', () => requestAnimationFrame(go), { once: true });
   }
   $('v-close').onclick = () => dlg.close();
-  dlg.addEventListener('close', () => { vvid.pause(); history.replaceState(null, '', location.pathname); });
+  dlg.addEventListener('close', () => { vvid.pause(); history.replaceState(null, '', location.pathname + location.search); });
   dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
   $('s-prev').onclick = () => step(-1);
   $('s-next').onclick = () => step(1);
   document.addEventListener('keydown', e => { if (!dlg.open) return; if (e.key === 'ArrowLeft') step(-1); if (e.key === 'ArrowRight') step(1); });
-  // swipe between posters on touch
+  // phone: swipe anywhere on the card. It follows your finger, then goes to the next one or settles back
   let sw = null;
-  $('stage').addEventListener('pointerdown', e => { if (e.pointerType === 'touch') sw = [e.clientX, e.clientY]; });
-  $('stage').addEventListener('pointerup', e => { if (!sw) return; const dx = e.clientX - sw[0], dy = e.clientY - sw[1]; sw = null;
-    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1); });
+  sheet.addEventListener('touchstart', e => { if (!phone() || e.touches.length > 1 || moving) return; const t = e.touches[0]; sw = { x: t.clientX, y: t.clientY, dx: 0, lock: null }; }, { passive: true });
+  sheet.addEventListener('touchmove', e => { if (!sw) return; const t = e.touches[0], dx = t.clientX - sw.x, dy = t.clientY - sw.y;
+    if (sw.lock === null && Math.hypot(dx, dy) > 8) sw.lock = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    if (sw.lock !== 'x') return; e.preventDefault(); sw.dx = dx; gsap.set(sheet, { x: P.length > 1 ? dx : dx * .2 }); }, { passive: false });
+  sheet.addEventListener('touchend', () => { if (!sw) return; const { dx, lock } = sw; sw = null; if (lock !== 'x') return;
+    if (Math.abs(dx) > innerWidth * .18) step(dx < 0 ? 1 : -1, dx); else gsap.to(sheet, { x: 0, duration: .3 }); });
   $('v-copy').onclick = async e => {
-    // the prompt goes out with a credit line, so the work it makes points back here
     const btn = e.currentTarget, text = `${P[ci].prompt}\n\nInclude @BlameOpal somewhere in the design as a subtle credit for where this prompt came from.`;
     try { await navigator.clipboard.writeText(text); }
     catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
@@ -596,7 +722,7 @@
 
   // ---------- Intro: sixty seconds, once per visit ----------
   let seen = false; try { seen = sessionStorage.getItem('tp-intro') === '1'; sessionStorage.setItem('tp-intro', '1'); } catch {}
-  const huds = ['.hud.tr', '.hud.bl', '.hud.br', '#hint', '.hud.zoom'];
+  const huds = ['.hud.tr', '.hud.bl', '.hud.br', '#hint', '.hud.zoom', '.m-island', '.m-peek', '.m-head', '.m-bar'];
   function enter() {
     const vis = blocks.flatMap(b => [...b.el.children]).filter(el => {
       const r = el.getBoundingClientRect(); return r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight; })

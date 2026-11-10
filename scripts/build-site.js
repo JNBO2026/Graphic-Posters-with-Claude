@@ -47,6 +47,25 @@ for (const p of posters) {
 `);
 }
 
+// remind.ics: a calendar people subscribe to (webcal). Calendars re-check it, so the drops appear once day 01 sets the schedule.
+{
+  const start = posters.find(p => p.day === 1 && p.started_at) ? Date.parse(posters.find(p => p.day === 1).started_at) : null;
+  const host = SITE.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const stamp = t => new Date(t).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const fold = l => l.match(/.{1,74}/g).join('\r\n ');
+  const ev = [];
+  if (start !== null) for (let n = 1; n <= (SITE.total || 30); n++) {
+    const t = start + (n - 1) * 864e5, done = posters.find(p => p.day === n);
+    ev.push(['BEGIN:VEVENT', `UID:thirty-posters-day-${pad(n)}@${host}`, `DTSTAMP:${stamp(Date.now())}`, `DTSTART:${stamp(t)}`, `DTEND:${stamp(t + 9e5)}`,
+      fold(`SUMMARY:${done ? `Day ${pad(n)}: ${done.title}` : `Thirty posters: day ${pad(n)} drops today`}`),
+      fold(`DESCRIPTION:One prompt\\, inputted in 60 seconds\\, made in Claude Code and posted as is. ${SITE.url}#day-${pad(n)}`),
+      `URL:${SITE.url}#day-${pad(n)}`, 'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:A new poster is up', 'TRIGGER:PT0M', 'END:VALARM', 'END:VEVENT'].join('\r\n'));
+  }
+  fs.writeFileSync(path.join(dist, 'remind.ics'), ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//blame opal//Thirty posters//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    'X-WR-CALNAME:Thirty posters by blame opal', 'X-WR-CALDESC:30 posters in 30 minutes. A reminder when each one drops.', 'REFRESH-INTERVAL;VALUE=DURATION:PT6H', 'X-PUBLISHED-TTL:PT6H',
+    ...ev, 'END:VCALENDAR', ''].join('\r\n'));
+}
+
 // Share preview: the latest poster, or nothing yet
 const latest = posters.slice().sort((a, b) => b.day - a.day)[0];
 const title = latest ? `Day ${pad(latest.day)}: ${latest.title} · Thirty posters` : 'Thirty posters';
