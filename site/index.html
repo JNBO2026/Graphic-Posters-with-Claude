@@ -81,7 +81,6 @@
   .chiprow { display:flex; align-items:center; gap:12px; padding:10px 16px; border-radius:999px; box-shadow:0 0 0 2px var(--ground); }
   .lock { display:flex; align-items:center; gap:8px; font:600 16px/16px 'Instrument Sans'; text-decoration:none; }
   .lock img { height:14px; width:auto; filter:var(--mark); }
-  .hud.tl { top:16px; left:16px; }
   .hud.tr { top:16px; right:16px; }
   .prog { display:flex; gap:2px; }
   .prog i { width:4px; height:14px; border-radius:2px; background:var(--line2); }
@@ -91,6 +90,14 @@
   .hud.bl { left:16px; bottom:16px; width:340px; display:flex; flex-direction:column; gap:2px; }
   .hud.bl h1 { font:600 28px/28px 'Instrument Sans'; text-wrap:balance; }
   .hud.bl p { font:400 14px/18px 'Instrument Sans'; color:var(--sec); }
+  .about-top { display:flex; align-items:center; gap:12px; }
+  .socials { display:flex; gap:8px; flex-wrap:wrap; }
+  .socials.mini { display:none; gap:6px; }
+  .socials a { display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:var(--ink); border-radius:999px; padding:10px 16px;
+               box-shadow:inset 0 0 0 1.5px var(--line2); font:500 14px/16px 'Instrument Sans'; transition:background 200ms cubic-bezier(.2,.7,.2,1); }
+  .socials.mini a { padding:8px; }
+  .socials svg { width:16px; height:16px; flex:none; }
+  @media (hover:hover) { .socials a:hover { background:var(--raised); } }
   .hud.br { right:16px; bottom:16px; width:340px; }
   .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
   .btn { font:500 16px/16px 'Instrument Sans'; border-radius:999px; padding:14px 20px; border:0; cursor:pointer; text-decoration:none;
@@ -167,15 +174,20 @@
   .tools { display:flex; flex-wrap:wrap; gap:6px; }
   .tools span { font:500 12px/14px 'Instrument Sans'; padding:6px 10px; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--line2); }
   .demo { left:50%; top:16px; transform:translateX(-50%); padding:10px 16px; border-radius:999px; font:500 14px/16px 'Instrument Sans'; box-shadow:0 0 0 2px var(--ground); }
-  @media (max-width:760px) { .demo { top:64px; } }
+  @media (max-width:760px) { .demo { top:108px; padding:6px 12px; font:500 12px/14px 'Instrument Sans'; white-space:nowrap; } }
   .fly { position:fixed; z-index:40; object-fit:cover; pointer-events:none; }
 
   /* ---------- Phone ---------- */
   @media (max-width:760px) {
-    .hud.tl { top:12px; left:12px; } .hud.tr { top:12px; right:12px; }
+    .hud.tr { display:none; }
     .chiprow { padding:8px 12px; gap:8px; }
-    .hud.tl .k, .hud.tr .k { display:none; }
-    .hud.bl { display:none; }
+    .hud.bl { top:12px; left:12px; right:12px; bottom:auto; width:auto; }
+    .hud.bl .tile { padding:12px; gap:8px; }
+    .hud.bl h1 { font:600 20px/20px 'Instrument Sans'; }
+    .hud.bl p, .hud.bl .sign { display:none !important; }
+    .hud.bl .about-top { justify-content:space-between; }
+    .hud.bl .socials.big { display:none; }
+    .hud.bl .socials.mini { display:flex; }
     .hud.br { left:12px; right:12px; bottom:12px; width:auto; }
     .hud.br .tile { display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px 12px; padding:12px; }
     .hud.br .tile .k { grid-column:1; }
@@ -207,10 +219,6 @@
 <main id="canvas" aria-label="All 30 posters. Drag or scroll to explore, pinch or use + and - to zoom, click a poster to open it."><div id="world"></div></main>
 <div id="proxy" hidden></div>
 
-<header class="hud tl glass chiprow">
-  <a class="lock" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a>
-  <span class="k">Thirty posters</span>
-</header>
 <div class="hud tr glass chiprow">
   <span class="k" id="count"></span>
   <span class="prog" id="prog" aria-hidden="true"></span>
@@ -449,14 +457,17 @@
   $('gh').href = (S.repo || '#') + '/subscription';
   const ast = `<svg class="ast" viewBox="64 64 48 48" aria-hidden="true"><path fill="currentColor" d="M93.1626 112H82.821V100.486L74.6795 108.629L67.3703 101.319L75.5117 93.1758H64V82.8324H75.5117L67.3703 74.6813L74.6877 67.3709L82.8292 75.5138V64H93.1708V75.5138L101.312 67.3709L108.63 74.6813L100.488 82.8242H112V93.1676H100.488L108.63 101.31L101.312 108.621L93.1708 100.478V111.992L93.1626 112ZM84.848 109.972H91.1437V95.5989L101.304 105.761L105.762 101.302L95.6018 91.1401H109.973V84.8434H95.6018L105.762 74.6813L101.304 70.2225L91.1437 80.3846V66.0192H84.848V80.3929L74.6877 70.2308L70.2297 74.6896L80.3901 84.8517H66.0189V91.1483H80.3901L70.2297 101.31L74.6877 105.769L84.848 95.6071V109.981V109.972Z"/></svg>`;
   const sign = `<div class="tile sign">${ast}<span>we give a sh*t.</span></div>`;
-  if (L) {
-    $('latest').innerHTML = `<div class="tile"><span class="k">Latest · Day ${pad(L.day)} of ${TOTAL}</span><h1>${esc(L.title)}</h1>${L.note ? `<p>${esc(L.note)}</p>` : ''}
-      <div class="row"><button class="btn ghost" id="l-open">See it, copy the prompt <span class="arr">→</span></button></div></div>${sign}`;
-    $('l-open').onclick = () => open(L.day, null);
-  } else {
-    $('latest').innerHTML = `<div class="tile"><span class="k">Starting soon</span><h1>30 posters. 60 seconds of prompting each.</h1>
-      <p>One prompt a day, typed in a minute, made in Claude Code. Whatever comes back gets posted. Right, wrong or hideous.</p></div>${sign}`;
-  }
+  // the bottom-left module: what the challenge is, and where to follow it
+  const TIx = window.TOOL_ICONS || { paths: {} };
+  const social = (slug, href, label) => href ? `<a href="${esc(href)}" target="_blank" rel="noopener" aria-label="${label}"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TIx.paths[slug] || ''}"/></svg><span>${label}</span></a>` : '';
+  const links = [social('instagram', S.instagram, 'Instagram'), social('linkedin', S.linkedin, 'LinkedIn')].join('');
+  $('latest').innerHTML = `<div class="tile">
+      <div class="about-top"><a class="lock" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a>
+        <div class="socials mini">${links.replace(/<span>[^<]*<\/span>/g, '')}</div></div>
+      <h1>30 posters in 30 minutes.</h1>
+      <p>One poster a day for 30 days. Each one starts as a prompt typed in 60 seconds, goes into Claude Code, and gets posted as is. No redos, no touch-ups. Every prompt is here to copy.</p>
+      ${links ? `<div class="socials big">${links}</div>` : ''}
+    </div>${sign}`;
   $('next-clock').innerHTML = clockHTML('l');
   const nextClock = $('next-clock').firstElementChild;
 
@@ -585,7 +596,7 @@
 
   // ---------- Intro: sixty seconds, once per visit ----------
   let seen = false; try { seen = sessionStorage.getItem('tp-intro') === '1'; sessionStorage.setItem('tp-intro', '1'); } catch {}
-  const huds = ['.hud.tl', '.hud.tr', '.hud.bl', '.hud.br', '#hint', '.hud.zoom'];
+  const huds = ['.hud.tr', '.hud.bl', '.hud.br', '#hint', '.hud.zoom'];
   function enter() {
     const vis = blocks.flatMap(b => [...b.el.children]).filter(el => {
       const r = el.getBoundingClientRect(); return r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight; })
