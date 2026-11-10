@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thirty Posters</title>
+<meta name="description" content="30 days, 30 posters, 60 seconds of prompting each. Every prompt free to copy.">
+<!-- og:start -->
+<!-- og:end -->
+<link rel="alternate" type="application/rss+xml" title="Thirty posters" href="feed.xml">
+<link rel="stylesheet" href="system/assets/fonts/fonts.css">
+<style>
+  :root {
+    --paper:#FAFAF4; --raised:#EEEEE7; --sunken:#E1E1D9; --ink:#101010;
+    --sec:#101010AD; --ter:#101010A6; --line:#1010101F; --line2:#1010103D; --acid:#67FF67; --ground:#000;
+    --ease:cubic-bezier(.2,.7,.2,1); --mark:none;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --paper:#1A1A1A; --raised:#262626; --sunken:#121212; --ink:#FAFAF4; --sec:#FAFAF49E; --ter:#FAFAF49E; --line:#FAFAF41F; --line2:#FAFAF43D; --mark:invert(1); } }
+  :root[data-theme="dark"] { --paper:#1A1A1A; --raised:#262626; --sunken:#121212; --ink:#FAFAF4; --sec:#FAFAF49E; --ter:#FAFAF49E; --line:#FAFAF41F; --line2:#FAFAF43D; --mark:invert(1); }
+
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--ground); color:var(--ink); font-family:'Instrument Sans', system-ui, sans-serif;
+         font-kerning:normal; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  .k { font:500 14px/16px 'Instrument Sans'; color:var(--sec); }
+
+  header { background:var(--paper); display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 24px; flex-wrap:wrap; }
+  .lock { display:flex; align-items:center; gap:8px; font:600 18px/18px 'Instrument Sans'; text-decoration:none; }
+  .lock img { height:16px; width:auto; filter:var(--mark); }
+  .count { font:500 14px/16px 'Instrument Sans'; display:flex; align-items:center; gap:8px; }
+  .count i { width:8px; height:8px; border-radius:50%; background:var(--acid); display:inline-block; }
+
+  /* Latest: the newest poster, the prompt and the sign up */
+  .latest { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:2px; border-top:2px solid var(--ground); }
+  .hero { background:var(--sunken); display:flex; align-items:center; justify-content:center; padding:48px; }
+  .hero img, .hero .ph { width:min(100%, 520px); aspect-ratio:1 / 1.4142; display:block; object-fit:cover;
+                         box-shadow:0 24px 64px rgba(0,0,0,.22); cursor:zoom-in; }
+  .hero .ph { background:var(--paper); box-shadow:inset 0 0 0 1px var(--line); cursor:default; display:flex; align-items:flex-end; padding:24px; }
+  .hero .ph span { font:600 158px/130px 'Instrument Sans'; color:var(--line2); }
+  .info { display:flex; flex-direction:column; gap:2px; background:var(--ground); }
+  .tile { background:var(--paper); padding:32px; display:flex; flex-direction:column; gap:16px; }
+  .info .main { flex:1; justify-content:flex-end; }
+  .info h1 { font:600 64px/64px 'Instrument Sans'; letter-spacing:-.01em; text-wrap:balance; }
+  .info .note { font:400 18px/28px 'Instrument Sans'; color:var(--sec); max-width:36em; }
+  .well { background:var(--raised); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:12px; }
+  .well pre { font:400 16px/24px 'Instrument Sans'; white-space:pre-wrap; word-wrap:break-word; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .btn { font:500 16px/16px 'Instrument Sans'; border-radius:999px; padding:14px 20px; border:0; cursor:pointer;
+         text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:transform 200ms var(--ease); white-space:nowrap; }
+  .btn:active { transform:scale(.96); }
+  .btn.go { background:var(--acid); color:#101010; }
+  .btn.ghost { background:transparent; color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--line2); }
+  .sub h2 { font:600 28px/28px 'Instrument Sans'; }
+  .sub p { font:400 16px/24px 'Instrument Sans'; color:var(--sec); }
+  .sub form { display:flex; gap:8px; flex-wrap:wrap; }
+  .sub input { flex:1 1 220px; min-width:0; font:400 16px/16px 'Instrument Sans'; color:var(--ink); background:var(--raised);
+               border:0; border-radius:999px; padding:14px 20px; box-shadow:inset 0 0 0 1.5px var(--line); }
+  .sub input:focus { outline:none; box-shadow:inset 0 0 0 1.5px var(--ink); }
+  .sub .alt { font:500 14px/16px 'Instrument Sans'; color:var(--sec); display:flex; gap:16px; flex-wrap:wrap; }
+  .sub .alt a { text-decoration:none; display:inline-flex; gap:6px; align-items:center; color:var(--ink); }
+  .sub .done { font:500 16px/24px 'Instrument Sans'; }
+
+  .bar { background:var(--paper); padding:16px 24px; display:flex; justify-content:space-between; align-items:center; gap:16px; border-top:2px solid var(--ground); }
+
+  /* The wall: zero gaps, A3 tiles */
+  .wall { display:grid; grid-template-columns:repeat(6, 1fr); gap:0; border-top:2px solid var(--ground); }
+  @media (max-width:1200px) { .wall { grid-template-columns:repeat(4, 1fr); } }
+  @media (max-width:760px)  { .wall { grid-template-columns:repeat(2, 1fr); } }
+  .cell { position:relative; aspect-ratio:1 / 1.4142; overflow:hidden; display:block; border:0; padding:0;
+          background:var(--sunken); color:inherit; font:inherit; text-align:left; cursor:pointer; }
+  .cell img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 450ms var(--ease); }
+  .cell .over { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; gap:8px; padding:16px;
+                background:linear-gradient(to top, rgba(16,16,16,.92) 0%, rgba(16,16,16,.72) 46%, rgba(16,16,16,0) 100%);
+                color:#FAFAF4; opacity:0; transition:opacity 200ms var(--ease); }
+  .cell .ck { font:500 12px/14px 'Instrument Sans'; color:#FAFAF49E; }
+  .cell .t { font:600 18px/18px 'Instrument Sans'; }
+  .cell .p { font:400 14px/18px 'Instrument Sans'; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
+  @media (hover:hover) { .cell:hover .over, .cell:focus-visible .over { opacity:1; } .cell:hover img { transform:scale(1.02); } }
+  .cell:focus-visible { outline:2px solid var(--acid); outline-offset:-2px; }
+  .cell.empty { cursor:default; display:flex; flex-direction:column; justify-content:space-between; padding:16px;
+                background:var(--paper); box-shadow:inset 0 0 0 1px var(--line); }
+  .cell.empty .n { font:600 44px/44px 'Instrument Sans'; color:var(--line); }
+
+  footer { background:var(--paper); padding:16px 24px; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+           font:500 14px/16px 'Instrument Sans'; color:var(--sec); border-top:2px solid var(--ground); }
+  footer a { color:var(--ink); }
+
+  /* The preview */
+  dialog { border:0; padding:0; background:transparent; max-width:none; max-height:none; width:100vw; height:100dvh; }
+  dialog::backdrop { background:rgba(0,0,0,.86); }
+  .sheet { width:100%; height:100%; display:grid; grid-template-columns:minmax(0,1fr) 400px; gap:2px; background:#000; }
+  .stage { display:flex; align-items:center; justify-content:center; padding:24px; background:var(--sunken); min-height:0; }
+  .stage img { max-width:100%; max-height:100%; aspect-ratio:1 / 1.4142; object-fit:contain; display:block; box-shadow:0 24px 64px rgba(0,0,0,.28); }
+  .side { background:var(--paper); display:flex; flex-direction:column; gap:24px; padding:24px; overflow:auto; }
+  .side .top { display:flex; justify-content:space-between; align-items:center; }
+  .side h2 { font:600 44px/44px 'Instrument Sans'; text-wrap:balance; }
+  .side .note { font:400 16px/24px 'Instrument Sans'; color:var(--sec); }
+  .icon { width:40px; height:40px; border-radius:50%; border:0; background:var(--raised); color:var(--ink); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+  .nav { display:flex; gap:8px; margin-top:auto; }
+
+  @media (max-width:900px) {
+    .latest { grid-template-columns:1fr; }
+    .hero { padding:24px; }
+    .tile { padding:24px; }
+    .info h1 { font:600 44px/44px 'Instrument Sans'; }
+    .hero .ph span { font:600 88px/80px 'Instrument Sans'; }
+  }
+  @media (max-width:760px) {
+    header, .bar, footer { padding:16px; }
+    .tile { padding:16px; }
+    .sheet { grid-template-columns:1fr; height:auto; min-height:100%; }
+    dialog { overflow:auto; }
+    .stage { padding:16px; }
+    .stage img { max-height:70dvh; }
+    .side h2 { font:600 28px/28px 'Instrument Sans'; }
+  }
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="lock" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a>
+  <span class="count"><i></i><span id="count"></span></span>
+</header>
+
+<section class="latest" aria-label="Latest poster">
+  <div class="hero" id="hero"></div>
+  <div class="info">
+    <div class="tile main" id="latest"></div>
+    <div class="tile sub" id="subscribe">
+      <h2 id="sub-h">Get the next one.</h2>
+      <p>A new poster lands every day for 30 days. Get it the moment it goes up, prompt included.</p>
+      <form id="sub-form" method="post" target="popupwindow" hidden>
+        <input type="email" name="email" placeholder="Your email" required autocomplete="email" aria-label="Your email">
+        <input type="hidden" name="tag" value="thirty-posters">
+        <button class="btn go" type="submit">Notify me</button>
+      </form>
+      <p class="done" id="sub-done" hidden>Nearly there. Check your inbox to confirm.</p>
+      <div class="alt">
+        <a href="feed.xml"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>RSS feed</a>
+        <a id="gh" href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>Watch on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="bar"><span class="k">The wall. Hover for the prompt, click to copy it.</span><span class="k" id="bar-r"></span></div>
+<main class="wall" id="wall" aria-label="All posters"></main>
+
+<footer>
+  <span>Made with Claude Code from a 60 second prompt. Posted as is. <a id="gh2" href="#">How it works</a></span>
+  <span>we give a sh*t.</span>
+</footer>
+
+<dialog id="view" aria-label="Poster preview">
+  <div class="sheet">
+    <div class="stage"><img id="v-img" alt=""></div>
+    <aside class="side">
+      <div class="top"><span class="k" id="v-day"></span>
+        <button class="icon" id="v-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <h2 id="v-title"></h2>
+      <p class="note" id="v-note"></p>
+      <div class="well"><span class="k">The prompt, as typed</span><pre id="v-prompt"></pre></div>
+      <div class="row">
+        <button class="btn go" id="v-copy">Copy the prompt</button>
+        <a class="btn ghost" id="v-dl" download>Download poster</a>
+      </div>
+      <div class="nav">
+        <button class="icon" id="v-prev" aria-label="Previous poster"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button class="icon" id="v-next" aria-label="Next poster"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+    </aside>
+  </div>
+</dialog>
+
+<script src="site.config.js"></script>
+<script src="data/posters.js"></script>
+<script>
+  const S = window.SITE || {}, TOTAL = S.total || 30;
+  const P = (window.POSTERS || []).slice().sort((a, b) => a.day - b.day);
+  const L = P[P.length - 1];
+  const pad = n => String(n).padStart(2, '0');
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+  const fmtDate = d => new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+  const $ = id => document.getElementById(id);
+  const copy = async (text, btn) => {
+    try { await navigator.clipboard.writeText(text); }
+    catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+    btn.textContent = 'Copied';
+  };
+
+  $('count').textContent = `${pad(P.length)} of ${TOTAL} posted`;
+  $('gh').href = (S.repo || '#') + '/subscription'; $('gh2').href = S.repo || '#';
+  $('bar-r').textContent = `${TOTAL - P.length} to go`;
+
+  // Latest
+  if (L) {
+    $('hero').innerHTML = `<img src="${L.image}" alt="Day ${pad(L.day)} poster, ${esc(L.title)}" id="hero-img">`;
+    $('latest').innerHTML = `<span class="k">Latest · Day ${pad(L.day)} of ${TOTAL} · ${fmtDate(L.date)}</span>
+      <h1>${esc(L.title)}</h1>${L.note ? `<p class="note">${esc(L.note)}</p>` : ''}
+      <div class="well"><span class="k">The prompt, as typed</span><pre>${esc(L.prompt)}</pre></div>
+      <div class="row"><button class="btn ghost" id="l-copy">Copy the prompt</button><a class="btn ghost" href="${L.image}" download>Download poster</a></div>`;
+    $('l-copy').onclick = e => copy(L.prompt, e.currentTarget);
+    $('hero-img').onclick = () => open(P.length - 1);
+  } else {
+    $('hero').innerHTML = `<div class="ph"><span>01</span></div>`;
+    $('latest').innerHTML = `<span class="k">Starting soon</span><h1>30 posters. 60 seconds of prompting each.</h1>
+      <p class="note">Every day for 30 days, one prompt written in a minute goes into Claude Code. Whatever comes back gets posted. Right, wrong or hideous.</p>`;
+    $('sub-h').textContent = 'Get day one.';
+  }
+
+  // Sign up: Buttondown, once a username is set in site.config.js
+  if (S.buttondown) {
+    const f = $('sub-form');
+    f.action = `https://buttondown.com/api/emails/embed-subscribe/${encodeURIComponent(S.buttondown)}`;
+    f.hidden = false;
+    f.addEventListener('submit', () => { window.open('', 'popupwindow', 'width=520,height=640'); setTimeout(() => { f.hidden = true; $('sub-done').hidden = false; }, 50); });
+  }
+
+  // The wall
+  $('wall').innerHTML = Array.from({ length: TOTAL }, (_, i) => {
+    const p = P.find(x => x.day === i + 1);
+    if (!p) return `<div class="cell empty" aria-hidden="true"><span class="k">Day ${pad(i + 1)}</span><span class="n">${pad(i + 1)}</span></div>`;
+    return `<button class="cell" data-i="${P.indexOf(p)}" id="day-${pad(p.day)}" aria-label="Day ${pad(p.day)}, ${esc(p.title)}. Open prompt">
+      <img src="${p.thumb}" alt="" loading="lazy">
+      <span class="over"><span class="ck">Day ${pad(p.day)} · ${fmtDate(p.date)}</span><span class="t">${esc(p.title)}</span>
+      <span class="p">${esc(p.prompt)}</span><span class="ck">Click for the full prompt</span></span></button>`;
+  }).join('');
+
+  // Preview
+  const dlg = $('view'); let cur = 0;
+  function show(i) {
+    cur = (i + P.length) % P.length; const p = P[cur];
+    $('v-img').src = p.image; $('v-img').alt = `Day ${pad(p.day)} poster, ${p.title}`;
+    $('v-day').textContent = `Day ${pad(p.day)} of ${TOTAL} · ${fmtDate(p.date)}`;
+    $('v-title').textContent = p.title; $('v-note').textContent = p.note || '';
+    $('v-prompt').textContent = p.prompt; $('v-dl').href = p.image;
+    $('v-copy').textContent = 'Copy the prompt';
+    $('v-prev').hidden = $('v-next').hidden = P.length < 2;
+    history.replaceState(null, '', '#day-' + pad(p.day));
+  }
+  function open(i) { show(i); if (!dlg.open) dlg.showModal(); }
+  $('wall').addEventListener('click', e => { const t = e.target.closest('.cell[data-i]'); if (t) open(+t.dataset.i); });
+  $('v-close').onclick = () => dlg.close();
+  dlg.addEventListener('close', () => history.replaceState(null, '', location.pathname));
+  $('v-prev').onclick = () => show(cur - 1);
+  $('v-next').onclick = () => show(cur + 1);
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  document.addEventListener('keydown', e => { if (!dlg.open) return; if (e.key === 'ArrowLeft') show(cur - 1); if (e.key === 'ArrowRight') show(cur + 1); });
+  $('v-copy').onclick = e => copy(P[cur].prompt, e.currentTarget);
+  // Deep links from the posts and the emails: /#day-07
+  const fromHash = () => { const m = location.hash.match(/^#day-(\d{2})$/); if (!m) return; const i = P.findIndex(p => p.day === +m[1]); if (i > -1) open(i); };
+  fromHash(); window.addEventListener('hashchange', fromHash);
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+[TEMPLATE. Rewrite every word for the day. Keep the shape: two line hook before "see more", short paragraphs, one question at the end, the tagline, three hashtags. No link in the post.]
+
+60 seconds to write a prompt. Then I’m not allowed to touch it.
+
+Day NN of 30. [What Claude made of it, in one or two lines. Dry.]
+
+[One short paragraph: what today’s prompt asked for and what came back. Honest if it went wrong.]
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+[A question people can answer in a comment.]
+
+we give a sh*t.
+
+#ClaudeCode #AIDesign #GraphicDesign
