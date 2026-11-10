@@ -96,7 +96,7 @@ The challenge **has not started**. `days/` holds only `_template/`. Day 01's `st
 - [ ] Real-device checks: video playback, pinch zoom, swipe, the sheet drag, frame rate on a cheap Android.
 - [ ] Missing logos (see the logo library above): James to supply.
 - [x] Full rehearsal (10 Nov): two test days (a still and an animated poster) through every stage in a throwaway copy. Fixed: the site build crashed on a day with meta.json but no render yet; share links now open the poster straight away (skipping the intro); the copy and Release links now use `/d/NN` so they show that poster as the link preview; Flora and Canva downloads were blocked.
-- [ ] Day 01 has not happened. When it does, follow CLAUDE.md exactly.
+- [x] Day 01, "Day one.", prompted 10 Nov 2026 at 21:55 UTC (147 words), published that night. James posts it at 7am on 11 Nov, so its `date` is 11 Nov and `start` in site.config.js anchors the schedule there: day N is due 11 Nov 07:00 + N x 24h. When it does, follow CLAUDE.md exactly.
 
 ## How to get context back fast
 1. Read `CLAUDE.md` (operating manual) and this file.
