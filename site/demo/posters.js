@@ -25,6 +25,7 @@ window.DEMO = true;
     prompt: 'example prompt for the preview, animated countdown poster',
     process: 'Code only, no generative model. The digits roll with a stepped [[CSS]] animation and the hand sweeps once every ten seconds. [[Playwright]] captured all 240 frames one by one and [[FFmpeg]] encoded them to an MP4 that loops.',
     tools: ['Claude Code', 'CSS', 'Playwright', 'FFmpeg'],
+    skills: [{ name: 'canvas-design', url: 'https://github.com/anthropics/skills/tree/main/skills/canvas-design' }],
     thumb: 'demo/thumb-03.jpg', image: 'demo/poster-03.jpg', video: 'demo/poster-03.mp4'
   }];
 })();

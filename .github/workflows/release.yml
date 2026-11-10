@@ -30,6 +30,11 @@ jobs:
               echo
               echo "**How it was made:** $(jq -r '.process // "" | gsub("\\[\\[(?<n>[^\\]]+)\\]\\]"; .n)' "$meta")"
               echo
+              if [ "$(jq '(.skills // []) | length' "$meta")" != "0" ]; then
+                echo "**Skills used** (public, free to grab):"
+                jq -r '.skills[] | "- [\(.name)](\(.url))"' "$meta"
+                echo
+              fi
               echo "See it on the wall and copy the prompt: $(grep -o "url: '[^']*'" site/site.config.js | cut -d"'" -f2)#day-$d"
             } > notes.md
             files=("days/$d/poster.jpg#Day $d poster (A3)")

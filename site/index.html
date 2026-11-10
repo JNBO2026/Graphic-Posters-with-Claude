@@ -139,6 +139,9 @@
   .lz { display:inline-flex; align-items:center; gap:6px; vertical-align:-3px; padding:2px 8px 2px 4px; margin:1px 0; border-radius:999px; white-space:nowrap;
         background:var(--raised); box-shadow:inset 0 0 0 1.5px var(--line2); font:500 12px/16px 'Instrument Sans'; color:var(--ink); }
   .lz svg, .lz b { width:16px; height:16px; flex:none; }
+  a.lz { text-decoration:none; transition:background 200ms cubic-bezier(.2,.7,.2,1); }
+  @media (hover:hover) { a.lz:hover { background:var(--paper); } a.lz:hover .ext { transform:translate(2px,-2px); } }
+  .lz .ext { width:12px; height:12px; padding:0; transition:transform 200ms cubic-bezier(.2,.7,.2,1); }
   .lz svg { padding:2px; }
   .lz b { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:var(--ink); color:var(--on-ink); font:600 10px/10px 'Instrument Sans'; }
   .made p { line-height:22px !important; }
@@ -254,6 +257,7 @@
       <p class="note" id="v-note"></p>
       <div class="well"><span class="k">The prompt, as typed</span><pre id="v-prompt"></pre></div>
       <div class="made" id="v-made-box"><span class="k">How it was made</span><p id="v-made"></p><div class="tools" id="v-tools"></div></div>
+      <div class="made" id="v-skills-box" hidden><span class="k">Skills used</span><div class="tools" id="v-skills"></div></div>
       <div class="row">
         <button class="btn go" id="v-copy">Copy the prompt</button>
         <a class="btn ghost" id="v-dl" download>Download poster</a>
@@ -487,6 +491,12 @@
       : `<b aria-hidden="true">${esc(name[0].toUpperCase())}</b>`;
     return `<span class="lz">${icon}${esc(name)}</span>`;
   }
+  const EXT = '<svg class="ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"/></svg>';
+  function skillLink(x) {
+    const host = /github\.com\/anthropics\//.test(x.url) ? 'claude' : /github\.com/.test(x.url) ? 'github' : null;
+    const icon = host && TI.paths[host] ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TI.paths[host]}"/></svg>` : `<b aria-hidden="true">${esc(x.name[0].toUpperCase())}</b>`;
+    return `<a class="lz" href="${esc(x.url)}" target="_blank" rel="noopener" title="Get the ${esc(x.name)} skill">${icon}${esc(x.name)}${EXT}</a>`;
+  }
   // [[Name]] in the write-up becomes a lozenge, everything else is plain text
   const tagged = t => String(t).split(/(\[\[[^\]]+\]\])/).map(x => /^\[\[.+\]\]$/.test(x) ? lozenge(x.slice(2, -2)) : esc(x)).join('');
 
@@ -502,7 +512,15 @@
     $('v-day').textContent = `Day ${pad(p.day)} of ${TOTAL} · ${fmtDate(p.date)}`;
     $('v-title').textContent = p.title; $('v-note').textContent = p.note || '';
     $('v-made').innerHTML = p.process ? tagged(p.process) : ''; $('v-made-box').hidden = !p.process;
-    $('v-tools').innerHTML = (p.tools || []).map(lozenge).join('');
+    // the list under the write-up only adds tools the text hasn't already tagged
+    const key = n => n.trim().toLowerCase(), base = n => key(n).split(':')[0].trim();
+    const inline = [...String(p.process || '').matchAll(/\[\[([^\]]+)\]\]/g)].map(m => m[1]);
+    const seen = new Set(inline.flatMap(n => [key(n), base(n)]));
+    const extra = (p.tools || []).filter(t => !seen.has(key(t)) && !seen.has(base(t)));
+    $('v-tools').innerHTML = extra.map(lozenge).join(''); $('v-tools').hidden = !extra.length;
+    // public skills only, each linked to its source
+    const sk = (p.skills || []).filter(x => x && x.url);
+    $('v-skills').innerHTML = sk.map(skillLink).join(''); $('v-skills-box').hidden = !sk.length;
     $('v-prompt').textContent = p.prompt; $('v-copy').textContent = 'Copy the prompt';
     $('v-dl').href = p.video || p.image; $('v-dl').textContent = p.video ? 'Download video' : 'Download poster';
     $('v-dl2').hidden = !p.video; $('v-dl2').href = p.image;

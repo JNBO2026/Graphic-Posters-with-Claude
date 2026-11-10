@@ -46,7 +46,7 @@ pack(`${D}_Poster`, [
   ['poster-A3.jpg', path.join(dir, 'poster.jpg')],
   ...(motion.length ? [['poster-A3.mp4', VIDEO]] : []),
   ['prompt.txt', fs.readFileSync(path.join(dir, 'prompt.md'), 'utf8')],
-  ['how-it-was-made.txt', (() => { const m = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')); if (!m.process) throw new Error('meta.json has no process'); return m.process.replace(/\[\[([^\]]+)\]\]/g, '$1') + (m.tools ? '\n\nTools: ' + m.tools.join(', ') : '') + '\n'; })()],
+  ['how-it-was-made.txt', (() => { const m = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')); if (!m.process) throw new Error('meta.json has no process'); return m.process.replace(/\[\[([^\]]+)\]\]/g, '$1') + (m.tools ? '\n\nTools: ' + m.tools.join(', ') : '') + ((m.skills || []).length ? '\n\nSkills used (public, free to grab):\n' + m.skills.map(x => `${x.name}: ${x.url}`).join('\n') : '') + '\n'; })()],
   ['link.txt', LINK + '\n'],
 ]);
 fs.rmSync(tmp, { recursive: true, force: true });
