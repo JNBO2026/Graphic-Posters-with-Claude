@@ -246,40 +246,54 @@
     #remind .panel { left:8px; right:8px; bottom:8px; width:auto; max-height:calc(100dvh - 64px); }
   }
 
-  /* ---------- Phone: four minimal ways in (mobile-g mark, -h pill, -i top bar, -j dock). No clocks here, the wall has plenty ---------- */
+  /* ---------- Phone: the logo and a burger, four ways (mobile-k top, -l bottom bar, -m corners, -n top with progress) ---------- */
+  .menu { display:none; }
   @media (max-width:760px) {
     .ph { display:flex; position:fixed; z-index:8; }
-    html.mobile-g .ph:not(.ph-g), html.mobile-h .ph:not(.ph-h), html.mobile-i .ph:not(.ph-i), html.mobile-j .ph:not(.ph-j) { display:none; }
-    .ph button, .ph a { -webkit-tap-highlight-color:transparent; }
-    .ph-g { left:12px; bottom:calc(12px + env(safe-area-inset-bottom)); }
-    .ph-mark { width:52px; height:52px; border-radius:50%; border:0; background:var(--paper); box-shadow:0 0 0 2px var(--ground); display:flex; align-items:center; justify-content:center; cursor:pointer;
-               transition:transform 200ms var(--ease); }
-    .ph-mark img { height:13px; filter:var(--mark); }
-    .ph-h { left:12px; bottom:calc(12px + env(safe-area-inset-bottom)); }
-    .ph-pill { display:flex; align-items:center; gap:10px; height:52px; padding:0 14px 0 6px; border:0; border-radius:999px; background:var(--paper); color:var(--ink); cursor:pointer;
-               box-shadow:0 0 0 2px var(--ground); font:600 15px/16px 'Instrument Sans'; letter-spacing:-.01em; white-space:nowrap; transition:transform 200ms var(--ease); }
-    .ph-pill .mk { width:40px; height:40px; border-radius:50%; background:var(--raised); display:flex; align-items:center; justify-content:center; flex:none; }
-    .ph-pill .mk img { height:11px; filter:var(--mark); }
-    .ph-pill svg { width:18px; height:18px; color:var(--sec); flex:none; }
-    .ph-i { left:0; right:0; top:0; justify-content:space-between; align-items:center; gap:8px; padding:6px 6px 6px 12px; padding-top:max(6px, env(safe-area-inset-top));
-            background:var(--paper); box-shadow:0 2px 0 var(--ground); }
-    .ph-title { display:flex; align-items:center; gap:8px; min-height:44px; border:0; background:transparent; color:var(--ink); cursor:pointer; font:600 15px/16px 'Instrument Sans'; letter-spacing:-.01em; }
-    .ph-title img { height:11px; filter:var(--mark); }
-    .ph-title svg { width:16px; height:16px; color:var(--sec); }
-    .ph-icons { display:flex; gap:2px; }
-    .ph-icons a { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--ink); }
-    .ph-icons svg { width:18px; height:18px; }
-    .ph-j { left:50%; bottom:calc(12px + env(safe-area-inset-bottom)); transform:translateX(-50%); gap:2px; padding:4px; border-radius:999px; background:var(--paper); box-shadow:0 0 0 2px var(--ground); }
-    .ph-j a, .ph-j button { width:48px; height:48px; border-radius:50%; border:0; background:transparent; display:flex; align-items:center; justify-content:center; color:var(--ink); cursor:pointer;
-                            transition:transform 200ms var(--ease); }
-    .ph-j svg { width:20px; height:20px; }
-    .ph-j img { height:12px; filter:var(--mark); }
-    .ph-j .gh { background:var(--acid); color:#101010; }
-    .ph-mark:active, .ph-pill:active, .ph-j a:active, .ph-j button:active { transform:scale(.96); }
-    html.mobile-i .demo { top:68px; }
-    html.mobile-i .hint { bottom:24px; }
-    html.mobile-j .hint { bottom:88px; }
-    html.mobile-g .hint, html.mobile-h .hint { bottom:80px; }
+    html:not(.mobile-k) .ph-k, html:not(.mobile-l) .ph-l, html:not(.mobile-m) .ph-m, html:not(.mobile-n) .ph-n { display:none; }
+    .ph button, .ph a, .menu button, .menu a { -webkit-tap-highlight-color:transparent; }
+    .ph-logo { display:inline-flex; align-items:center; gap:8px; font:600 16px/16px 'Instrument Sans'; color:var(--ink); text-decoration:none; min-height:44px; }
+    .ph-logo img { height:12px; filter:var(--mark); }
+    /* the burger: two lines that turn into a cross */
+    .burger { position:relative; width:44px; height:44px; border:0; border-radius:50%; background:transparent; color:var(--ink); cursor:pointer; flex:none; transition:transform 200ms var(--ease); }
+    .burger i { position:absolute; left:13px; width:18px; height:2px; border-radius:1px; background:currentColor; transition:transform 300ms var(--ease); }
+    .burger i:first-child { top:17px; } .burger i:last-child { top:25px; }
+    .burger.x i:first-child { transform:translateY(4px) rotate(45deg); }
+    .burger.x i:last-child { transform:translateY(-4px) rotate(-45deg); }
+    .burger:active, .ph-round:active { transform:scale(.96); }
+    /* K: top bar */
+    .ph-k, .ph-n { left:0; right:0; top:0; justify-content:space-between; align-items:center; padding:4px 6px 4px 16px; padding-top:max(4px, env(safe-area-inset-top));
+                   background:var(--paper); box-shadow:0 2px 0 var(--ground); }
+    /* L: one floating bar at the bottom, in thumb reach */
+    .ph-l { left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); justify-content:space-between; align-items:center; padding:4px 4px 4px 16px; border-radius:999px;
+            background:var(--paper); box-shadow:0 0 0 2px var(--ground); }
+    /* M: two round buttons in the bottom corners, nothing at the top */
+    .ph-m { left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); justify-content:space-between; pointer-events:none; }
+    .ph-round { pointer-events:auto; width:52px; height:52px; border-radius:50%; border:0; background:var(--paper); box-shadow:0 0 0 2px var(--ground); display:flex; align-items:center; justify-content:center;
+                color:var(--ink); transition:transform 200ms var(--ease); }
+    .ph-round img { height:12px; filter:var(--mark); }
+    .ph-round.burger i { left:17px; } .ph-round.burger i:first-child { top:21px; } .ph-round.burger i:last-child { top:29px; }
+    /* N: top bar with the run's progress in the middle */
+    .ph-count { font:600 14px/16px 'Instrument Sans'; font-variant-numeric:tabular-nums; color:var(--ink); display:flex; align-items:center; gap:8px; }
+    .ph-count .bar { width:64px; }
+    html.mobile-k .demo, html.mobile-n .demo { top:64px; }
+    html.mobile-k .hint, html.mobile-n .hint { bottom:24px; }
+    html.mobile-l .hint, html.mobile-m .hint { bottom:84px; }
+    /* the menu: full screen, Swiss. Slides down on transform, links rise in after it */
+    .menu { display:flex; flex-direction:column; position:fixed; inset:0; z-index:22; background:var(--paper); overflow:auto; overscroll-behavior:contain;
+            padding:4px 6px calc(24px + env(safe-area-inset-bottom)) 16px; padding-top:max(4px, env(safe-area-inset-top)); visibility:hidden; transform:translateY(-100%); will-change:transform; }
+    .menu-top { display:flex; justify-content:space-between; align-items:center; }
+    .menu-in { display:flex; flex-direction:column; gap:20px; padding:24px 10px 0 0; flex:1; }
+    .menu h2 { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.03em; }
+    .menu p { font:400 16px/24px 'Instrument Sans'; color:var(--sec); text-wrap:pretty; }
+    .menu-list { display:flex; flex-direction:column; box-shadow:inset 0 1px 0 var(--ink); }
+    .menu-list a { display:grid; grid-template-columns:32px 1fr 20px; align-items:center; gap:8px; min-height:64px; text-decoration:none; color:var(--ink); box-shadow:inset 0 -1px 0 var(--line);
+                   font:600 24px/24px 'Instrument Sans'; letter-spacing:-.01em; transition:background 200ms var(--ease); }
+    .menu-list .no { font:500 12px/14px 'Instrument Sans'; color:var(--sec); font-variant-numeric:tabular-nums; }
+    .menu-list svg { width:20px; height:20px; }
+    .menu .btn { width:100%; }
+    .menu .hint2 { font:500 12px/14px 'Instrument Sans'; color:var(--sec); text-align:center; margin-top:-12px; }
+    .menu .sign { margin-top:auto; display:flex; justify-content:space-between; align-items:center; padding-top:16px; box-shadow:inset 0 1px 0 var(--line); }
     /* the sheet: slides up on transform only, follows your finger down to close */
     .sh-scrim { display:block; position:fixed; inset:0; z-index:20; background:rgba(0,0,0,.48); opacity:0; visibility:hidden; transition:opacity 300ms var(--ease), visibility 0s linear 300ms; }
     .sh-scrim.on { opacity:1; visibility:visible; transition:opacity 300ms var(--ease), visibility 0s; }
@@ -321,11 +335,12 @@
   <button id="z-in" aria-label="Zoom in"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg></button>
 </div>
 
-<!-- phone: four minimal ways in, all open the same info sheet -->
-<div class="ph ph-g"><button class="ph-mark" data-info aria-label="About 30 posters in 30 minutes"><img src="system/assets/brand/bo-mark.svg" alt=""></button></div>
-<div class="ph ph-h"><button class="ph-pill" data-info aria-label="About 30 posters in 30 minutes"><span class="mk"><img src="system/assets/brand/bo-mark.svg" alt=""></span>30 posters in 30 minutes<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></button></div>
-<header class="ph ph-i"><button class="ph-title" data-info aria-label="About 30 posters in 30 minutes"><img src="system/assets/brand/bo-mark.svg" alt="">30 posters in 30 minutes<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><span class="ph-icons" data-socials-icons></span></header>
-<nav class="ph ph-j" aria-label="30 posters in 30 minutes"><button data-info aria-label="About 30 posters in 30 minutes"><img src="system/assets/brand/bo-mark.svg" alt=""></button><span style="display:contents" data-socials-icons></span><a class="gh" data-gh target="_blank" rel="noopener" aria-label="Get notified on GitHub"></a></nav>
+<!-- phone: the logo and a burger, four ways -->
+<header class="ph ph-k"><a class="ph-logo" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a><button class="burger" data-menu aria-label="Menu" aria-expanded="false" aria-controls="menu"><i></i><i></i></button></header>
+<div class="ph ph-l"><a class="ph-logo" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a><button class="burger" data-info aria-label="Menu"><i></i><i></i></button></div>
+<div class="ph ph-m"><a class="ph-round" href="https://blameopal.studio" aria-label="blame opal"><img src="system/assets/brand/bo-mark.svg" alt=""></a><button class="ph-round burger" data-menu aria-label="Menu" aria-expanded="false" aria-controls="menu"><i></i><i></i></button></div>
+<header class="ph ph-n"><a class="ph-logo" href="https://blameopal.studio" aria-label="blame opal"><img src="system/assets/brand/bo-mark.svg" alt=""></a><span class="ph-count" data-count></span><button class="burger" data-menu aria-label="Menu" aria-expanded="false" aria-controls="menu"><i></i><i></i></button></header>
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu"></div>
 <div class="sh-scrim" id="sh-scrim"></div>
 <section class="sh" id="sh" role="dialog" aria-modal="true" aria-label="About 30 posters in 30 minutes"><span class="grab" aria-hidden="true"></span><div class="sh-in" id="sh-in"></div></section>
 
@@ -375,7 +390,7 @@
   const S = window.SITE || {}, TOTAL = S.total || 30, DAY = 864e5, COLS = 6, ROWS = Math.ceil(TOTAL / COLS);
   const Q = new URLSearchParams(location.search);
   const TILE = /^[def]$/.test(Q.get('tile')) ? Q.get('tile') : (S.tile || 'd');
-  const MOBILE = /^[ghij]$/.test(Q.get('mobile')) ? Q.get('mobile') : (S.mobile || 'g');
+  const MOBILE = /^[klmn]$/.test(Q.get('mobile')) ? Q.get('mobile') : (S.mobile || 'k');
   document.documentElement.classList.add('tile-' + TILE, 'mobile-' + MOBILE);
   const P = (window.POSTERS || []).slice().sort((a, b) => a.day - b.day);
   const byDay = Object.fromEntries(P.map(p => [p.day, p]));
@@ -539,7 +554,7 @@
   $('z-out').onclick = () => zoomTo(Z.z / 1.4);
   $('z-pct').onclick = () => zoomTo(1);
   addEventListener('keydown', e => {
-    if (dlg.open || sheetOpen() || /input|textarea/i.test(e.target.tagName)) return;
+    if (dlg.open || sheetOpen() || (typeof mOn !== 'undefined' && mOn) || /input|textarea/i.test(e.target.tagName)) return;
     if (e.key === '+' || e.key === '=') zoomTo(Z.z * 1.4); else if (e.key === '-' || e.key === '_') zoomTo(Z.z / 1.4); else if (e.key === '0') zoomTo(1);
   });
   const pts = new Map(); let pinch = null;
@@ -617,8 +632,6 @@
   const ghIcon = TI.paths.github ? `<svg class="gh-ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${TI.paths.github}"/></svg>` : '';
   $('gh-btn').href = GH; $('gh-btn').insertAdjacentHTML('afterbegin', ghIcon);
   const socialIcon = (slug, href, label) => href ? `<a href="${esc(href)}" target="_blank" rel="noopener" aria-label="${label}">${logo(slug)}</a>` : '';
-  $$('[data-socials-icons]').forEach(el => { el.innerHTML = socialIcon('instagram', S.instagram, 'blameopal on Instagram') + socialIcon('linkedin', S.linkedin, 'James on LinkedIn'); });
-  $$('[data-gh]').forEach(a => { a.href = GH; a.innerHTML = ghIcon.replace('class="gh-ic"', ''); });
 
   // phone: the info sheet. About, socials, GitHub. Slides on transform only
   const shEl = $('sh'), shIn = $('sh-in'), shScrim = $('sh-scrim');
@@ -648,6 +661,41 @@
   shScrim.addEventListener('click', () => info(false));
   shIn.querySelector('[data-sh-close]').addEventListener('click', () => info(false));
   addEventListener('keydown', e => { if (e.key === 'Escape' && shOn) info(false); });
+
+  // phone: the full screen menu behind the burger
+  $$('[data-count]').forEach(el => { el.innerHTML = `${pad(P.length)}/${TOTAL}<span class="bar"><i style="transform:scaleX(${P.length / TOTAL})"></i></span>`; });
+  const menu = $('menu'), ARR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"/></svg>';
+  const row = (n, href, label) => href ? `<a href="${esc(href)}" target="_blank" rel="noopener"><span class="no">${n}</span><span>${label}</span>${ARR}</a>` : '';
+  menu.innerHTML = `<div class="menu-top"><a class="ph-logo" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a>
+      <button class="burger x" data-menu-close aria-label="Close menu"><i></i><i></i></button></div>
+    <div class="menu-in">
+      <h2>30 posters<br>in 30 minutes.</h2>
+      <p>${ABOUT}</p>
+      <nav class="menu-list">${row('01', S.instagram, 'Instagram')}${row('02', S.linkedin, 'LinkedIn')}${row('03', S.repo, 'The repo')}</nav>
+      <a class="btn go" href="${GH}" target="_blank" rel="noopener">${ghIcon}Get notified on GitHub</a>
+      <span class="hint2">Watch, then Custom, then Releases. One email per poster.</span>
+      <div class="sign"><span class="k">we give a sh*t.</span>${ast}</div>
+    </div>`;
+  let mOn = false, mLast = null;
+  const menuBtns = $$('[data-menu]');
+  function menuOpen(open) {
+    if (open === mOn) return; mOn = open;
+    menuBtns.forEach(b => { b.classList.toggle('x', open); b.setAttribute('aria-expanded', open); });
+    gsap.killTweensOf(menu);
+    if (open) {
+      mLast = document.activeElement;
+      gsap.set(menu, { visibility: 'visible', y: 0 });
+      gsap.fromTo(menu, { yPercent: -100 }, { yPercent: 0, duration: reduce ? 0 : .45 });
+      if (!reduce) gsap.fromTo(menu.querySelectorAll('.menu-in > *, .menu-list a'), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .45, stagger: .05, delay: .12, clearProps: 'opacity,visibility,transform' });
+      const c = menu.querySelector('[data-menu-close]'); if (c) c.focus({ preventScroll: true });
+    } else {
+      gsap.to(menu, { yPercent: -100, duration: reduce ? 0 : .3, onComplete: () => gsap.set(menu, { visibility: 'hidden' }) });
+      if (mLast) mLast.focus({ preventScroll: true });
+    }
+  }
+  menuBtns.forEach(b => b.addEventListener('click', () => menuOpen(!mOn)));
+  menu.querySelector('[data-menu-close]').addEventListener('click', () => menuOpen(false));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && mOn) menuOpen(false); });
   // pull it down to close: it follows your finger, then closes or settles back
   let pull = null;
   shEl.addEventListener('touchstart', e => { if (shEl.scrollTop > 0) return; pull = { y: e.touches[0].clientY, dy: 0 }; }, { passive: true });

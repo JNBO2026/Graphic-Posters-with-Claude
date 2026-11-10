@@ -7,8 +7,8 @@ window.SITE = {
   // Follow links in the bottom-left module. Leave one empty to hide its button.
   instagram: 'https://www.instagram.com/blameopal/',
   linkedin: 'https://www.linkedin.com/in/jamesnawka',
-  // Design options while James picks: empty slot tiles 'd' | 'e' | 'f', phone layout 'g' | 'h' | 'i' | 'j'. ?tile= and ?mobile= preview the others.
+  // Design options while James picks: empty slot tiles 'd' | 'e' | 'f', phone layout 'k' | 'l' | 'm' | 'n'. ?tile= and ?mobile= preview the others.
   tile: 'f',
-  mobile: 'g',
+  mobile: 'k',
   total: 30
 };

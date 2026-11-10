@@ -42,7 +42,7 @@ Source is `site/` (page, `site.config.js`, `vercel.json`, `vendor/` GSAP 3.13). 
 - `site/site.config.js` holds the live URL. Change it there only.
 - Notifications: GitHub only. "Get notified on GitHub" (Watch, then Custom, then Releases; each day's Release emails watchers). Socials: Instagram blameopal and LinkedIn, in `site.config.js`. No calendar, email or RSS: James decided against them.
 - Empty slot tiles: **F, Departures** (picked by James): day number and status, then one hairline row each for days, hours, minutes and seconds. D and E stay in the code for reference only.
-- Phone layout: still open (`mobile: 'g' | 'h' | 'i' | 'j'` in `site.config.js`, preview with `?mobile=`; review page at `/review`). Phone shows no clocks outside the wall, just the about line, socials and the GitHub button.
+- Phone layout: still open (`mobile: 'k' | 'l' | 'm' | 'n'`, logo and burger menu in `site.config.js`, preview with `?mobile=`; review page at `/review`). Phone shows no clocks outside the wall, just the about line, socials and the GitHub button.
 - Performance: the wall loads `thumb-s.jpg` and swaps to `thumb.jpg` only when zoomed, clocks only tick on screen, nothing animates layout properties (transform and opacity only).
 
 ## Setup status
