@@ -9,6 +9,8 @@ window.SITE = {
   linkedin: 'https://www.linkedin.com/in/jamesnawka',
   // Design options while James picks: empty slot tiles 'd' | 'e' | 'f', phone layout 'k' | 'l' | 'm' | 'n'. ?tile= and ?mobile= preview the others.
   tile: 'f',
-  mobile: 'k',
+  mobile: 'l',
+  // hover on a posted poster (desktop): 'a' title card, 'b' prompt snippet, 'c' ledger card, 'd' cursor only
+  hover: 'a',
   total: 30
 };

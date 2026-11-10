@@ -49,12 +49,23 @@
                 font:500 12px/14px 'Instrument Sans'; color:var(--ink); }
   .cell img { outline:1px solid rgba(0,0,0,.1); outline-offset:-1px; }
   .cell .chip svg { width:10px; height:10px; }
-  .cell .over { position:absolute; inset:0; padding:12px; display:flex; flex-direction:column; justify-content:flex-end; gap:6px;
-                background:linear-gradient(to top, rgba(16,16,16,.92), rgba(16,16,16,.6) 50%, rgba(16,16,16,0)); color:#FAFAF4; opacity:0; transition:opacity 200ms var(--ease); }
-  .cell .over .meta { color:#FAFAF49E; }
-  .cell .over b { font:600 18px/18px 'Instrument Sans'; }
-  .cell .over span.p { font:400 14px/18px 'Instrument Sans'; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
-  @media (hover:hover) { .cell.posted:hover .over, .cell.posted:focus-visible .over { opacity:1; } }
+  /* hover: four treatments (hover-a title card, -b prompt snippet, -c ledger card, -d nothing but the cursor) */
+  .cell .over { position:absolute; inset:0; padding:8px; display:flex; flex-direction:column; justify-content:flex-end; opacity:0; pointer-events:none; transition:opacity 200ms var(--ease); }
+  .cell .over .meta { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  .cell .over .card { background:var(--paper); color:var(--ink); border-radius:4px; padding:10px 12px; display:flex; flex-direction:column; gap:6px;
+                      box-shadow:0 8px 24px rgba(0,0,0,.16); transform:translateY(8px); transition:transform 300ms var(--ease); }
+  .cell .over .card b { font:600 16px/20px 'Instrument Sans'; letter-spacing:-.01em; text-wrap:balance; }
+  .o-b { background:linear-gradient(to top, rgba(16,16,16,.88), rgba(16,16,16,.5) 45%, rgba(16,16,16,0) 70%); padding:14px !important; gap:8px; color:#FAFAF4; }
+  .o-b .meta { color:#FAFAF49E !important; }
+  .o-b q { font:600 18px/22px 'Instrument Sans'; letter-spacing:-.01em; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; text-wrap:pretty; }
+  .o-b q::before { content:'\201C'; } .o-b q::after { content:'\201D'; }
+  .o-c .card { gap:0; padding:10px 12px 4px; }
+  .o-c .card b { margin-bottom:6px; }
+  .o-c .lrow:last-child { box-shadow:none; }
+  .cell img { transition:transform 450ms var(--ease); }
+  @media (hover:hover) { .cell.posted:hover .over, .cell.posted:focus-visible .over { opacity:1; } .cell.posted:hover .over .card, .cell.posted:focus-visible .over .card { transform:none; }
+    .cell.posted:hover img, .cell.posted:hover video { transform:scale(1.03); } }
+  .cell video { transition:transform 450ms var(--ease); }
 
   /* empty slots: one layout, three treatments (tile-a, tile-b, tile-c on <html>) */
   .slot .in { position:absolute; inset:0; padding:16px; display:flex; flex-direction:column; justify-content:space-between; }
@@ -126,7 +137,10 @@
   .hud.bl { left:16px; bottom:16px; width:344px; display:flex; flex-direction:column; gap:2px; }
   .hud.bl h1 { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; text-wrap:balance; }
   .hud.bl p { font:400 14px/20px 'Instrument Sans'; color:var(--sec); }
-  .hud.br { right:16px; bottom:16px; width:344px; }
+  .gh-tab { right:24px; bottom:0; display:inline-flex; align-items:center; gap:8px; padding:14px 20px 20px; border-radius:12px 12px 0 0; background:var(--acid); color:#101010; text-decoration:none;
+            font:500 16px/16px 'Instrument Sans'; box-shadow:0 0 0 2px var(--ground); transform:translateY(6px); transition:transform 200ms var(--ease); }
+  @media (hover:hover) { .gh-tab:hover { transform:translateY(0); } }
+  .gh-tab:active { transform:translateY(6px) scale(.96); }
   .socials { display:flex; gap:8px; flex-wrap:wrap; }
   .pill { display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:var(--ink); border-radius:999px; padding:10px 16px; border:0; cursor:pointer; background:transparent;
           box-shadow:inset 0 0 0 1.5px var(--line2); font:500 14px/16px 'Instrument Sans'; transition:background 200ms var(--ease), transform 200ms var(--ease); }
@@ -214,7 +228,7 @@
 
   /* ---------- Phone ---------- */
   @media (max-width:760px) {
-    .hud.tr, .hud.bl, .hud.br, .zoom { display:none !important; }
+    .hud.bl, .gh-tab, .zoom { display:none !important; }
     .hint { bottom:104px; font:500 12px/14px 'Instrument Sans'; padding:8px 12px; }
     .demo { top:12px; }
     .slot .in { padding:10px; }
@@ -315,20 +329,8 @@
 <main id="canvas" aria-label="All 30 posters. Drag or scroll to explore, pinch or use + and - to zoom, click a poster to open it."><div id="world"></div></main>
 <div id="proxy" hidden></div>
 
-<div class="hud tr glass chiprow ring">
-  <span class="k num" id="count"></span>
-  <span class="prog" id="prog" aria-hidden="true"></span>
-</div>
 <aside class="hud bl" id="about" aria-label="About the challenge"></aside>
-<aside class="hud br" aria-label="Next poster">
-  <div class="tile">
-    <span class="k" id="next-k"></span>
-    <div id="next-clock"></div>
-    <a class="btn go" id="gh-btn" target="_blank" rel="noopener">Get notified on GitHub</a>
-    <span class="meta" style="text-align:center">Watch, then Custom, then Releases</span>
-  </div>
-</aside>
-<div class="hud hint glass ring" id="hint">Drag or scroll to explore. Pinch to zoom.</div>
+<a class="hud gh-tab" id="gh-btn" target="_blank" rel="noopener" title="Watch, then Custom, then Releases">Get notified on GitHub</a><div class="hud hint glass ring" id="hint">Drag or scroll to explore. Pinch to zoom.</div>
 <div class="hud zoom glass chiprow ring" role="group" aria-label="Zoom">
   <button id="z-out" aria-label="Zoom out"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
   <button class="pct" id="z-pct" aria-label="Reset zoom">100%</button>
@@ -389,8 +391,9 @@
   gsap.registerPlugin(Draggable, InertiaPlugin);
   const S = window.SITE || {}, TOTAL = S.total || 30, DAY = 864e5, COLS = 6, ROWS = Math.ceil(TOTAL / COLS);
   const Q = new URLSearchParams(location.search);
-  const TILE = /^[def]$/.test(Q.get('tile')) ? Q.get('tile') : (S.tile || 'd');
-  const MOBILE = /^[klmn]$/.test(Q.get('mobile')) ? Q.get('mobile') : (S.mobile || 'k');
+  const TILE = /^[def]$/.test(Q.get('tile')) ? Q.get('tile') : (S.tile || 'f');
+  const HOVER = /^[abcd]$/.test(Q.get('hover')) ? Q.get('hover') : (S.hover || 'a');
+  const MOBILE = /^[klmn]$/.test(Q.get('mobile')) ? Q.get('mobile') : (S.mobile || 'l');
   document.documentElement.classList.add('tile-' + TILE, 'mobile-' + MOBILE);
   const P = (window.POSTERS || []).slice().sort((a, b) => a.day - b.day);
   const byDay = Object.fromEntries(P.map(p => [p.day, p]));
@@ -483,18 +486,31 @@
   // ---------- The wall ----------
   const canvas = $('canvas'), world = $('world'), proxy = $('proxy'), Z = { z: 1 };
   let lastZ = 0; const setScale = z => { if (z !== lastZ) { lastZ = z; world.style.transform = `scale(${z})`; } };
-  let TW, TH, BW, BH, blocks = [], slots = [], nx = 1, ny = 1, slotIO = null;
+  let TW, TH, BW, BH, blocks = [], slots = [], nx = 1, ny = 1, slotIO = null, vidIO = null;
   function sizes() {
     const w = innerWidth;
     TW = w <= 760 ? 160 : w <= 1200 ? 210 : 248; TH = Math.round(TW * 1.4142 / 2) * 2;
     BW = (TW + 2) * COLS; BH = (TH + 2) * ROWS;
     document.documentElement.style.setProperty('--tw', TW + 'px'); document.documentElement.style.setProperty('--th', TH + 'px');
   }
+  // what a posted poster says on hover
+  const words = p => String(p.prompt).trim().split(/\s+/).length;
+  const madeWith = p => /^code only/i.test(p.process || '') ? 'Code only' : ((p.tools || []).find(t => t.includes(':')) || 'Gen AI').split(':')[0];
+  const snippet = p => { const w = String(p.prompt).trim().split(/\s+/); return w.slice(0, 12).join(' ') + (w.length > 12 ? '…' : ''); };
+  function hoverHTML(p) {
+    const n = pad(p.day);
+    if (HOVER === 'a') return `<span class="over o-a"><span class="card"><span class="meta">Day ${n}</span><b>${esc(p.title)}</b></span></span>`;
+    if (HOVER === 'b') return `<span class="over o-b"><span class="meta">Day ${n} · ${words(p)} words in 60 seconds</span><q>${esc(snippet(p))}</q></span>`;
+    if (HOVER === 'c') return `<span class="over o-c"><span class="card"><b>${esc(p.title)}</b>
+      <span class="lrow"><span>Prompt</span><span class="v">${words(p)} words</span></span>
+      <span class="lrow"><span>Made with</span><span class="v">${esc(madeWith(p))}</span></span>
+      <span class="lrow"><span>Posted</span><span class="v">${shortDate(Date.parse(p.date + 'T12:00:00'))}</span></span></span></span>`;
+    return '';
+  }
   function cellHTML(n) {
     const p = byDay[n];
     if (p) return `<button class="cell posted" data-day="${n}" aria-label="Day ${pad(n)}, ${esc(p.title)}. Open poster and prompt">
-      <img src="${p.thumbS || p.thumb}"${p.thumbS ? ` srcset="${p.thumbS} 560w, ${p.thumb} 1116w" sizes="${Math.round(TW * Z.z)}px"` : ''} alt="" draggable="false" decoding="async"><span class="chip">Day ${pad(n)}${p.video ? ' · Motion<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12-7.5z"/></svg>' : ''}</span>
-      <span class="over"><span class="meta">Day ${pad(n)} · ${fmtDate(p.date)}</span><b>${esc(p.title)}</b><span class="p">${esc(p.prompt)}</span></span></button>`;
+      <img src="${p.thumbS || p.thumb}"${p.thumbS ? ` srcset="${p.thumbS} 560w, ${p.thumb} 1116w" sizes="${Math.round(TW * Z.z)}px"` : ''} alt="" draggable="false" decoding="async">${p.video ? `<video muted loop playsinline preload="none" disablepictureinpicture poster="${p.thumbS || p.thumb}" data-src="${p.video}" aria-hidden="true"></video>` : ''}<span class="chip">Day ${pad(n)}</span>${hoverHTML(p)}</button>`;
     return slotHTML(n, n === nextDay);
   }
   function build() {
@@ -514,6 +530,11 @@
     if (slotIO) slotIO.disconnect();
     slotIO = new IntersectionObserver(es => { const now = Date.now(); es.forEach(e => { const s = e.target._slot; s.vis = e.isIntersecting; if (s.vis) updateSlot(s, now); }); }, { root: canvas, rootMargin: '160px' });
     slots.forEach(s => slotIO.observe(s.el));
+    // motion posters play on their own while they're on screen, and stop when they're not
+    if (vidIO) vidIO.disconnect();
+    vidIO = new IntersectionObserver(es => es.forEach(e => { const v = e.target;
+      if (e.isIntersecting) { if (!v.getAttribute('src')) v.src = v.dataset.src; v.muted = true; if (!reduce) v.play().catch(() => {}); } else v.pause(); }), { root: canvas, rootMargin: '80px' });
+    canvas.querySelectorAll('.cell.posted video').forEach(v => vidIO.observe(v));
   }
   let rx = NaN, ry = NaN, rzm = NaN;
   function render(force) {
@@ -578,12 +599,6 @@
     gsap.to(proxy, { x: `+=${innerWidth / 2 - (r.left + r.width / 2)}`, y: `+=${innerHeight / 2 - (r.top + r.height / 2)}`, duration: reduce ? 0 : .45, onUpdate: () => drag.update() });
   });
   canvas.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { const c = e.target.closest('.cell.posted'); if (c) { e.preventDefault(); open(+c.dataset.day, c); } } });
-  if (fine && !reduce) {
-    canvas.addEventListener('pointerover', e => { const c = e.target.closest && e.target.closest('.cell.posted'); if (!c || c.querySelector('video')) return;
-      const p = byDay[+c.dataset.day]; if (!p || !p.video) return;
-      const v = document.createElement('video'); Object.assign(v, { src: p.video, muted: true, loop: true, playsInline: true, autoplay: true }); c.appendChild(v); v.play().catch(() => {}); });
-    canvas.addEventListener('pointerout', e => { const c = e.target.closest && e.target.closest('.cell.posted'); if (!c || c.contains(e.relatedTarget)) return; const v = c.querySelector('video'); if (v) v.remove(); });
-  }
   let hinted = false;
   function hideHint() { if (hinted) return; hinted = true; gsap.to('#hint', { autoAlpha: 0, duration: .3 }); }
 
@@ -607,7 +622,7 @@
       const c = e.target.closest('.cell');
       cur.classList.toggle('inv', !!(c && c.classList.contains('posted') && (byDay[+c.dataset.day] || {}).dark));
       if (!c) return curTag('Drag');
-      curTag(c.classList.contains('posted') ? `Open day ${pad(+c.dataset.day)}` : slotTag(+c.dataset.day));
+      curTag(c.classList.contains('posted') ? (HOVER === 'd' ? `Day ${pad(+c.dataset.day)} · ${byDay[+c.dataset.day].title}` : `Open day ${pad(+c.dataset.day)}`) : slotTag(+c.dataset.day));
     });
     canvas.addEventListener('pointerdown', () => { if (!reduce) gsap.fromTo(cur.querySelector('svg'), { scale: 1 }, { scale: .8, duration: .2, yoyo: true, repeat: 1 }); });
     document.documentElement.addEventListener('mouseleave', () => cur.classList.add('off'));
@@ -615,8 +630,6 @@
 
   // ---------- About and the HUD ----------
   if (window.DEMO) { const d = document.createElement('div'); d.className = 'hud demo glass ring'; d.textContent = 'Preview with example data'; document.body.appendChild(d); }
-  $('count').textContent = `${pad(P.length)} of ${TOTAL} posted`;
-  $('prog').innerHTML = Array.from({ length: TOTAL }, (_, i) => `<i class="${byDay[i + 1] ? 'on' : ''}"></i>`).join('');
   const ast = `<svg class="ast" viewBox="64 64 48 48" aria-hidden="true"><path fill="currentColor" d="M93.1626 112H82.821V100.486L74.6795 108.629L67.3703 101.319L75.5117 93.1758H64V82.8324H75.5117L67.3703 74.6813L74.6877 67.3709L82.8292 75.5138V64H93.1708V75.5138L101.312 67.3709L108.63 74.6813L100.488 82.8242H112V93.1676H100.488L108.63 101.31L101.312 108.621L93.1708 100.478V111.992L93.1626 112ZM84.848 109.972H91.1437V95.5989L101.304 105.761L105.762 101.302L95.6018 91.1401H109.973V84.8434H95.6018L105.762 74.6813L101.304 70.2225L91.1437 80.3846V66.0192H84.848V80.3929L74.6877 70.2308L70.2297 74.6896L80.3901 84.8517H66.0189V91.1483H80.3901L70.2297 101.31L74.6877 105.769L84.848 95.6071V109.981V109.972Z"/></svg>`;
   const ABOUT = 'One poster a day for 30 days. Each one starts as a prompt inputted in 60 seconds, goes into Claude Code, and gets posted as is. No redos, no touch-ups. Every prompt is here to copy.';
   const socialPill = (slug, href, label) => href ? `<a class="pill" href="${esc(href)}" target="_blank" rel="noopener">${logo(slug)}${label}</a>` : '';
@@ -624,7 +637,6 @@
   $('about').innerHTML = `<div class="tile"><a class="lock" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a>
       <h1>30 posters in 30 minutes.</h1><p>${ABOUT}</p>${socials ? `<div class="socials">${socials}</div>` : ''}</div>
     <div class="tile sign">${ast}<span>we give a sh*t.</span></div>`;
-  $('next-clock').innerHTML = bigClockHTML();
   $$('[data-next-clock]').forEach(el => { el.innerHTML = smallClockHTML(); });
 
   // ---------- Get notified: GitHub, plus the socials ----------
@@ -705,11 +717,7 @@
 
   // One tick a second drives every clock
   const nextEls = $$('[data-next-k]'), nextSmall = $$('[data-next-clock]');
-  function setNext(label, t) {
-    $('next-k').textContent = label; nextEls.forEach(el => { if (el.textContent !== label) el.textContent = label; });
-    setBig($('next-clock'), t);
-    nextSmall.forEach(el => ['d','h','m','s'].forEach(k => setRoll(el.querySelector(`[data-k="${k}"] .roll`), pad(t[k]))));
-  }
+  function setNext() {}
   function tick() {
     if (document.hidden) return; // nothing to tick when nobody can see it
     const now = Date.now();
@@ -822,7 +830,7 @@
 
   // ---------- Intro: sixty seconds, once per visit ----------
   let seen = false; try { seen = sessionStorage.getItem('tp-intro') === '1'; sessionStorage.setItem('tp-intro', '1'); } catch {}
-  const huds = ['.hud.tr', '.hud.bl', '.hud.br', '#hint', '.hud.zoom', '.ph'];
+  const huds = ['.hud.bl', '.gh-tab', '#hint', '.hud.zoom', '.ph'];
   function enter() {
     const vis = blocks.flatMap(b => [...b.el.children]).filter(el => {
       const r = el.getBoundingClientRect(); return r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight; })

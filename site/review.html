@@ -9,73 +9,70 @@
 <style>
   :root { --paper:#FAFAF4; --raised:#EEEEE7; --sunken:#E1E1D9; --ink:#101010; --sec:#101010AD; --line:#1010101F; --line2:#1010103D; --acid:#67FF67; --ground:#000; --radius:10px; --ease:cubic-bezier(.2,.7,.2,1); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --paper:#1A1A1A; --raised:#262626; --sunken:#121212; --ink:#FAFAF4; --sec:#FAFAF49E; --line:#FAFAF41F; --line2:#FAFAF43D; } }
-  :root[data-theme="dark"] { --paper:#1A1A1A; --raised:#262626; --sunken:#121212; --ink:#FAFAF4; --sec:#FAFAF49E; --line:#FAFAF41F; --line2:#FAFAF43D; }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { background:var(--ground); color:var(--ink); font-family:'Instrument Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased; padding:2px; display:flex; flex-direction:column; gap:2px; }
   .tile { background:var(--paper); border-radius:var(--radius); padding:24px; display:flex; flex-direction:column; gap:16px; }
   .k { font:500 14px/16px 'Instrument Sans'; color:var(--sec); }
   h1 { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.01em; }
   h2 { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; }
-  p { font:400 16px/24px 'Instrument Sans'; color:var(--sec); max-width:68ch; text-wrap:pretty; }
+  p { font:400 16px/24px 'Instrument Sans'; color:var(--sec); max-width:72ch; text-wrap:pretty; }
   .lock { display:inline-flex; align-items:center; gap:8px; font:600 16px/16px 'Instrument Sans'; }
   .lock img { height:14px; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lock img { filter:invert(1); } }
-  .opts { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:16px; }
-  .opts.four { grid-template-columns:repeat(4, minmax(0, 1fr)); }
-  .opts.one { grid-template-columns:minmax(0, 360px); }
-  .opt { display:flex; flex-direction:column; gap:12px; padding:12px; border-radius:var(--radius); background:var(--raised); box-shadow:inset 0 0 0 1.5px transparent; transition:box-shadow 200ms var(--ease); }
+  @media (prefers-color-scheme: dark) { .lock img { filter:invert(1); } }
+  .opts { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; }
+  .opts.decided { grid-template-columns:repeat(2, minmax(0, 300px)); }
+  .opt { display:flex; flex-direction:column; gap:12px; padding:12px; border-radius:var(--radius); background:var(--raised); box-shadow:inset 0 0 0 2px transparent; transition:box-shadow 200ms var(--ease); }
   .opt.on { box-shadow:inset 0 0 0 2px var(--ink); }
   .opt .t { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
   .opt b { font:600 18px/18px 'Instrument Sans'; }
   .opt small { font:400 14px/20px 'Instrument Sans'; color:var(--sec); }
-  .phone { position:relative; width:100%; aspect-ratio:390 / 844; border-radius:24px; overflow:hidden; background:var(--ground); box-shadow:0 0 0 2px var(--ground); }
-  .phone iframe { position:absolute; left:0; top:0; width:390px; height:844px; border:0; transform-origin:0 0; }
-  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-  .btn { font:500 16px/16px 'Instrument Sans'; border-radius:999px; padding:14px 20px; border:0; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:transform 200ms var(--ease); }
+  .frame { position:relative; width:100%; overflow:hidden; background:var(--ground); box-shadow:0 0 0 2px var(--ground); }
+  .frame.phone { aspect-ratio:390 / 844; border-radius:24px; }
+  .frame.desk { aspect-ratio:1440 / 900; border-radius:8px; }
+  .frame iframe { position:absolute; left:0; top:0; border:0; transform-origin:0 0; }
+  .btn { font:500 16px/16px 'Instrument Sans'; border-radius:999px; padding:14px 20px; border:0; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:transform 200ms var(--ease); }
   .btn:active { transform:scale(.96); }
   .btn.go { background:var(--acid); color:#101010; }
   .btn.ghost { background:transparent; color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--line2); }
   .pick { width:100%; }
   .opt.on .pick { background:var(--ink); color:var(--paper); box-shadow:none; }
-  label { display:flex; flex-direction:column; gap:8px; }
-  input, textarea { font:400 16px/24px 'Instrument Sans'; color:var(--ink); background:var(--raised); border:0; border-radius:var(--radius); padding:12px 16px; box-shadow:inset 0 0 0 1.5px var(--line); width:100%; }
-  input:focus, textarea:focus { outline:none; box-shadow:inset 0 0 0 1.5px var(--ink); }
-  textarea { min-height:120px; resize:vertical; }
+  textarea { font:400 16px/24px 'Instrument Sans'; color:var(--ink); background:var(--raised); border:0; border-radius:var(--radius); padding:12px 16px; box-shadow:inset 0 0 0 1.5px var(--line); width:100%; min-height:120px; resize:vertical; }
+  textarea:focus { outline:none; box-shadow:inset 0 0 0 1.5px var(--ink); }
   .bar { position:sticky; bottom:2px; z-index:5; flex-direction:row; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; box-shadow:0 0 0 2px var(--ground); }
   .sum { font:500 14px/20px 'Instrument Sans'; color:var(--sec); }
   .sum strong { color:var(--ink); font-weight:600; }
-  @media (max-width:900px) { .opts, .opts.four { grid-template-columns:1fr; } .phone { max-width:360px; margin:0 auto; } h1 { font:600 28px/28px 'Instrument Sans'; } .tile { padding:16px; } }
+  @media (max-width:900px) { .opts, .opts.decided { grid-template-columns:1fr; } h1 { font:600 28px/28px 'Instrument Sans'; } .tile { padding:16px; } }
 </style>
 </head>
 <body>
 <header class="tile">
   <span class="lock"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</span>
   <h1>Thirty posters: review</h1>
-  <p>Each option below is the real site running with example data. Scroll, drag and tap inside the phones. Pick a phone layout, add any notes, then copy your selections and paste them back to Claude.</p>
+  <p>Round five. Each frame is the real site with example data, so hover and click inside them. Pick a hover style, add any notes, then copy your selections and paste them back to Claude.</p>
 </header>
 
 <section class="tile">
-  <span class="k">Decided</span><h2>Countdown tiles: F</h2>
-  <p>Departures. Day number and status, then one ruled row each for days, hours, minutes and seconds.</p>
-  <div class="opts one">
-    <div class="opt on" data-v="F"><div class="t"><b>F</b><small>Departures, picked</small></div><small>Locked in. Shown here so you can see it with each phone layout.</small><div class="phone"><iframe loading="lazy" title="Tile option F" data-src="./?demo&tile=f&mobile=k"></iframe></div></div>
+  <span class="k">Decided</span><h2>Tiles F, phone L</h2>
+  <p>Departures tiles, and the logo with a burger on a floating bar at the bottom. Motion posters now play on their own and are labelled just by day. The posted counter and the second clock are gone from desktop; Get notified on GitHub is a tab tucked into the bottom edge.</p>
+  <div class="opts decided">
+    <div class="opt on"><div class="t"><b>F + L</b><small>Phone</small></div><div class="frame phone"><iframe loading="lazy" title="Phone" data-w="390" data-h="844" data-src="./?demo&tile=f&mobile=l"></iframe></div></div>
   </div>
 </section>
 
-<section class="tile" data-q="mobile">
-  <span class="k">Question</span><h2>Phone layout, round four</h2>
-  <p>The logo and a burger menu, four ways. Tap the burger inside each phone to see the menu.</p>
-  <div class="opts four">
-    <div class="opt" data-v="K"><div class="t"><b>K</b><small>Logo and burger</small></div><small>Your brief. The logo top left, a burger top right. The burger turns into a cross and opens a full screen menu: the title, one line of about, numbered links and Get notified on GitHub.</small><div class="phone"><iframe loading="lazy" title="Phone layout K" data-src="./?demo&tile=f&mobile=k"></iframe></div><button class="btn ghost pick">Pick K</button></div>
-    <div class="opt" data-v="L"><div class="t"><b>L</b><small>Bottom bar</small></div><small>The same pair on a floating bar at the bottom, where thumbs are. The burger opens the sheet from the bottom instead of a full screen menu.</small><div class="phone"><iframe loading="lazy" title="Phone layout L" data-src="./?demo&tile=f&mobile=l"></iframe></div><button class="btn ghost pick">Pick L</button></div>
-    <div class="opt" data-v="M"><div class="t"><b>M</b><small>Corners</small></div><small>Two round buttons, the logo bottom left and the burger bottom right. Nothing at the top, the wall runs edge to edge.</small><div class="phone"><iframe loading="lazy" title="Phone layout M" data-src="./?demo&tile=f&mobile=m"></iframe></div><button class="btn ghost pick">Pick M</button></div>
-    <div class="opt" data-v="N"><div class="t"><b>N</b><small>Logo, progress, burger</small></div><small>A top bar with the mark, how far through the 30 you are (03/30 and a rule), and the burger. The one bit of status worth keeping on screen.</small><div class="phone"><iframe loading="lazy" title="Phone layout N" data-src="./?demo&tile=f&mobile=n"></iframe></div><button class="btn ghost pick">Pick N</button></div>
+<section class="tile" data-q="hover">
+  <span class="k">Question</span><h2>What shows when you hover a poster</h2>
+  <p>Desktop only. Four levels, from a small title card to nothing at all. Hover the posters inside each frame.</p>
+  <div class="opts">
+    <div class="opt" data-v="A"><div class="t"><b>A</b><small>Title card</small></div><small>A small paper card rises from the bottom: the day and the title. Nothing else.</small><div class="frame desk"><iframe loading="lazy" title="Hover A" data-w="1440" data-h="900" data-src="./?demo&hover=a"></iframe></div><button class="btn ghost pick">Pick A</button></div>
+    <div class="opt" data-v="B"><div class="t"><b>B</b><small>Prompt snippet</small></div><small>The first dozen words of the prompt as a pull quote, with how many words were typed in the 60 seconds. The prompt is the hook.</small><div class="frame desk"><iframe loading="lazy" title="Hover B" data-w="1440" data-h="900" data-src="./?demo&hover=b"></iframe></div><button class="btn ghost pick">Pick B</button></div>
+    <div class="opt" data-v="C"><div class="t"><b>C</b><small>Ledger card</small></div><small>The title, then three ruled rows: prompt length in words, made with (code only or the model), and the date posted. Matches the Departures tiles.</small><div class="frame desk"><iframe loading="lazy" title="Hover C" data-w="1440" data-h="900" data-src="./?demo&hover=c"></iframe></div><button class="btn ghost pick">Pick C</button></div>
+    <div class="opt" data-v="D"><div class="t"><b>D</b><small>Cursor only</small></div><small>Nothing over the poster at all. The blame opal cursor carries the day and the title. The poster stays clean.</small><div class="frame desk"><iframe loading="lazy" title="Hover D" data-w="1440" data-h="900" data-src="./?demo&hover=d"></iframe></div><button class="btn ghost pick">Pick D</button></div>
   </div>
 </section>
 
 <section class="tile">
-  <span class="k">Question 3</span><h2>Anything else</h2>
-    <label><span class="k">Anything else (optional)</span><textarea id="notes" placeholder="Notes for Claude"></textarea></label>
+  <span class="k">Anything else</span>
+  <textarea id="notes" placeholder="Notes for Claude"></textarea>
 </section>
 
 <footer class="tile bar">
@@ -85,34 +82,26 @@
 
 <script>
 (() => {
-  const pick = { tile: 'F', mobile: '' };
-  let store = {}; try { store = JSON.parse(localStorage.getItem('tp-review-4') || '{}'); } catch {}
-  const save = () => { try { localStorage.setItem('tp-review-4', JSON.stringify({ ...pick, notes: notes.value })); } catch {} };
+  const pick = { hover: '' };
+  let store = {}; try { store = JSON.parse(localStorage.getItem('tp-review-5') || '{}'); } catch {}
   const notes = document.getElementById('notes');
-  // phones: scale a real 390 x 844 viewport into each frame, load when on screen
-  const fit = () => document.querySelectorAll('.phone').forEach(ph => { const f = ph.querySelector('iframe'); f.style.transform = `scale(${ph.clientWidth / 390})`; });
+  const save = () => { try { localStorage.setItem('tp-review-5', JSON.stringify({ ...pick, notes: notes.value })); } catch {} };
+  const fit = () => document.querySelectorAll('.frame').forEach(fr => { const f = fr.querySelector('iframe'), w = +f.dataset.w, h = +f.dataset.h;
+    f.style.width = w + 'px'; f.style.height = h + 'px'; f.style.transform = `scale(${fr.clientWidth / w})`; });
   addEventListener('resize', fit); fit();
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const f = e.target; if (!f.src) f.src = f.dataset.src; io.unobserve(f); } }), { rootMargin: '400px' });
   document.querySelectorAll('iframe').forEach(f => io.observe(f));
-  // picks
-  document.querySelectorAll('[data-q]').forEach(sec => {
-    const q = sec.dataset.q;
-    sec.querySelectorAll('.opt').forEach(o => o.querySelector('.pick').onclick = () => { pick[q] = o.dataset.v; paint(); save(); });
-  });
+  document.querySelectorAll('[data-q]').forEach(sec => sec.querySelectorAll('.opt').forEach(o => o.querySelector('.pick').onclick = () => { pick[sec.dataset.q] = o.dataset.v; paint(); save(); }));
   function paint() {
     document.querySelectorAll('[data-q]').forEach(sec => sec.querySelectorAll('.opt').forEach(o => {
       const on = pick[sec.dataset.q] === o.dataset.v; o.classList.toggle('on', on); o.querySelector('.pick').textContent = on ? `Picked ${o.dataset.v}` : `Pick ${o.dataset.v}`; }));
-    document.getElementById('sum').innerHTML = `Tiles <strong>F</strong> · Phone layout <strong>${pick.mobile || 'not picked'}</strong>`;
+    document.getElementById('sum').innerHTML = `Tiles <strong>F</strong> · Phone <strong>L</strong> · Hover <strong>${pick.hover || 'not picked'}</strong>`;
   }
-  pick.mobile = store.mobile || ''; notes.value = store.notes || '';
+  pick.hover = store.hover || ''; notes.value = store.notes || '';
   notes.addEventListener('input', save);
   paint();
-  document.getElementById('copy').onclick = async e => {
-    const text = [
-      'Thirty posters review, round four',
-      `Phone layout: ${pick.mobile || 'not picked'}`,
-      ...(notes.value.trim() ? ['Notes:', notes.value.trim()] : [])
-    ].join('\n');
+  document.getElementById('copy').onclick = async () => {
+    const text = ['Thirty posters review, round five', `Hover: ${pick.hover || 'not picked'}`, ...(notes.value.trim() ? ['Notes:', notes.value.trim()] : [])].join('\n');
     try { await navigator.clipboard.writeText(text); }
     catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
     const btn = document.getElementById('copy'); btn.textContent = 'Copied. Paste it to Claude';
