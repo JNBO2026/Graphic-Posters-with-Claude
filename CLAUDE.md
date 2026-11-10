@@ -48,6 +48,7 @@ Source is `site/` (page, `site.config.js`, `vercel.json`, `vendor/` GSAP 3.13). 
 - Phone layout: **L** (picked by James): the logo and a burger on a floating bar at the bottom; the burger opens the bottom sheet (about, Instagram, LinkedIn, Get notified on GitHub). No clocks outside the wall.
 - Desktop: no posted counter, no second clock. The about module bottom left, Get notified on GitHub as an acid tab tucked into the bottom edge, bottom right. Motion posters autoplay on the wall while on screen and are labelled by day only.
 - Hover on a posted poster: **C, ledger card** (picked by James): title, then Prompt (word count), Made with (words only), Tools (a row of logos: models first, then the code tools, one per maker, up to six; tools with no logo such as Playwright are left off). Made with is worked out from `tools` and `process` ("Code only", the model, "Code + model", "model +N"); set `made` in meta.json to override it with a short label when that would read better.
+- Poster view on desktop: the cursor is a magnifier over the poster. Click to zoom 3x into the full-size file, move to look around, click or Esc to come back; a trackpad pinch over the poster zooms the poster, not the page.
 - Performance: the wall loads `thumb-s.jpg` and swaps to `thumb.jpg` only when zoomed, clocks only tick on screen, nothing animates layout properties (transform and opacity only).
 
 ## Setup status
