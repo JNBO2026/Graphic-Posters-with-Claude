@@ -40,7 +40,7 @@ Source is `site/` (page, `site.config.js`, `vercel.json`). `scripts/build-site.j
 ## Setup status
 - [x] Site repo: `JNBO2026/thirty-posters-site` (private), deploys from `main`. In a new session, if `../thirty-posters-site` is missing: `add_repo` it with push access, then `git clone https://github.com/JNBO2026/thirty-posters-site ../thirty-posters-site`. Do this before the day starts, not mid-timer.
 - [x] Vercel: https://thirty-posters-site.vercel.app (in `site/site.config.js`).
-- [ ] Buttondown account. Username into `site/site.config.js`. RSS automation pointed at `<site url>/feed.xml`.
+- [x] Buttondown username `nawka` (in `site/site.config.js`). [ ] RSS to email automation pointed at https://thirty-posters-site.vercel.app/feed.xml, James to confirm it's on (and on his plan).
 - [ ] This repo's About > Website set to the Vercel URL.
 
 ## Design system
