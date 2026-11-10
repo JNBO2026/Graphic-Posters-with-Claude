@@ -12,41 +12,14 @@
     "Playwright"
   ],
   "keywords": [
-    {
-      "text": "the words day one",
-      "did": "The only words on the poster, DAY over ONE"
-    },
-    {
-      "text": "bold condensed",
-      "did": "Letters 5 pixels wide and 10 tall, with two-pixel stems"
-    },
-    {
-      "text": "bow house",
-      "did": "Every pixel is a square, a quarter circle or a triangle"
-    },
-    {
-      "text": "made out of pixels",
-      "did": "A 17 by 25 grid of 58 px pixels"
-    },
-    {
-      "text": "Japanese gradients",
-      "did": "Five traditional colours, Konjō to Yamabuki, one flat colour per pixel"
-    },
-    {
-      "text": "no more than 100 pixels margin",
-      "did": "Measured: everything sits exactly 100 px in"
-    },
-    {
-      "text": "aggressive noise texture",
-      "did": "Heavy grain, bristle lines and a few thousand brush strokes"
-    },
-    {
-      "text": "anchored",
-      "did": "Every label starts on a column or sits on a margin line"
-    },
-    {
-      "text": "other pieces of information",
-      "did": "一日目 in the header, the five colours named in the footer, the grid size"
-    }
+    "the words day one",
+    "bold condensed",
+    "bow house",
+    "made out of pixels",
+    "Japanese gradients",
+    "no more than 100 pixels margin",
+    "aggressive noise texture",
+    "anchored",
+    "other pieces of information"
   ]
 }

@@ -223,12 +223,11 @@
   /* Keywords: the words in the prompt that shaped the poster (meta.keywords). Options a to d, see review */
   .well mark { background:none; color:inherit; }
   .kwx[hidden] { display:none; }
-  .kw-a mark, .kw-b mark { cursor:help; border-radius:4px; transition:background-color 200ms var(--ease), color 200ms var(--ease); }
+  .kw-a mark { cursor:help; border-radius:4px; transition:background-color 200ms var(--ease), color 200ms var(--ease); }
   .kw-a mark { background:var(--ink); color:var(--paper); padding:0 4px; margin:0 -1px; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
   .kw-a mark.on { background:var(--acid); color:#101010; }
   .kw-b pre { color:color-mix(in srgb, var(--ink) 38%, transparent); }
   .kw-b mark { color:var(--ink); font-weight:600; }
-  .kw-b mark.on { text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:4px; }
   .kw-a .kwx, .kw-b .kwx { display:flex; gap:10px; align-items:baseline; min-height:24px; padding-top:12px; box-shadow:inset 0 1px 0 var(--line); font:400 14px/20px 'Instrument Sans'; color:var(--sec); }
   .kwx .q { color:var(--ink); font-weight:600; white-space:nowrap; }
   .kw-c mark { text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:4px; text-decoration-color:var(--line2); }
@@ -844,15 +843,15 @@
     well.className = 'well' + (KW ? ' kw-' + KW : '');
     const text = String(p.prompt), low = text.toLowerCase(); let html = '', at = 0;
     if (KW && KW !== 'd') {
-      const hits = (p.keywords || []).map(k => ({ ...k, i: low.indexOf(String(k.text).toLowerCase()) })).filter(k => k.i >= 0).sort((a, b) => a.i - b.i);
+      const hits = (p.keywords || []).map(k => typeof k === 'string' ? { text: k } : k).map(k => ({ ...k, i: low.indexOf(String(k.text).toLowerCase()) })).filter(k => k.i >= 0).sort((a, b) => a.i - b.i);
       for (const k of hits) { if (k.i < at) continue; list.push(k); const n = list.length;
         html += esc(text.slice(at, k.i)) + `<mark data-n="${n}" tabindex="0">${esc(text.slice(k.i, k.i + k.text.length))}</mark>${KW === 'c' ? `<sup>${n}</sup>` : ''}`; at = k.i + k.text.length; }
     }
     html += esc(text.slice(at)); pre.innerHTML = html;
     const ks = KW === 'd' ? (p.keywords || []) : list;
-    if (!KW || !ks.length) { box.hidden = true; box.innerHTML = ''; return; }
+    if (!KW || KW === 'b' || !ks.length) { box.hidden = true; box.innerHTML = ''; return; }
     box.hidden = false;
-    if (KW === 'a' || KW === 'b') {
+    if (KW === 'a') {
       const hint = `<span>${phone() ? 'Tap' : 'Hover'} a marked word to see what it did.</span>`; box.innerHTML = hint;
       const show = m => { pre.querySelectorAll('mark').forEach(x => x.classList.toggle('on', x === m)); const k = list[+m.dataset.n - 1];
         box.innerHTML = `<span class="q">${esc(k.text)}</span><span>${esc(k.did)}</span>`; };
