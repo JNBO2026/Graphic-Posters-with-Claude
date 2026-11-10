@@ -1,0 +1,9 @@
+Link sticker
+  Text: Steal the prompt
+  URL: {{LINK}}
+
+Poll sticker
+  Question: Day one. Post it or bin it?
+  Options: Post it / Bin it
+
+Place both stickers in the middle of the frame, clear of the poster’s headline. Keep the top 72px and bottom 96px empty, Instagram covers them.

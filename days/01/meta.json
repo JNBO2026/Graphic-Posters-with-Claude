@@ -1,0 +1,9 @@
+{
+  "day": 1,
+  "date": "2026-11-10",
+  "started_at": "2026-11-10T21:55:55Z",
+  "title": "Day one.",
+  "note": "Day one set in Bauhaus pixels, washed in a Japanese gradient and roughed up like a brush.",
+  "process": "Code only, no generative model. [[Claude Code]] built the letters as square, quarter circle and triangle pixels on a 17 by 25 grid inside a 100 px margin, coloured each from a gradient of five traditional Japanese colours mixed in OKLab, then painted brush strokes and heavy grain over them in [[Canvas]]. The labels are set in [[Google Fonts]], JetBrains Mono and Noto Sans JP.",
+  "tools": ["Claude Code", "Canvas", "Google Fonts", "Playwright"]
+}

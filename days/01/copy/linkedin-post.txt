@@ -1,0 +1,15 @@
+147 words in 60 seconds. Then I wasn’t allowed to touch it.
+
+Day 01 of 30. I asked for the words day one, bold and condensed, Bauhaus but built from pixels, a Japanese gradient, nothing in the 100 px margin and aggressive noise so it reads like a brush.
+
+Claude built its own pixel letters from squares, quarter circles and triangles, coloured them from five traditional Japanese colours and roughed them up with a few thousand brush strokes. Then it audited its own layout like a designer would and moved what didn’t line up. No model, all code.
+
+It’s not what I’d have drawn. It might be better.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+What would you have asked for with 60 seconds?
+
+we give a sh*t.
+
+#ClaudeCode #AIDesign #GraphicDesign
