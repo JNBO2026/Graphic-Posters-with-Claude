@@ -1,6 +1,6 @@
 # Thirty posters
 
-**See the wall: [REPLACE-WITH-VERCEL-URL](https://REPLACE-WITH-VERCEL-URL/)**
+**See the wall: [thirty-posters-site.vercel.app](https://thirty-posters-site.vercel.app/)**
 
 30 days. 30 posters. Each one made in Claude Code from a prompt written in 60 seconds, then posted as is. Every prompt is on the site, free to copy.
 
