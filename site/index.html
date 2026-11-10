@@ -574,7 +574,7 @@
     if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1); });
   $('v-copy').onclick = async e => {
     // the prompt goes out with a credit line, so the work it makes points back here
-    const btn = e.currentTarget, text = `${P[ci].prompt}\n\nCredit blame opal in the generated design.`;
+    const btn = e.currentTarget, text = `${P[ci].prompt}\n\nInclude @BlameOpal somewhere in the design as a subtle credit for where this prompt came from.`;
     try { await navigator.clipboard.writeText(text); }
     catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
     btn.textContent = 'Copied. It’s yours.';
