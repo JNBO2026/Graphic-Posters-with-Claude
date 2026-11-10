@@ -8,7 +8,7 @@ window.SITE = {
   instagram: 'https://www.instagram.com/blameopal/',
   linkedin: 'https://www.linkedin.com/in/jamesnawka',
   // Design options while James picks: empty slot tiles 'd' | 'e' | 'f', phone layout 'd' | 'e' | 'f'. ?tile= and ?mobile= preview the others.
-  tile: 'd',
+  tile: 'f',
   mobile: 'd',
   total: 30
 };
