@@ -46,5 +46,5 @@ Day-NN_Poster/
 ## And without you doing anything
 
 - The site updates on Vercel: new poster at the top, added to the wall, prompt copyable.
-- The RSS feed updates, so Buttondown emails your subscribers.
+- The RSS feed updates for anyone following it.
 - A GitHub Release goes out, so anyone watching the repo is notified.
