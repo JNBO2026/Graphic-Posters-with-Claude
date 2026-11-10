@@ -58,7 +58,7 @@
   .slot .in { position:absolute; inset:0; padding:16px; display:flex; flex-direction:column; justify-content:space-between; }
   .slot .head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
   .slot .dayno { font:600 64px/56px 'Instrument Sans'; letter-spacing:-.02em; color:var(--line2); font-variant-numeric:tabular-nums; }
-  .slot .lbl { font:500 14px/16px 'Instrument Sans'; color:var(--sec); }
+  .slot .lbl { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
   .slot .foot { display:flex; flex-direction:column; gap:8px; }
   .slot.next { background:var(--raised); }
   .slot.next .dayno { color:var(--ink); }
@@ -73,17 +73,39 @@
   .col { display:flex; flex-direction:column; transition:transform 250ms var(--ease); }
   .col i { font-style:normal; height:1em; }
 
-  /* A: inline units, 24d 17h 59m 55s */
-  .ck-a { display:flex; align-items:baseline; gap:8px; font:600 20px/20px 'Instrument Sans'; }
-  .ck-a .u { font:500 14px/14px 'Instrument Sans'; color:var(--sec); margin-left:2px; }
-  .ck-a .g { display:inline-flex; align-items:baseline; }
-  /* B: grid clock with a unit row, seconds as a bar */
-  .ck-b { display:grid; grid-template-columns:repeat(var(--n), auto); justify-content:start; column-gap:12px; row-gap:6px; }
-  .ck-b .roll { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; }
-  .ck-b .u { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
-  /* C: words, then a live clock only on the next one */
-  .ck-c { font:600 18px/22px 'Instrument Sans'; }
-  .ck-c .live { display:block; margin-top:4px; font:600 28px/28px 'Instrument Sans'; }
+  /* shared: hairline rows, label left, value right, tabular figures */
+  .lrow { display:flex; justify-content:space-between; align-items:baseline; gap:8px; padding:6px 0; box-shadow:inset 0 -1px 0 var(--line); font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  .lrow .v { color:var(--ink); font:600 14px/14px 'Instrument Sans'; font-variant-numeric:tabular-nums; display:inline-flex; align-items:baseline; }
+  .lrow .v .u { font:500 11px/11px 'Instrument Sans'; color:var(--sec); margin:0 3px 0 1px; }
+  .lrow .v .u:last-child { margin-right:0; }
+  .lrow:last-child { box-shadow:none; }
+  .rule { height:1px; background:var(--ink); opacity:.88; }
+  /* D: ledger. A huge cropped number, then the account rows */
+  .t-d .in { padding:12px 14px 14px; }
+  .t-d .huge { font:600 168px/128px 'Instrument Sans'; letter-spacing:-.06em; margin-left:-8px; color:var(--line2); font-variant-numeric:tabular-nums; }
+  .t-d.next .huge { color:var(--ink); }
+  .t-d .ledger { display:flex; flex-direction:column; }
+  /* E: ticker. A fintech stat card with a 30 bar strip */
+  .t-e .in { padding:14px; }
+  .t-e .chip2 { font:500 12px/14px 'Instrument Sans'; padding:4px 8px; border-radius:999px; box-shadow:inset 0 0 0 1px var(--line2); color:var(--sec); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .t-e.next .chip2 { background:var(--ink); color:var(--on-ink); box-shadow:none; }
+  .t-e .val { display:flex; align-items:baseline; font:600 32px/32px 'Instrument Sans'; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .t-e .val .u { font:500 14px/14px 'Instrument Sans'; color:var(--sec); margin:0 6px 0 2px; letter-spacing:0; }
+  .t-e .val .sep { opacity:.32; }
+  .t-e .sub { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  .t-e .bars { display:grid; grid-template-columns:repeat(30, 1fr); gap:2px; align-items:end; height:28px; }
+  .t-e .bars i { height:100%; border-radius:1px; background:var(--line); }
+  .t-e .bars i.done { background:var(--sec); }
+  .t-e .bars i.me { background:var(--ink); }
+  /* F: departures. A Swiss timetable, one row per unit */
+  .t-f .in { padding:12px 14px 14px; }
+  .t-f .head2 { display:flex; justify-content:space-between; align-items:flex-start; }
+  .t-f .num2 { font:600 64px/52px 'Instrument Sans'; letter-spacing:-.04em; font-variant-numeric:tabular-nums; color:var(--line2); }
+  .t-f.next .num2 { color:var(--ink); }
+  .t-f .board { display:flex; flex-direction:column; }
+  .t-f .board .lrow { padding:7px 0; }
+  .t-f .board .lrow .v { font:600 20px/20px 'Instrument Sans'; }
+  .t-f .status { font:500 12px/14px 'Instrument Sans'; color:var(--sec); text-align:right; }
   .sep { opacity:.32; padding:0 1px; }
 
   /* ---------- HUD: framed bento ---------- */
@@ -212,13 +234,18 @@
     .slot .in { padding:10px; }
     .slot .dayno { font:600 40px/36px 'Instrument Sans'; }
     .slot .lbl { font:500 12px/14px 'Instrument Sans'; }
-    .ck-a { font:600 14px/14px 'Instrument Sans'; gap:4px; }
-    .ck-a .u { font:500 11px/11px 'Instrument Sans'; margin-left:1px; }
-    .ck-b { column-gap:6px; }
-    .ck-b .roll { font:600 18px/18px 'Instrument Sans'; }
-    .ck-b .u { font:500 10px/12px 'Instrument Sans'; }
-    .ck-c { font:600 14px/18px 'Instrument Sans'; }
-    .ck-c .live { font:600 18px/18px 'Instrument Sans'; }
+    .t-d .in, .t-e .in, .t-f .in { padding:10px; }
+    .t-d .huge { font:600 88px/68px 'Instrument Sans'; margin-left:-4px; }
+    .lrow { font:500 10px/12px 'Instrument Sans'; padding:4px 0; }
+    .lrow .v { font:600 11px/12px 'Instrument Sans'; }
+    .lrow .v .u { font:500 9px/9px 'Instrument Sans'; margin:0 2px 0 0; }
+    .t-e .val { font:600 16px/16px 'Instrument Sans'; letter-spacing:-.01em; }
+    .t-e .val .u { font:500 10px/10px 'Instrument Sans'; margin:0 3px 0 1px; }
+    .t-e .bars { height:18px; gap:1px; }
+    .t-e .chip2 { font:500 10px/12px 'Instrument Sans'; padding:3px 6px; }
+    .t-f .num2 { font:600 40px/34px 'Instrument Sans'; }
+    .t-f .board .lrow { padding:4px 0; }
+    .t-f .board .lrow .v { font:600 13px/13px 'Instrument Sans'; }
     #intro .n { font:600 88px/80px 'Instrument Sans'; }
     /* the poster view becomes full screen cards: swipe anywhere */
     dialog { overflow:auto; overscroll-behavior:contain; }
@@ -233,35 +260,38 @@
     #remind .panel { left:8px; right:8px; bottom:8px; width:auto; max-height:calc(100dvh - 64px); }
   }
 
-  /* ---------- Phone layouts: mobile-a island, mobile-b peek sheet, mobile-c header and bar ---------- */
-  .m { display:none; }
+  /* ---------- Phone: a pill bottom left that expands into the full story (mobile-d, -e, -f) ---------- */
+  .pn, .pn-bell, .pn-clock { display:none; }
   @media (max-width:760px) {
-    .m { display:flex; }
-    .m-island { position:fixed; z-index:6; left:12px; right:12px; bottom:12px; align-items:center; gap:10px; padding:6px; border-radius:999px; }
-    .m-island .bo { width:44px; height:44px; border-radius:50%; border:0; background:var(--paper); display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; }
-    .m-island .bo img { height:12px; filter:var(--mark); }
-    .m-island .mid { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
-    .m-island .mid .k { font:500 12px/14px 'Instrument Sans'; }
-    .m-island .mid .roll { font:600 20px/20px 'Instrument Sans'; }
-    .bell { width:48px; height:48px; border-radius:50%; border:0; background:var(--acid); color:#101010; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; }
-    .bell svg { width:20px; height:20px; }
-    .m-peek { position:fixed; z-index:6; left:8px; right:8px; bottom:8px; flex-direction:column; gap:12px; padding:10px 16px 16px; border-radius:12px; }
-    .m-peek .grab { align-self:center; width:36px; height:4px; border-radius:2px; background:var(--line2); }
-    .m-peek .r1 { display:flex; justify-content:space-between; align-items:center; gap:12px; }
-    .m-peek h1 { font:600 20px/22px 'Instrument Sans'; letter-spacing:-.01em; }
-    .m-peek .roll { font:600 18px/18px 'Instrument Sans'; }
-    .m-peek [data-next-clock] { white-space:nowrap; flex:none; }
-    html.mobile-b .hint, html.mobile-c .hint { display:none; }
-    .m-head { position:fixed; z-index:6; top:12px; left:12px; padding:8px 12px 8px 10px; gap:8px; border-radius:999px; }
-    .m-head .lock { font:600 14px/14px 'Instrument Sans'; }
-    .m-head .lock img { height:12px; }
-    .m-head .k { font:500 12px/14px 'Instrument Sans'; }
-    .m-bar { position:fixed; z-index:6; left:12px; right:12px; bottom:12px; flex-direction:row; align-items:center; justify-content:space-between; gap:12px; padding:12px 12px 12px 16px; border-radius:12px; }
-    .m-bar .k { font:500 12px/14px 'Instrument Sans'; }
-    .m-bar .roll { font:600 20px/20px 'Instrument Sans'; }
-    .m-bar .btn { padding:12px 16px; font:500 14px/16px 'Instrument Sans'; }
-    html.mobile-a .m:not(.m-island), html.mobile-b .m:not(.m-peek), html.mobile-c .m:not(.m-head):not(.m-bar) { display:none !important; }
-    html.mobile-c .demo { top:60px; }
+    .pn { display:block; position:fixed; z-index:8; left:12px; bottom:12px; max-width:calc(100vw - 24px); border-radius:28px; background:var(--glass);
+          backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 0 0 2px var(--ground); overflow:hidden; }
+    .pn-btn { display:flex; align-items:center; gap:10px; padding:8px 16px 8px 8px; border:0; background:transparent; cursor:pointer; text-align:left; min-height:56px; color:var(--ink); }
+    .pn-btn .mk { width:40px; height:40px; border-radius:50%; background:var(--paper); display:flex; align-items:center; justify-content:center; flex:none; box-shadow:inset 0 0 0 1px var(--line); }
+    .pn-btn .mk img { height:11px; filter:var(--mark); }
+    .pn-btn .tx { display:flex; flex-direction:column; gap:2px; min-width:0; }
+    .pn-btn b { font:600 16px/20px 'Instrument Sans'; letter-spacing:-.01em; white-space:nowrap; }
+    .pn-btn small { font:500 12px/14px 'Instrument Sans'; color:var(--sec); white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .pn-btn .plus { width:24px; height:24px; flex:none; color:var(--sec); transition:transform 300ms var(--ease); }
+    .pn.open .pn-btn .plus { transform:rotate(45deg); }
+    .pn-body { display:none; padding:4px 16px 16px; flex-direction:column; gap:16px; }
+    .pn.open .pn-body { display:flex; }
+    .pn-body h2 { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; text-wrap:balance; }
+    .pn-body p { font:400 14px/20px 'Instrument Sans'; color:var(--sec); text-wrap:pretty; }
+    .pn-body .bigclock .roll { font:600 32px/32px 'Instrument Sans'; }
+    .pn-body .opt { padding:10px 0; }
+    .pn-body .small-link { padding:0 0 4px 52px; }
+    .pn.open { left:8px; right:8px; bottom:8px; max-height:calc(100dvh - 16px); overflow:auto; border-radius:20px; background:var(--paper); }
+    .pn-bell { display:flex; position:fixed; z-index:7; right:12px; bottom:16px; width:48px; height:48px; border-radius:50%; border:0; background:var(--acid); color:#101010; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 0 2px var(--ground); }
+    .pn-bell svg { width:20px; height:20px; }
+    .pn-clock { display:flex; position:fixed; z-index:7; top:12px; right:12px; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; font:500 12px/14px 'Instrument Sans'; }
+    .pn-clock .roll { font:600 14px/14px 'Instrument Sans'; }
+    html:not(.mobile-d) .pn-bell, html:not(.mobile-f) .pn-clock { display:none !important; }
+    html.mobile-e .pn-btn small, html.mobile-d .pn-btn small.cd { display:flex; }
+    html:not(.mobile-e) .pn-btn small.cd { display:none; }
+    .pn-scrim { position:fixed; inset:0; z-index:7; background:rgba(0,0,0,.48); display:none; }
+    .pn-scrim.on { display:block; }
+    .demo { top:12px; left:12px; transform:none; }
+    html.mobile-f .demo { top:52px; }
   }
 </style>
 </head>
@@ -288,22 +318,18 @@
   <button id="z-in" aria-label="Zoom in"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg></button>
 </div>
 
-<!-- phone layouts -->
-<div class="m m-island glass ring" role="region" aria-label="Next poster">
-  <button class="bo" data-open="about" aria-label="About the challenge"><img src="system/assets/brand/bo-mark.svg" alt=""></button>
-  <div class="mid"><span class="k" data-next-k></span><span data-next-clock></span></div>
-  <button class="bell" data-open="remind" aria-label="Remind me when the next poster drops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></button>
-</div>
-<div class="m m-peek tile ring" role="button" tabindex="0" data-open="about" aria-label="About the challenge and reminders">
-  <span class="grab" aria-hidden="true"></span>
-  <div class="r1"><span class="lock"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</span><span class="k" data-next-k></span></div>
-  <div class="r1"><h1>30 posters in 30 minutes.</h1><span data-next-clock></span></div>
-</div>
-<div class="m m-head glass chiprow ring" role="button" tabindex="0" data-open="about" aria-label="About the challenge"><span class="lock"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</span><span class="k">30 posters in 30 minutes</span></div>
-<div class="m m-bar tile ring">
-  <div style="display:flex;flex-direction:column;gap:4px;min-width:0"><span class="k" data-next-k></span><span data-next-clock></span></div>
-  <button class="btn go" data-open="remind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>Remind me</button>
-</div>
+<!-- phone: the pill -->
+<div class="pn-scrim" id="pn-scrim"></div>
+<nav class="pn" id="pn" aria-label="About the challenge">
+  <button class="pn-btn" id="pn-btn" aria-expanded="false" aria-controls="pn-body">
+    <span class="mk"><img src="system/assets/brand/bo-mark.svg" alt="blame opal"></span>
+    <span class="tx"><b>30 posters in 30 minutes</b><small class="cd"><span data-next-k></span>&nbsp;<span data-next-clock></span></small></span>
+    <svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>
+  </button>
+  <div class="pn-body" id="pn-body"></div>
+</nav>
+<button class="pn-bell" id="pn-bell" aria-label="Remind me when the next poster drops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></button>
+<div class="pn-clock glass ring"><span class="k" data-next-k></span><span data-next-clock></span></div>
 
 <div id="remind" role="dialog" aria-modal="true" aria-label="Get the next one">
   <div class="scrim" data-close></div>
@@ -355,8 +381,8 @@
   gsap.registerPlugin(Draggable, InertiaPlugin);
   const S = window.SITE || {}, TOTAL = S.total || 30, DAY = 864e5, COLS = 6, ROWS = Math.ceil(TOTAL / COLS);
   const Q = new URLSearchParams(location.search);
-  const TILE = /^[abc]$/.test(Q.get('tile')) ? Q.get('tile') : (S.tile || 'a');
-  const MOBILE = /^[abc]$/.test(Q.get('mobile')) ? Q.get('mobile') : (S.mobile || 'a');
+  const TILE = /^[def]$/.test(Q.get('tile')) ? Q.get('tile') : (S.tile || 'd');
+  const MOBILE = /^[def]$/.test(Q.get('mobile')) ? Q.get('mobile') : (S.mobile || 'd');
   document.documentElement.classList.add('tile-' + TILE, 'mobile-' + MOBILE);
   const P = (window.POSTERS || []).slice().sort((a, b) => a.day - b.day);
   const byDay = Object.fromEntries(P.map(p => [p.day, p]));
@@ -407,28 +433,42 @@
   // the compact clock for phone bars: 01:17:59:55
   const smallClockHTML = () => `<span class="num">${['d','h','m','s'].map((k, i) => `${i ? '<span class="sep">:</span>' : ''}<span data-k="${k}">${roll(2)}</span>`).join('')}</span>`;
 
-  // ---------- Empty slot tiles: three treatments ----------
+  // ---------- Empty slot tiles: Swiss and fintech treatments ----------
+  const u2 = k => `<span data-k="${k}">${roll(2)}</span>`;
+  const shortDate = t => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
   function slotHTML(n, isNext) {
-    const head = TILE === 'b'
-      ? `<div class="head"><span class="lbl">Day ${pad(n)}${isNext ? ' · Next' : ''}</span>${isNext ? '<i class="pulse"></i>' : ''}</div>`
-      : `<div class="head"><span class="dayno">${pad(n)}</span>${isNext ? '<i class="pulse"></i>' : ''}</div>`;
-    let foot;
-    if (TILE === 'a') foot = `<span class="lbl" data-msg></span><span class="ck-a">${['d','h','m','s'].map(k => `<span class="g" data-k="${k}">${roll(2)}<span class="u">${k}</span></span>`).join('')}</span>`;
-    if (TILE === 'b') foot = `<span class="lbl" data-msg></span><span class="ck-b" style="--n:3">${['d','h','m'].map(k => `<span data-k="${k}">${roll(2)}</span>`).join('')}${['Days','Hrs','Mins'].map(u => `<span class="u">${u}</span>`).join('')}</span><span class="bar"><i data-sec></i></span>`;
-    if (TILE === 'c') foot = `<span class="lbl" data-msg></span><span class="ck-c"><span data-words></span>${isNext ? `<span class="live num">${['h','m','s'].map((k, i) => `${i ? '<span class="sep">:</span>' : ''}<span data-k="${k}">${roll(2)}</span>`).join('')}</span>` : ''}</span><span class="bar"><i data-prog></i></span>`;
-    return `<div class="cell slot${isNext ? ' next' : ''}" data-day="${n}" role="img" aria-label="Day ${pad(n)}, not posted yet"><div class="in">${head}<div class="foot">${foot}</div></div></div>`;
+    const cls = `cell slot t-${TILE}${isNext ? ' next' : ''}`;
+    let inner;
+    if (TILE === 'd') inner = `
+      <div class="lrow"><span>${isNext ? 'Next up' : 'Opens'}</span><span class="v" data-opens></span></div>
+      <span class="huge">${pad(n)}</span>
+      <div class="ledger">
+        <div class="lrow"><span data-msg></span><span class="v">${u2('d')}<span class="u">d</span>${u2('h')}<span class="u">h</span>${u2('m')}<span class="u">m</span>${u2('s')}<span class="u">s</span></span></div>
+        <div class="lrow"><span>Through the wait</span><span class="v" data-pct></span></div>
+        <span class="bar"><i data-prog></i></span>
+      </div>`;
+    if (TILE === 'e') inner = `
+      <div class="head"><span class="lbl">Day ${pad(n)}</span><span class="chip2" data-chip></span></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="sub" data-msg></span>
+        <span class="val">${u2('d')}<span class="u">d</span>${u2('h')}<span class="sep">:</span>${u2('m')}<span class="sep">:</span>${u2('s')}</span>
+        <span class="sub" data-opens></span></div>
+      <span class="bars" aria-hidden="true">${Array.from({ length: TOTAL }, (_, i) => `<i class="${byDay[i + 1] ? 'done' : ''}${i + 1 === n ? ' me' : ''}"></i>`).join('')}</span>`;
+    if (TILE === 'f') inner = `
+      <div class="head2"><span class="num2">${pad(n)}</span><span class="status"><span data-msg></span><br><span data-opens></span></span></div>
+      <div class="board">${[['d', 'Days'], ['h', 'Hours'], ['m', 'Minutes'], ['s', 'Seconds']].map(([k, l]) => `<div class="lrow"><span>${l}</span><span class="v">${u2(k)}</span></div>`).join('')}</div>`;
+    return `<div class="${cls}" data-day="${n}" role="img" aria-label="Day ${pad(n)}, not posted yet"><div class="in">${inner}</div></div>`;
   }
   function updateSlot(s, now) {
     const pre = start === null, ms = pre ? s.n * DAY : due(s.n) - now, t = parts(ms), late = !pre && ms < 0;
-    const msg = pre ? 'Starts with day one' : late ? 'Overdue by' : 'Due in';
-    if (s.msg.textContent !== msg) s.msg.textContent = msg;
+    const set = (sel, txt) => { const el = s.el.querySelector(sel); if (el && el.textContent !== txt) el.textContent = txt; };
+    set('[data-msg]', pre ? 'Starts with day one' : late ? 'Overdue by' : 'Due in');
+    set('[data-opens]', pre ? `Day one + ${s.n - 1}` : TILE === 'e' ? `Opens ${shortDate(start + (s.n - 1) * DAY)}` : shortDate(start + (s.n - 1) * DAY));
+    const pct = pre ? 0 : Math.min(1, Math.max(0, (now - start) / (due(s.n) - start)));
+    set('[data-pct]', `${Math.floor(pct * 100)}%`);
+    const days = Math.max(1, Math.ceil(ms / DAY));
+    set('[data-chip]', s.el.classList.contains('next') ? 'Next' : pre ? `+${s.n} days` : late ? 'Late' : `In ${days} ${days === 1 ? 'day' : 'days'}`);
+    const b = s.el.querySelector('[data-prog]'); if (b) b.style.transform = `scaleX(${pct})`;
     ['d','h','m','s'].forEach(k => { const r = s.el.querySelector(`[data-k="${k}"] .roll`); if (r) setRoll(r, pad(t[k])); });
-    if (TILE === 'b') { const b = s.el.querySelector('[data-sec]'); if (b) b.style.transform = `scaleX(${pre ? 0 : (60 - t.s) / 60})`; }
-    if (TILE === 'c') {
-      const w = s.el.querySelector('[data-words]'), txt = pre ? `${s.n} ${s.n === 1 ? 'day' : 'days'} after day one starts` : late ? 'Running late' : t.d >= 1 ? `${t.d + (t.h || t.m || t.s ? 1 : 0)} days` : 'Today';
-      if (w.textContent !== txt) w.textContent = txt;
-      const b = s.el.querySelector('[data-prog]'); if (b) b.style.transform = `scaleX(${pre ? 0 : Math.min(1, Math.max(0, (now - start) / (due(s.n) - start)))})`;
-    }
   }
 
   // ---------- The wall ----------
@@ -602,15 +642,43 @@
     gsap.to('#remind .panel > *', { autoAlpha: 0, y: 10, duration: .2, stagger: .035 }); gsap.to('#remind .scrim', { autoAlpha: 0, duration: .3, onComplete: done });
   }
   $('remind-open').onclick = () => openRemind(false);
-  $$('[data-open]').forEach(el => { const go = () => openRemind(el.dataset.open === 'about' || MOBILE !== 'c');
-    el.addEventListener('click', go); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); });
+  // phone: the pill. Tap it and it opens into the story, the clock and the reminders
+  const pn = $('pn'), pnBtn = $('pn-btn'), pnBody = $('pn-body'), pnScrim = $('pn-scrim');
+  const remindRows = () => `
+    ${opt(webcal, ICON.cal, 'Add every drop to your calendar', 'One reminder a day. Updates itself.', true)}
+    <a class="small-link" href="${gcal}" target="_blank" rel="noopener">Google Calendar? Use this link instead</a>
+    ${S.instagram ? opt(S.instagram, logo('instagram'), 'Follow on Instagram', 'Every poster, as it lands') : ''}
+    ${S.linkedin ? opt(S.linkedin, logo('linkedin'), 'Follow on LinkedIn', 'The thinking behind each one') : ''}
+    ${opt((S.repo || '#') + '/subscription', ICON.eye, 'Watch on GitHub', 'Choose Custom, then Releases')}`;
+  pnBody.innerHTML = `<p>${ABOUT}</p>
+    <div style="display:flex;flex-direction:column;gap:8px"><span class="k" data-next-k></span>${bigClockHTML().replace('class="bigclock"', 'class="bigclock" data-pn-clock')}</div>
+    <div><span class="k">Get the next one</span>${remindRows()}</div>
+    <div class="row" style="justify-content:space-between"><span class="k">we give a sh*t.</span>${ast}</div>`;
+  let pnOpen = false;
+  function pnToggle(want = !pnOpen, focusRemind = false) {
+    if (want === pnOpen) return; pnOpen = want;
+    const from = pn.getBoundingClientRect();
+    pn.classList.toggle('open', want); pnBtn.setAttribute('aria-expanded', want); pnScrim.classList.toggle('on', want);
+    if (reduce) return;
+    // the pill grows from its own corner into the card, then its contents rise in
+    const to = pn.getBoundingClientRect();
+    gsap.fromTo(pn, { width: from.width, height: from.height }, { width: to.width, height: to.height, duration: .3, clearProps: 'width,height' });
+    if (want) {
+      gsap.fromTo(pnBody.children, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .45, stagger: .07, delay: .1 });
+      if (focusRemind) setTimeout(() => { const o = pnBody.querySelector('.opt'); if (o) o.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 350);
+    }
+  }
+  pnBtn.onclick = () => pnToggle();
+  pnScrim.onclick = () => pnToggle(false);
+  $('pn-bell').onclick = () => pnToggle(true, true);
+  addEventListener('keydown', e => { if (e.key === 'Escape' && pnOpen) pnToggle(false); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && remindOpen()) closeRemind(); });
 
   // One tick a second drives every clock
-  const nextEls = $$('[data-next-k]'), nextSmall = $$('[data-next-clock]');
+  const nextEls = $$('[data-next-k]'), nextSmall = $$('[data-next-clock]'), pnClock = document.querySelector('[data-pn-clock]');
   function setNext(label, t) {
     $('next-k').textContent = label; nextEls.forEach(el => { if (el.textContent !== label) el.textContent = label; });
-    setBig($('next-clock'), t);
+    setBig($('next-clock'), t); if (pnClock) setBig(pnClock, t);
     nextSmall.forEach(el => ['d','h','m','s'].forEach(k => setRoll(el.querySelector(`[data-k="${k}"] .roll`), pad(t[k]))));
   }
   function tick() {
@@ -722,7 +790,7 @@
 
   // ---------- Intro: sixty seconds, once per visit ----------
   let seen = false; try { seen = sessionStorage.getItem('tp-intro') === '1'; sessionStorage.setItem('tp-intro', '1'); } catch {}
-  const huds = ['.hud.tr', '.hud.bl', '.hud.br', '#hint', '.hud.zoom', '.m-island', '.m-peek', '.m-head', '.m-bar'];
+  const huds = ['.hud.tr', '.hud.bl', '.hud.br', '#hint', '.hud.zoom', '.pn', '.pn-bell', '.pn-clock'];
   function enter() {
     const vis = blocks.flatMap(b => [...b.el.children]).filter(el => {
       const r = el.getBoundingClientRect(); return r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight; })
