@@ -38,7 +38,7 @@ Source is `site/` (page, `site.config.js`, `vercel.json`). `scripts/build-site.j
 - Notifications: Buttondown emails subscribers from `feed.xml` (RSS to email). The page also links the RSS feed and "Watch on GitHub".
 
 ## Setup status
-- [ ] Site repo created: `[name to confirm]`. Attach it with `add_repo` (push access), clone it to `../thirty-posters-site`.
+- [x] Site repo: `JNBO2026/thirty-posters-site` (private), deploys from `main`. In a new session, if `../thirty-posters-site` is missing: `add_repo` it with push access, then `git clone https://github.com/JNBO2026/thirty-posters-site ../thirty-posters-site`. Do this before the day starts, not mid-timer.
 - [ ] Vercel project imported from the site repo. URL into `site/site.config.js`.
 - [ ] Buttondown account. Username into `site/site.config.js`. RSS automation pointed at `<site url>/feed.xml`.
 - [ ] This repo's About > Website set to the Vercel URL.

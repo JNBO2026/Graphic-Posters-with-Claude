@@ -6,7 +6,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 SITE="${SITE_REPO_DIR:-../thirty-posters-site}"
 [ -d "$SITE/.git" ] || { echo "No site repo at $SITE. Clone it first."; exit 1; }
-rsync -a --delete --exclude .git --exclude README.md dist/ "$SITE/"
+# mirror dist/ into the site repo, keeping its .git and README.md
+find "$SITE" -mindepth 1 -maxdepth 1 ! -name .git ! -name README.md -exec rm -rf {} +
+cp -R dist/. "$SITE/"
 cd "$SITE"
 git add -A
 git diff --cached --quiet && { echo "site: nothing changed"; exit 0; }
