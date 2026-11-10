@@ -55,7 +55,7 @@ The challenge **has not started**. `days/` holds only `_template/`. Day 01's `st
 - `.github/workflows/release.yml`: a GitHub Release per new day (poster, MP4, how it was made, skills). This is the notification route.
 
 ### Environment
-- Network allowlist on the "A Poster a day with Claude" environment: the Blame Opal system host, the Vercel site, and James's 10 UI reference sites (canvasui.dev, vgpu.sh, threeui.com, www.usefragments.com, ui.shadcn.com, www.kibo-ui.com, magicui.design, heroui.com, smoothui.dev, blocks.so).
+- Network allowlist on the "A Poster a day with Claude" environment: the Blame Opal system host, the Vercel site, `media.flora.ai` and `export-download.canva.com` (so generated images can be downloaded into a poster; added after the rehearsal found them blocked), and James's 10 UI reference sites (canvasui.dev, vgpu.sh, threeui.com, www.usefragments.com, ui.shadcn.com, www.kibo-ui.com, magicui.design, heroui.com, smoothui.dev, blocks.so).
 - github.com web pages are blocked; git over HTTPS works (used by verify-skill.sh). `gh` is for search only.
 - The Bash safety check sometimes rejects long heredoc python commands as "possible rm"; write the script to the scratchpad and run the file instead.
 - Playwright Chromium can't play H.264, so video playback can't be verified headless (check `paused`, `src`, `error` instead).
@@ -95,6 +95,7 @@ The challenge **has not started**. `days/` holds only `_template/`. Day 01's `st
 - [ ] This repo's About > Website: set to https://thirty-posters-site.vercel.app (James, in GitHub settings).
 - [ ] Real-device checks: video playback, pinch zoom, swipe, the sheet drag, frame rate on a cheap Android.
 - [ ] Missing logos (see the logo library above): James to supply.
+- [x] Full rehearsal (10 Nov): two test days (a still and an animated poster) through every stage in a throwaway copy. Fixed: the site build crashed on a day with meta.json but no render yet; share links now open the poster straight away (skipping the intro); the copy and Release links now use `/d/NN` so they show that poster as the link preview; Flora and Canva downloads were blocked.
 - [ ] Day 01 has not happened. When it does, follow CLAUDE.md exactly.
 
 ## How to get context back fast

@@ -4,7 +4,7 @@
 const fs = require('fs'), path = require('path'), vm = require('vm'), { execFileSync } = require('child_process');
 const day = process.argv[2], root = path.resolve(__dirname, '..'), dir = path.join(root, 'days', day);
 const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync(path.join(root, 'site', 'site.config.js'), 'utf8'), ctx);
-const LINK = `${ctx.window.SITE.url}#day-${day}`;
+const LINK = `${ctx.window.SITE.url}d/${day}`;
 const exp = path.join(dir, 'social', 'export'), copy = path.join(dir, 'copy');
 const shots = fs.readdirSync(exp).sort();
 const pick = (fmt, theme) => shots.filter(f => f.includes(`-${fmt}-${theme}.png`)).map(f => path.join(exp, f));

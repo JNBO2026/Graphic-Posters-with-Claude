@@ -2,7 +2,7 @@
 
 Three zips, sent to you in the chat when the day is done. They're also saved in `days/NN/handover/` (kept out of git, so rebuild with `node scripts/package-day.js NN` if you need them again).
 
-Every link in the copy is the site address with that day's deep link (`/#day-NN`), which opens straight onto the poster and its prompt.
+Every link in the copy is the day's share link (`/d/NN`): it previews that poster when pasted into LinkedIn or Instagram, then opens straight onto the poster and its prompt.
 
 ## Day-NN_LinkedIn.zip
 

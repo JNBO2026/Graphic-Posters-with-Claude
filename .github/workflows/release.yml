@@ -35,7 +35,7 @@ jobs:
                 jq -r '.skills[] | "- [\(.name)](\(.url))"' "$meta"
                 echo
               fi
-              echo "See it on the wall and copy the prompt: $(grep -o "url: '[^']*'" site/site.config.js | cut -d"'" -f2)#day-$d"
+              echo "See it on the wall and copy the prompt: $(grep -o "url: '[^']*'" site/site.config.js | cut -d"'" -f2)d/$d"
             } > notes.md
             files=("days/$d/poster.jpg#Day $d poster (A3)")
             [ -f "days/$d/poster.mp4" ] && files+=("days/$d/poster.mp4#Day $d poster, animated (MP4)")

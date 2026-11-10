@@ -880,7 +880,8 @@
       .fromTo(vis, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .56, stagger: { amount: Math.min(1.4, vis.length * .07) }, clearProps: 'opacity,visibility,transform' })
       .fromTo(huds, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .56, stagger: .07, clearProps: 'transform' }, '-=.6');
   }
-  if (reduce) { $('intro').remove(); fromHash(); }
+  // a shared link (/d/NN lands on #day-NN) skips the intro and opens the poster straight away
+  if (reduce || /^#day-\d{2}$/.test(location.hash)) { $('intro').remove(); fromHash(); }
   else if (seen) { $('intro').remove(); enter(); }
   else {
     gsap.set(huds, { autoAlpha: 0 });

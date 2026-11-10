@@ -20,7 +20,8 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 const days = fs.readdirSync(path.join(root, 'days')).filter(d => /^\d{2}$/.test(d)).sort();
 const posters = days.map(d => {
   const dir = path.join(root, 'days', d);
-  if (!fs.existsSync(path.join(dir, 'meta.json'))) return null;
+  // a day still being made (no meta or no render yet) stays an empty slot
+  if (!fs.existsSync(path.join(dir, 'meta.json')) || !fs.existsSync(path.join(dir, 'poster.jpg'))) return null;
   const meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
   const prompt = fs.readFileSync(path.join(dir, 'prompt.md'), 'utf8').trim();
   cp(`days/${d}/poster.jpg`, `posters/${d}/poster.jpg`); cp(`days/${d}/thumb.jpg`, `posters/${d}/thumb.jpg`);
