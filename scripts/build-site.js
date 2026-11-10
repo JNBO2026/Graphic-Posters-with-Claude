@@ -24,7 +24,8 @@ const posters = days.map(d => {
   const meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
   const prompt = fs.readFileSync(path.join(dir, 'prompt.md'), 'utf8').trim();
   cp(`days/${d}/poster.jpg`, `posters/${d}/poster.jpg`); cp(`days/${d}/thumb.jpg`, `posters/${d}/thumb.jpg`);
-  return { ...meta, prompt, thumb: `posters/${d}/thumb.jpg`, image: `posters/${d}/poster.jpg` };
+  const video = fs.existsSync(path.join(dir, 'poster.mp4')) ? (cp(`days/${d}/poster.mp4`, `posters/${d}/poster.mp4`), `posters/${d}/poster.mp4`) : undefined;
+  return { ...meta, prompt, thumb: `posters/${d}/thumb.jpg`, image: `posters/${d}/poster.jpg`, video };
 }).filter(Boolean);
 
 fs.mkdirSync(path.join(dist, 'data'), { recursive: true });

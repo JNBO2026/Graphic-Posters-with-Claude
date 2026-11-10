@@ -39,10 +39,13 @@ Day-NN_Instagram/
 ```
 Day-NN_Poster/
 ├── poster-A3.jpg             2480 × 3508, the master (A3 ratio)
+├── poster-A3.mp4             animated posters only: 1240 × 1754 MP4, loops
 ├── prompt.txt                your prompt, as typed
 ├── how-it-was-made.txt       code only, or which generative model made what
 └── link.txt                  its page on the site
 ```
+
+Animated posters also get `motion/poster.mp4` in the LinkedIn and Instagram zips, ready to post as a video or a Reel. The branded frames stay still.
 
 ## And without you doing anything
 

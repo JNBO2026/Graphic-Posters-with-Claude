@@ -21,6 +21,7 @@ function pack(name, files) { // files: [relative path, Buffer | source path]
   execFileSync('zip', ['-qr', path.join(out, name + '.zip'), name], { cwd: tmp });
 }
 const D = `Day-${day}`;
+const VIDEO = path.join(dir, 'poster.mp4'), motion = fs.existsSync(VIDEO) ? [['motion/poster.mp4', VIDEO]] : [];
 for (const f of fs.readdirSync(copy)) if (/\[TEMPLATE/.test(fs.readFileSync(path.join(copy, f), 'utf8'))) throw new Error(`copy/${f} still has template text`);
 
 pack(`${D}_LinkedIn`, [
@@ -29,6 +30,7 @@ pack(`${D}_LinkedIn`, [
   ['first-comment.txt', text('linkedin-first-comment.txt')],
   ['how-to-post.txt', text('linkedin-how-to-post.txt')],
   ['dark-version/post-image-dark.png', pick('li-portrait', 'dark')[0]],
+  ...motion,
 ]);
 pack(`${D}_Instagram`, [
   ...pick('ig-post', 'light').map((f, i) => [`Feed-carousel/${i + 1}.png`, f]),
@@ -38,11 +40,13 @@ pack(`${D}_Instagram`, [
   ['how-to-post.txt', text('instagram-how-to-post.txt')],
   ...pick('ig-post', 'dark').map((f, i) => [`dark-version/Feed-carousel/${i + 1}.png`, f]),
   ['dark-version/Story/story.png', pick('ig-story', 'dark')[0]],
+  ...motion,
 ]);
 pack(`${D}_Poster`, [
   ['poster-A3.jpg', path.join(dir, 'poster.jpg')],
+  ...(motion.length ? [['poster-A3.mp4', VIDEO]] : []),
   ['prompt.txt', fs.readFileSync(path.join(dir, 'prompt.md'), 'utf8')],
-  ['how-it-was-made.txt', (() => { const m = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')); if (!m.process) throw new Error('meta.json has no process'); return m.process + (m.tools ? '\n\nTools: ' + m.tools.join(', ') : '') + '\n'; })()],
+  ['how-it-was-made.txt', (() => { const m = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')); if (!m.process) throw new Error('meta.json has no process'); return m.process.replace(/\[\[([^\]]+)\]\]/g, '$1') + (m.tools ? '\n\nTools: ' + m.tools.join(', ') : '') + '\n'; })()],
   ['link.txt', LINK + '\n'],
 ]);
 fs.rmSync(tmp, { recursive: true, force: true });

@@ -28,9 +28,11 @@ jobs:
               echo
               sed 's/^/> /' "days/$d/prompt.md"
               echo
-              echo "**How it was made:** $(jq -r '.process // ""' "$meta")"
+              echo "**How it was made:** $(jq -r '.process // "" | gsub("\\[\\[(?<n>[^\\]]+)\\]\\]"; .n)' "$meta")"
               echo
               echo "See it on the wall and copy the prompt: $(grep -o "url: '[^']*'" site/site.config.js | cut -d"'" -f2)#day-$d"
             } > notes.md
-            gh release create "$tag" "days/$d/poster.jpg#Day $d poster (A3)" --title "Day $d: $title" --notes-file notes.md --target "$GITHUB_SHA"
+            files=("days/$d/poster.jpg#Day $d poster (A3)")
+            [ -f "days/$d/poster.mp4" ] && files+=("days/$d/poster.mp4#Day $d poster, animated (MP4)")
+            gh release create "$tag" "${files[@]}" --title "Day $d: $title" --notes-file notes.md --target "$GITHUB_SHA"
           done
