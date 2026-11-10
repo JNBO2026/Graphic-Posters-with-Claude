@@ -36,17 +36,16 @@
   #canvas { position:fixed; inset:0; overflow:hidden; cursor:grab; touch-action:none; }
   #canvas.drag { cursor:grabbing; }
   @media (hover:hover) and (pointer:fine) { #canvas, #canvas * { cursor:none !important; } }
-  .block { position:absolute; left:0; top:0; display:grid; grid-template-columns:repeat(6, var(--tw)); grid-auto-rows:var(--th); will-change:transform; }
+  .block { position:absolute; left:0; top:0; display:grid; grid-template-columns:repeat(6, var(--tw)); grid-auto-rows:var(--th); gap:2px; padding:1px; will-change:transform; }
   .cell { position:relative; width:var(--tw); height:var(--th); overflow:hidden; border:0; padding:0; text-align:left;
-          background:var(--paper); box-shadow:inset 0 0 0 1px var(--line); display:block; }
+          background:var(--paper); border-radius:var(--radius); display:block; isolation:isolate; }
   .cell img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; user-select:none; }
   .cell .in { position:absolute; inset:0; padding:12px; display:flex; flex-direction:column; justify-content:space-between; }
   .cell .top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .cell .big { font:600 64px/64px 'Instrument Sans'; color:var(--line2); letter-spacing:-.01em; }
   .cell .note { font:400 14px/18px 'Instrument Sans'; color:var(--sec); }
-  .cell.next { background:var(--ink); color:var(--on-ink); box-shadow:none; }
-  .cell.next .meta, .cell.next .note { color:color-mix(in srgb, var(--on-ink) 62%, transparent); }
-  .cell.next .big { color:color-mix(in srgb, var(--on-ink) 24%, transparent); }
+  .cell.next { background:var(--raised); }
+  .cell.next .big { color:var(--ink); }
   .dot { width:8px; height:8px; border-radius:50%; background:currentColor; display:inline-block; }
   .cell.next .dot { animation:pulse 1.2s ease-in-out infinite alternate; }
   @keyframes pulse { from { opacity:1 } to { opacity:.25 } }
@@ -134,6 +133,12 @@
   .well pre { font:400 16px/24px 'Instrument Sans'; white-space:pre-wrap; word-wrap:break-word; }
   .icon { width:40px; height:40px; border-radius:50%; border:0; background:var(--raised); color:var(--ink); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
   .nav { display:flex; gap:8px; margin-top:auto; }
+  .made { display:flex; flex-direction:column; gap:8px; padding:0 16px; }
+  .made p { font:400 14px/18px 'Instrument Sans'; color:var(--sec); }
+  .tools { display:flex; flex-wrap:wrap; gap:6px; }
+  .tools span { font:500 12px/14px 'Instrument Sans'; padding:6px 10px; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--line2); }
+  .demo { left:50%; top:16px; transform:translateX(-50%); padding:10px 16px; border-radius:999px; font:500 14px/16px 'Instrument Sans'; box-shadow:0 0 0 2px var(--ground); }
+  @media (max-width:760px) { .demo { top:64px; } }
   .fly { position:fixed; z-index:40; object-fit:cover; pointer-events:none; }
 
   /* ---------- Phone ---------- */
@@ -209,6 +214,7 @@
       <h2 id="v-title"></h2>
       <p class="note" id="v-note"></p>
       <div class="well"><span class="k">The prompt, as typed</span><pre id="v-prompt"></pre></div>
+      <div class="made" id="v-made-box"><span class="k">How it was made</span><p id="v-made"></p><div class="tools" id="v-tools"></div></div>
       <div class="row">
         <button class="btn go" id="v-copy">Copy the prompt</button>
         <a class="btn ghost" id="v-dl" download>Download poster</a>
@@ -226,6 +232,7 @@
 <script src="vendor/InertiaPlugin.min.js"></script>
 <script src="site.config.js"></script>
 <script src="data/posters.js"></script>
+<script>if (/[?&]demo\b/.test(location.search)) document.write('<script src="demo/posters.js"><\/script>');</script>
 <script>
 (() => {
   gsap.registerPlugin(Draggable, InertiaPlugin);
@@ -249,7 +256,7 @@
 
   // The schedule: day 1 starts when the first prompt lands, then one every 24 hours
   const start = S.start ? Date.parse(S.start) : (byDay[1] && byDay[1].started_at ? Date.parse(byDay[1].started_at) : null);
-  const due = n => start + (n - 1) * DAY;
+  const due = n => start + n * DAY;
   const nextDay = P.length < TOTAL ? (L ? L.day + 1 : 1) : null;
   const minuteLoop = now => '000000' + pad(59 - Math.floor(now / 1000) % 60);
 
@@ -271,7 +278,7 @@
   function sizes() {
     const w = innerWidth;
     TW = w <= 760 ? 160 : w <= 1200 ? 210 : 248; TH = Math.round(TW * 1.4142 / 2) * 2;
-    BW = TW * COLS; BH = TH * ROWS;
+    BW = (TW + 2) * COLS; BH = (TH + 2) * ROWS;
     document.documentElement.style.setProperty('--tw', TW + 'px'); document.documentElement.style.setProperty('--th', TH + 'px');
   }
   function cellHTML(n) {
@@ -335,10 +342,10 @@
   const qx = gsap.quickTo(cur, 'x', { duration: .2, ease: E }), qy = gsap.quickTo(cur, 'y', { duration: .2, ease: E });
   function curTag(t) { if (tagEl.textContent === t) return; tagEl.textContent = t; if (!reduce) gsap.fromTo(tagEl, { scale: .92 }, { scale: 1, duration: .2 }); }
   function slotTag(n) {
-    if (start === null) return n === 1 ? 'Day one. Any minute.' : `Day ${pad(n)}. Not yet.`;
+    if (start === null) return n === 1 ? 'Day one. Any minute.' : `Day ${pad(n)}. ${n} days once it starts.`;
     const ms = due(n) - Date.now();
-    if (ms < 0) return `Day ${pad(n)} is late`;
-    return `Day ${pad(n)} in ${ms > DAY ? Math.ceil(ms / DAY) + ' days' : Math.max(1, Math.ceil(ms / 36e5)) + ' hrs'}`;
+    if (ms < 0) return `Day ${pad(n)} is overdue`;
+    return `Day ${pad(n)} due in ${ms > DAY ? Math.ceil(ms / DAY) + ' days' : Math.max(1, Math.ceil(ms / 36e5)) + ' hrs'}`;
   }
   if (fine) {
     cur.classList.add('off');
@@ -348,7 +355,6 @@
       cur.classList.toggle('off', !onCanvas || dlg.open);
       if (!onCanvas || canvas.classList.contains('drag')) return;
       const c = e.target.closest('.cell');
-      cur.classList.toggle('inv', !!(c && c.classList.contains('next')));
       if (!c) return curTag('Drag');
       curTag(c.classList.contains('posted') ? `Open day ${pad(+c.dataset.day)}` : slotTag(+c.dataset.day));
     });
@@ -357,6 +363,7 @@
   }
 
   // ---------- The HUD ----------
+  if (window.DEMO) { const d = document.createElement('div'); d.className = 'hud demo glass'; d.textContent = 'Preview with example data'; document.body.appendChild(d); }
   $('count').textContent = `${pad(P.length)} of ${TOTAL} posted`;
   $('prog').innerHTML = Array.from({ length: TOTAL }, (_, i) => `<i class="${byDay[i + 1] ? 'on' : ''}"></i>`).join('');
   $('gh').href = (S.repo || '#') + '/subscription';
@@ -383,14 +390,14 @@
       setClock(nextClock, minuteLoop(now));
     } else {
       const ms = due(nextDay) - now;
-      $('next-k').textContent = ms >= 0 ? `Day ${pad(nextDay)} lands in` : `Day ${pad(nextDay)} is running late by`;
+      $('next-k').textContent = ms >= 0 ? `Day ${pad(nextDay)} is due in` : `Day ${pad(nextDay)} is overdue by`;
       $('next-note').textContent = ms >= 0 ? 'Watch the repo and it comes to you.' : 'Blame the prompt.';
       setClock(nextClock, split(Math.abs(ms)));
     }
     slots.forEach(s => {
       let str, msg;
-      if (start === null) { str = s.n === 1 ? minuteLoop(now) : '00000000'; msg = s.n === 1 ? '60 seconds. Then hands off.' : 'Waiting on day one'; }
-      else { const ms = due(s.n) - now; str = split(Math.abs(ms)); msg = ms >= 0 ? 'Lands in' : 'Running late by'; }
+      if (start === null) { str = split(s.n * DAY); msg = 'Starts with day one'; }
+      else { const ms = due(s.n) - now; str = split(Math.abs(ms)); msg = ms >= 0 ? 'Due in' : 'Overdue by'; }
       setClock(s.clock, str); if (s.msg.textContent !== msg) s.msg.textContent = msg;
     });
   }
@@ -403,6 +410,8 @@
     $('v-img').src = p.image; $('v-img').alt = `Day ${pad(p.day)} poster, ${p.title}`;
     $('v-day').textContent = `Day ${pad(p.day)} of ${TOTAL} · ${fmtDate(p.date)}`;
     $('v-title').textContent = p.title; $('v-note').textContent = p.note || '';
+    $('v-made').textContent = p.process || ''; $('v-made-box').hidden = !p.process;
+    $('v-tools').innerHTML = (p.tools || []).map(t => `<span>${esc(t)}</span>`).join('');
     $('v-prompt').textContent = p.prompt; $('v-dl').href = p.image; $('v-copy').textContent = 'Copy the prompt';
     $('v-prev').hidden = $('v-next').hidden = P.length < 2;
     history.replaceState(null, '', '#day-' + pad(p.day));

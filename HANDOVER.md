@@ -40,6 +40,7 @@ Day-NN_Instagram/
 Day-NN_Poster/
 ├── poster-A3.jpg             2480 × 3508, the master (A3 ratio)
 ├── prompt.txt                your prompt, as typed
+├── how-it-was-made.txt       code only, or which generative model made what
 └── link.txt                  its page on the site
 ```
 

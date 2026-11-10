@@ -42,6 +42,7 @@ pack(`${D}_Instagram`, [
 pack(`${D}_Poster`, [
   ['poster-A3.jpg', path.join(dir, 'poster.jpg')],
   ['prompt.txt', fs.readFileSync(path.join(dir, 'prompt.md'), 'utf8')],
+  ['how-it-was-made.txt', (() => { const m = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')); if (!m.process) throw new Error('meta.json has no process'); return m.process + (m.tools ? '\n\nTools: ' + m.tools.join(', ') : '') + '\n'; })()],
   ['link.txt', LINK + '\n'],
 ]);
 fs.rmSync(tmp, { recursive: true, force: true });
