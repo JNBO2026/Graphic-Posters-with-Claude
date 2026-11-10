@@ -1,0 +1,99 @@
+# Thirty posters: project context
+
+The full story of this project so far, for any session that picks it up cold (including after a conversation is compacted). `CLAUDE.md` is the operating manual; this file is the why and the history. Read both.
+
+Last updated: 10 Nov 2026, end of the set-up phase, before day one.
+
+---
+
+## What this is
+
+James (Blame Opal, London; Instagram `blameopal`, LinkedIn `jamesnawka`) is running a public 30 day challenge: **30 posters in 30 minutes**. Each day he opens a Claude Code session, sends "day N", gets 60 seconds to type one prompt, then is hands off. Claude makes the poster, packages the socials, publishes it to the website and hands over three zips. Whatever comes back gets posted as is.
+
+### His rules (non-negotiable)
+1. Generative AI can be used (image models on the connected MCPs: Canva, Figma, Flora).
+2. 60 seconds to write the prompt.
+3. He can only answer questions Claude asks. No re-prompting or visual direction afterwards.
+4. Hands off: Claude makes every decision the prompt doesn't.
+5. Post it as is.
+
+During a challenge day: never offer options to pick from. Ask only if genuinely blocked. During set-up and website work (like this session) he does want options, presented on the review page.
+
+### The daily trigger (see CLAUDE.md for the exact steps)
+"day N" → reply "Day NN. You have 60 seconds from now. Go." and start a background `sleep 60` → on wake send "STOP. Hit enter." plus a push notification → his next message is the prompt, verbatim → make it → hand over the three zips and the live link.
+
+The challenge **has not started**. `days/` holds only `_template/`. Day 01's `started_at` will set the whole schedule on the site.
+
+---
+
+## Where everything lives
+
+| Thing | Where |
+|---|---|
+| This repo (pipeline, days, site source) | `JNBO2026/Graphic-Posters-with-Claude`, branch `claude/exciting-tesla-8tm4yz` (it is also the default branch) |
+| Site repo (built output only) | `JNBO2026/thirty-posters-site` (private), branch `main`, cloned at `../thirty-posters-site`. Never edit by hand; `scripts/publish-site.sh` mirrors `dist/` into it |
+| Live site | https://thirty-posters-site.vercel.app (Vercel deploys the site repo on push) |
+| Example data version | https://thirty-posters-site.vercel.app/?demo (three demo posters, one animated; shows a "Preview with example data" banner; never on the real wall) |
+| Review page (option picking) | https://thirty-posters-site.vercel.app/review (not linked, noindex) |
+| Per-day share previews | `/d/NN` pages built by `build-site.js`, each with that poster as its link preview |
+| Design system kit | `system/` (copy of the Blame Opal template kit from the Blame Opal Design System MCP). Don't edit |
+| Socials templates | `days/_template/social/social.html` (Blame Opal instagram and linkedin kit) |
+| Copy templates | `days/_template/copy/*.txt` |
+
+### Scripts
+- `scripts/build-day.sh NN`: render poster (+ MP4 if animated) → render socials light and dark → pack zips → build site.
+- `scripts/render-poster.js NN`: `poster.jpg` (2x), `thumb.jpg` (1116 wide, for zoom), `thumb-s.jpg` (558 wide, the wall), `poster.mp4` for posters with `<meta name="poster-motion">` (frames captured deterministically, encoded with FFmpeg).
+- `scripts/render-social.js NN`: mounts the poster into the template frames and exports PNGs.
+- `scripts/package-day.js NN`: `Day-NN_LinkedIn.zip`, `Day-NN_Instagram.zip`, `Day-NN_Poster.zip` (see HANDOVER.md). Refuses to run if copy files still contain template text.
+- `scripts/build-site.js`: builds `dist/` (site, posters, data, share pages, OG tags).
+- `scripts/publish-site.sh "message"`: pushes `dist/` to the site repo.
+- `scripts/verify-skill.sh URL`: checks a public skill exists before it's credited.
+- `scripts/make-tool-icons.py <simple-icons package>`: regenerates `site/vendor/tool-icons.js` from `scripts/tools.json`.
+- `.github/workflows/release.yml`: a GitHub Release per new day (poster, MP4, how it was made, skills). This is the notification route.
+
+### Environment
+- Network allowlist on the "A Poster a day with Claude" environment: the Blame Opal system host, the Vercel site, and James's 10 UI reference sites (canvasui.dev, vgpu.sh, threeui.com, www.usefragments.com, ui.shadcn.com, www.kibo-ui.com, magicui.design, heroui.com, smoothui.dev, blocks.so).
+- github.com web pages are blocked; git over HTTPS works (used by verify-skill.sh). `gh` is for search only.
+- The Bash safety check sometimes rejects long heredoc python commands as "possible rm"; write the script to the scratchpad and run the file instead.
+- Playwright Chromium can't play H.264, so video playback can't be verified headless (check `paused`, `src`, `error` instead).
+
+---
+
+## Decisions made (and why)
+
+### Website (site/index.html)
+- **An endless, draggable, zoomable wall** of 30 A3 slots (GSAP 3.13 Draggable + Inertia, vendored). Bento: paper tiles, 10px corners, 2px black seams; four-pointed stars where corners meet. Trackpad pans 1:1; mouse wheel gets a short glide; pinch, ctrl/cmd-scroll, the zoom chip or +/- to zoom (up to a poster at ~86% of the viewport height).
+- **Empty slot tiles: F, Departures** (round two pick). Day number and status ("Opens 11 Nov", "Next, opens", "Starts with day one", "Overdue by"), then one hairline row each for days, hours, minutes, seconds. Countdown to the end of each day's 24 hours: day N is due at day 01 start + N × 24h.
+- **Hover on posted posters: C, ledger card** (round five pick). Title, then rows: Prompt (word count), Made with, Posted. Made with = "Code only"; or the model with its tool's logo ("Flux 1.1 Pro"); "Code + model" when both; "first model +N" for several. `meta.made` overrides with a short label.
+- **Motion posters** autoplay muted on the wall while on screen and pause off screen; labelled by day only.
+- **Poster view**: grows out of the tile; arrows sit in gutters beside the poster; count under it; on phone a full-screen card you can swipe anywhere. Prompt, "How it was made" with inline tool lozenges (logos from Simple Icons, CC0; lettered badge otherwise; no duplicates between inline and list), "Skills used" (public skills only, linked), Copy the prompt (adds "Include @BlameOpal somewhere in the design as a subtle credit for where this prompt came from."), downloads (video + still for motion posters).
+- **Desktop HUD**: the about module bottom left ("30 posters in 30 minutes.", about text, Instagram and LinkedIn pills, "we give a sh*t."), a green "Get notified on GitHub" tab tucked into the bottom edge bottom right, a hint and zoom chip bottom centre. No posted counter, no second clock (removed at James's request).
+- **Phone: L** (round four pick). The logo and a burger on a floating bar at the bottom; the burger opens a bottom sheet (about, socials, Get notified on GitHub). No clocks outside the wall.
+- **Notifications: GitHub only** (Watch → Custom → Releases). James rejected email (Buttondown costs money for RSS-to-email), RSS, and a calendar subscription (calendars are too busy).
+- **Removed at his request**: the share-to-socials panel, the posted counter, the second clock, the calendar, RSS, the top-left lockup chip, the "Latest poster" recap.
+- **Intro**: a 60 → 00 counter once per session, then tiles rise in.
+- **Motion rules**: one easing, cubic-bezier(.2,.7,.2,1); 200ms hovers, 300ms close, 450ms open; transform and opacity only (nothing animates width, height, top or left); stagger only infrequent entrances; 0.96 press.
+- **Performance** (measured, iPhone 13 profile, CPU 4x slower): 14,236 → 5,182 DOM nodes (one text node per rolling digit), clocks only update on screen, render only when the wall moves, nothing ticks in hidden tabs, 558px thumbs with 1116px only when zoomed, no backdrop blur on poster chips, font preloaded. 35 → 51fps dragging, longest task 892 → 334ms. Desktop 60fps.
+- The design options not picked (tiles D and E; phone and hover variants) are still in code behind `?tile=`, `?mobile=`, `?hover=` for reference. Defaults live in `site/site.config.js`.
+
+### Brand and voice
+- Socials are in the Blame Opal system (framed bento, Instrument Sans, one acid #67FF67 per view, sentence case, UK English, no em or en dashes). The **posters** follow the prompt, not the brand.
+- Copy in James's voice: load `james-tone-of-voice` and `blame-opal`, run the Blame Opal `check` tool. `we give a sh*t.` only as a sign-off, lower case, asterisk.
+- Instagram is `blameopal` everywhere.
+
+### What James likes and dislikes (from the review rounds)
+- Likes: Swiss and fintech typography (hairline rows, label left and value right, tabular figures, big numerals), edge over calm, minimal phone chrome, options shown live on a review page with one copy button.
+- Dislikes: duplicated information (day number twice, tags twice), too many countdowns, too much text on hover, controls on video, anything that feels janky or slow, calendar reminders, social sharing panels.
+- He reviews on his phone a lot. Check every change at iPhone size.
+
+---
+
+## Open items
+- [ ] This repo's About > Website: set to https://thirty-posters-site.vercel.app (James, in GitHub settings).
+- [ ] Real-device checks: video playback, pinch zoom, swipe, the sheet drag, frame rate on a cheap Android.
+- [ ] Day 01 has not happened. When it does, follow CLAUDE.md exactly.
+
+## How to get context back fast
+1. Read `CLAUDE.md` (operating manual) and this file.
+2. `git log --oneline | head -40` for the history of changes.
+3. Open the review page and `?demo` to see the current state.

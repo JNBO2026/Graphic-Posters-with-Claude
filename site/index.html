@@ -62,6 +62,10 @@
   .o-c .card { gap:0; padding:10px 12px 4px; }
   .o-c .card b { margin-bottom:6px; }
   .o-c .lrow:last-child { box-shadow:none; }
+  .o-c .mw { display:inline-flex; align-items:center; gap:6px; min-width:0; max-width:72%; }
+  .o-c .mw span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .o-c .mw svg, .o-c .mw b { width:14px; height:14px; flex:none; }
+  .o-c .mw b { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:var(--ink); color:var(--paper); font:600 9px/9px 'Instrument Sans'; }
   .cell img { transition:transform 450ms var(--ease); }
   @media (hover:hover) { .cell.posted:hover .over, .cell.posted:focus-visible .over { opacity:1; } .cell.posted:hover .over .card, .cell.posted:focus-visible .over .card { transform:none; }
     .cell.posted:hover img, .cell.posted:hover video { transform:scale(1.03); } }
@@ -495,7 +499,17 @@
   }
   // what a posted poster says on hover
   const words = p => String(p.prompt).trim().split(/\s+/).length;
-  const madeWith = p => /^code only/i.test(p.process || '') ? 'Code only' : ((p.tools || []).find(t => t.includes(':')) || 'Gen AI').split(':')[0];
+  // Made with: code only, the model (with its tool's logo), code plus a model, or the first model plus a count. meta.made overrides it
+  function madeWith(p) {
+    const models = (p.tools || []).filter(t => t.includes(':')).map(t => ({ tool: t.split(':')[0].trim(), model: t.split(':').slice(1).join(':').trim() }));
+    const codeOnly = /^code only/i.test(p.process || '');
+    const icon = m => { const slug = m && TI.tools[m.tool.toLowerCase()]; return slug && TI.paths[slug] ? logo(slug) : m ? `<b aria-hidden="true">${esc(m.tool[0].toUpperCase())}</b>` : ''; };
+    if (p.made) return { text: p.made, icon: icon(models[0]) };
+    if (codeOnly || !models.length) return { text: codeOnly ? 'Code only' : 'Code', icon: '' };
+    const mixed = /\[\[(HTML|CSS|SVG|JavaScript|Canvas|WebGL|GSAP|Three\.js|p5\.js)/i.test(p.process || '');
+    const first = models[0].model || models[0].tool, more = models.length > 1 ? ` +${models.length - 1}` : '';
+    return { text: (mixed ? 'Code + ' : '') + first + more, icon: icon(models[0]) };
+  }
   const snippet = p => { const w = String(p.prompt).trim().split(/\s+/); return w.slice(0, 12).join(' ') + (w.length > 12 ? '…' : ''); };
   function hoverHTML(p) {
     const n = pad(p.day);
@@ -503,7 +517,7 @@
     if (HOVER === 'b') return `<span class="over o-b"><span class="meta">Day ${n} · ${words(p)} words in 60 seconds</span><q>${esc(snippet(p))}</q></span>`;
     if (HOVER === 'c') return `<span class="over o-c"><span class="card"><b>${esc(p.title)}</b>
       <span class="lrow"><span>Prompt</span><span class="v">${words(p)} words</span></span>
-      <span class="lrow"><span>Made with</span><span class="v">${esc(madeWith(p))}</span></span>
+      <span class="lrow"><span>Made with</span>${(m => `<span class="v mw">${m.icon}<span>${esc(m.text)}</span></span>`)(madeWith(p))}</span>
       <span class="lrow"><span>Posted</span><span class="v">${shortDate(Date.parse(p.date + 'T12:00:00'))}</span></span></span></span>`;
     return '';
   }

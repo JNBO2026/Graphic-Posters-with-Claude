@@ -1,5 +1,7 @@
 # Thirty posters: how this repo runs
 
+Read `PROJECT_CONTEXT.md` too: the history, every decision James has made and why, where everything lives, and what's still open.
+
 James is doing a 30 day challenge. Each day he opens a session and types one prompt. Claude makes a poster from it, packages the socials and publishes it to the site.
 
 ## The rules (his, non-negotiable)
@@ -27,6 +29,7 @@ The day number comes from his message. The date is today's date when he sends it
 2. `days/NN/meta.json`: `day`, `date` (YYYY-MM-DD), `started_at` (ISO time his prompt message arrived, UTC), `title`, `note` (one line on the idea), `process` and `tools`. Day 01's `started_at` sets the whole schedule on the site: day N is due by the end of its 24 hours, day 01 `started_at` + N × 24 hours, so day 01 shows 24 hours and day 30 shows 30 days, and every empty slot counts down to it.
    - `process`: two or three plain sentences on how the poster was actually made, shown under the prompt on the site, in the release and in the poster zip. Name every generative model used, exactly (tool and model, e.g. "Flora, Flux 1.1 Pro"), and what it made. If no model was used, start with "Code only, no generative model." and say which code did what (HTML, CSS, SVG, canvas, WebGL, a font, a filter). Never claim a model you didn't use, never hide one you did.
    - Tag every tool and model in `process` as `[[Name]]` (e.g. "Built in [[Claude Code]] with [[SVG]]", "[[Flora: Flux 1.1 Pro]] made the texture"). On the site each becomes a lozenge with the tool's logo, like a mention in chat; the release and zip get plain text. Names with logos are in `scripts/tools.json`; anything else gets a lettered badge. To add a logo, add the name and its Simple Icons slug there and rerun `scripts/make-tool-icons.py`.
+   - `made` (optional): a short label for the hover card's Made with row, only when the automatic one reads badly (e.g. "Flux + Kling").
    - `tools`: a short list for the lozenges under the write-up, e.g. `["Claude Code", "SVG", "Flora: Flux 1.1 Pro", "Playwright"]`.
    - `skills`: public skills that actually shaped the poster, each `{ "name": "canvas-design", "url": "https://github.com/OWNER/REPO/tree/BRANCH/path/to/skill" }`. Only skills sourced online and public, so anyone can grab them, e.g. github.com/anthropics/skills. **Never list James's own or any private or org skills** (blame-opal, james-tone-of-voice and the like), even when they were loaded: they shape the socials, not the poster, and they're his. Check every URL with `scripts/verify-skill.sh URL` before adding it; if it doesn't pass, leave the skill out. No public skill used: leave `skills` out.
    - Code only is a perfectly good answer. Reach for a generative model only when the idea needs one.
@@ -44,7 +47,7 @@ Source is `site/` (page, `site.config.js`, `vercel.json`, `vendor/` GSAP 3.13). 
 - Empty slot tiles: **F, Departures** (picked by James): day number and status, then one hairline row each for days, hours, minutes and seconds. D and E stay in the code for reference only.
 - Phone layout: **L** (picked by James): the logo and a burger on a floating bar at the bottom; the burger opens the bottom sheet (about, Instagram, LinkedIn, Get notified on GitHub). No clocks outside the wall.
 - Desktop: no posted counter, no second clock. The about module bottom left, Get notified on GitHub as an acid tab tucked into the bottom edge, bottom right. Motion posters autoplay on the wall while on screen and are labelled by day only.
-- Hover on a posted poster: still open (`hover: 'a' | 'b' | 'c' | 'd'` in `site.config.js`, preview with `?hover=`; review page at `/review`).
+- Hover on a posted poster: **C, ledger card** (picked by James): title, then Prompt (word count), Made with, Posted. Made with is worked out from `tools` and `process` ("Code only", the model with its logo, "Code + model", "model +N"); set `made` in meta.json to override it with a short label when that would read better.
 - Performance: the wall loads `thumb-s.jpg` and swaps to `thumb.jpg` only when zoomed, clocks only tick on screen, nothing animates layout properties (transform and opacity only).
 
 ## Setup status

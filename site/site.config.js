@@ -11,6 +11,6 @@ window.SITE = {
   tile: 'f',
   mobile: 'l',
   // hover on a posted poster (desktop): 'a' title card, 'b' prompt snippet, 'c' ledger card, 'd' cursor only
-  hover: 'a',
+  hover: 'c',
   total: 30
 };
