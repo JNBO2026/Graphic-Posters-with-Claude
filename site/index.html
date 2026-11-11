@@ -199,6 +199,12 @@
   .media { min-height:0; flex:1; display:flex; align-items:center; justify-content:center; width:100%; }
   .media img, .media video { max-width:100%; max-height:100%; aspect-ratio:1 / 1.4142; object-fit:contain; display:block; box-shadow:0 24px 64px rgba(0,0,0,.28); background:var(--paper); }
   /* desktop: a magnifier to inspect the poster. Click to zoom, move to look around, click or Esc to come back */
+  /* phone: pinch to zoom the poster inside its own container, drag to look around, double tap to come back */
+  @media (max-width:760px) {
+    .media img, .media video { touch-action:pan-y; transform-origin:0 0; }
+    .media.pz { overflow:hidden; }
+    .media.pz img, .media.pz video { touch-action:none; box-shadow:none; }
+  }
   @media (pointer:fine) and (min-width:761px) {
     .media img, .media video { cursor:zoom-in; }
     .media.zoomed { overflow:hidden; }
@@ -812,6 +818,7 @@
   const media = () => P[ci].video ? vvid : vimg;
   function fill(i) {
     if (typeof LZ !== 'undefined') { LZ.s = 1; mediaBox.classList.remove('zoomed'); }
+    if (typeof PZ !== 'undefined') { Object.assign(PZ, { s: 1, x: 0, y: 0, pinch: null, pan: null }); mediaBox.classList.remove('pz'); }
     ci = (i + P.length) % P.length; const p = P[ci];
     gsap.set([vimg, vvid], { clearProps: 'opacity,visibility,transform' });
     vimg.alt = `Day ${pad(p.day)} poster, ${p.title}`;
@@ -915,8 +922,43 @@
     aim(e); LZ.s = s < 1.03 ? 1 : s; mediaBox.classList.toggle('zoomed', LZ.s > 1);
     gsap.to(media(), { scale: LZ.s, transformOrigin: `${LZ.ox}% ${LZ.oy}%`, duration: .15, overwrite: 'auto', force3D: false }); }, { passive: false });
   dlg.addEventListener('cancel', e => { if (LZ.s > 1) { e.preventDefault(); unzoom(); } });
+  // ---------- Phone: pinch to zoom inside the poster's container, one finger to pan while zoomed, double tap to zoom in or back out ----------
+  const PZ = { s: 1, x: 0, y: 0, pinch: null, pan: null, tap: 0, moved: false };
+  const pzApply = (anim) => { const m = media(); mediaBox.classList.toggle('pz', PZ.s > 1.001);
+    gsap.to(m, { x: PZ.x, y: PZ.y, scale: PZ.s, transformOrigin: '0 0', duration: anim ? .3 : 0, overwrite: 'auto', force3D: false,
+      onComplete: () => { if (PZ.s === 1) gsap.set(m, { clearProps: 'transform' }); } }); };
+  // keep the zoomed poster covering its container: no gaps opening at the edges
+  const pzClamp = () => { const box = mediaBox.getBoundingClientRect(), m = media(), w = m.offsetWidth, h = m.offsetHeight, b = pzBase(), bx = b.left, by = b.top;
+    const fit = (t, size, b0, lo, hi) => { const sz = size * PZ.s; return sz <= hi - lo ? (lo + hi) / 2 - b0 - sz / 2 : Math.min(lo - b0, Math.max(hi - b0 - sz, t)); };
+    PZ.x = fit(PZ.x, w, bx, box.left, box.right); PZ.y = fit(PZ.y, h, by, box.top, box.bottom); };
+  // where the poster sits untransformed (origin 0 0, so scale never moves its top left corner)
+  const pzBase = () => { const m = media(), r = m.getBoundingClientRect(); return { left: r.left - (+gsap.getProperty(m, 'x') || 0), top: r.top - (+gsap.getProperty(m, 'y') || 0) }; };
+  const pzReset = (anim) => { PZ.s = 1; PZ.x = 0; PZ.y = 0; PZ.pinch = PZ.pan = null; pzApply(anim); };
+  const mid = t => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2, d: Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) });
+  function zoomAt(s, px, py) { const b = pzBase(), lx = (px - b.left - PZ.x) / PZ.s, ly = (py - b.top - PZ.y) / PZ.s;
+    PZ.s = s; PZ.x = px - b.left - s * lx; PZ.y = py - b.top - s * ly; pzClamp(); }
+  mediaBox.addEventListener('touchstart', e => { if (!phone()) return; PZ.moved = false;
+    if (e.touches.length === 2) { e.preventDefault(); sw = null; const m = mid(e.touches), b = pzBase();
+      PZ.pinch = { d: m.d, s: PZ.s, lx: (m.x - b.left - PZ.x) / PZ.s, ly: (m.y - b.top - PZ.y) / PZ.s }; PZ.pan = null; }
+    else if (e.touches.length === 1 && PZ.s > 1) { e.stopPropagation(); sw = null; PZ.pan = { x: e.touches[0].clientX - PZ.x, y: e.touches[0].clientY - PZ.y }; }
+  }, { passive: false });
+  mediaBox.addEventListener('touchmove', e => { if (!phone()) return;
+    if (PZ.pinch && e.touches.length === 2) { e.preventDefault(); e.stopPropagation(); PZ.moved = true; const m = mid(e.touches), b = pzBase();
+      PZ.s = Math.min(5, Math.max(1, PZ.pinch.s * m.d / PZ.pinch.d)); PZ.x = m.x - b.left - PZ.s * PZ.pinch.lx; PZ.y = m.y - b.top - PZ.s * PZ.pinch.ly; pzClamp(); pzApply(false); }
+    else if (PZ.pan && e.touches.length === 1) { e.preventDefault(); e.stopPropagation(); PZ.moved = true;
+      PZ.x = e.touches[0].clientX - PZ.pan.x; PZ.y = e.touches[0].clientY - PZ.pan.y; pzClamp(); pzApply(false); }
+  }, { passive: false });
+  mediaBox.addEventListener('touchend', e => { if (!phone()) return;
+    if (PZ.pinch && e.touches.length < 2) { PZ.pinch = null; if (PZ.s < 1.08) pzReset(true);
+      else if (e.touches.length === 1) PZ.pan = { x: e.touches[0].clientX - PZ.x, y: e.touches[0].clientY - PZ.y }; return; }
+    if (e.touches.length) return; PZ.pan = null;
+    if (PZ.moved || e.changedTouches.length !== 1) { PZ.tap = 0; return; }
+    const now = Date.now(), t = e.changedTouches[0];
+    if (now - PZ.tap < 300) { e.preventDefault(); PZ.tap = 0; if (PZ.s > 1) pzReset(true); else { zoomAt(2.5, t.clientX, t.clientY); pzApply(true); } }
+    else PZ.tap = now;
+  }, { passive: false });
   $('v-close').onclick = () => dlg.close();
-  dlg.addEventListener('close', () => { LZ.s = 1; mediaBox.classList.remove('zoomed'); gsap.set([vimg, vvid], { clearProps: 'transform' }); vvid.pause(); history.replaceState(null, '', location.pathname + location.search); });
+  dlg.addEventListener('close', () => { LZ.s = 1; Object.assign(PZ, { s: 1, x: 0, y: 0, pinch: null, pan: null }); mediaBox.classList.remove('pz'); mediaBox.classList.remove('zoomed'); gsap.set([vimg, vvid], { clearProps: 'transform' }); vvid.pause(); history.replaceState(null, '', location.pathname + location.search); });
   dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
   $('s-prev').onclick = () => step(-1);
   $('s-next').onclick = () => step(1);
