@@ -1,0 +1,10 @@
+{
+  "day": 2,
+  "date": "2026-11-12",
+  "started_at": "2026-11-12T07:57:00Z",
+  "title": "Now you see it.",
+  "note": "A glass knot turning on vibrant green, only visible where it bends the type behind it.",
+  "process": "Code only, no generative model. [[Claude Code]] set the type in [[Google Fonts]] Fraunces, soft and wonky, on a 12 column grid in [[Canvas]], then built a torus knot in [[WebGL]] that refracts that type with a little dispersion and almost no edge, so the glass only shows through the letters. Grain and paper fibre overlays give the green its depth, and [[FFmpeg]] turned the 8 second turn into a loop.",
+  "tools": ["Claude Code", "Canvas", "WebGL", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["12-column grid", "some text to anchor the design", "3D rotating object", "made out of glass", "refracting from the text", "subtle definition", "vibrant green", "overlay textures", "playful type of serif"]
+}

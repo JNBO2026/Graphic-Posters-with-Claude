@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Day 02: Now you see it.</title>
+<meta name="poster-motion" content="8">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Fraunces with the soft and wonky axes fixed on: the playful serif -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,100,1;1,9..144,300..900,100,1&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#22CC5E; }
+  canvas, .ov { position:absolute; left:0; top:0; width:1240px; height:1754px; }
+  .ov { pointer-events:none; }
+  #grain { mix-blend-mode:overlay; opacity:.55; }
+  #fibre { mix-blend-mode:multiply; opacity:.5; }
+  #light { background:radial-gradient(120% 80% at 50% 46%, rgba(255,255,230,.16), rgba(255,255,230,0) 55%), radial-gradient(140% 100% at 50% 50%, rgba(0,0,0,0) 55%, rgba(4,40,16,.32) 100%); }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<canvas id="fibre" class="ov"></canvas>
+<canvas id="grain" class="ov"></canvas>
+<div id="light" class="ov"></div>
+<script>
+const READY = (async () => {
+  // ---------- The 12 column grid: 72 px margins, 20 px gutters ----------
+  const W = 1240, H = 1754, M = 72, G = 20, CW = (W - 2 * M - 11 * G) / 12;
+  const colX = i => M + i * (CW + G), colR = i => colX(i) + CW;
+  const GREEN = '#22CC5E', INK = '#062A14';
+  const dpr = window.devicePixelRatio || 1, PW = Math.round(W * dpr), PH = Math.round(H * dpr);
+
+  await Promise.all(['600 196px Fraunces', 'italic 600 196px Fraunces', '400 22px Fraunces', 'italic 400 22px Fraunces', '600 22px Fraunces'].map(f => document.fonts.load(f)));
+  await document.fonts.ready;
+
+  // ---------- The type: everything the glass can bend lives on one 2D canvas ----------
+  const tc = document.createElement('canvas'); tc.width = PW; tc.height = PH;
+  const t = tc.getContext('2d'); t.scale(dpr, dpr);
+  t.fillStyle = GREEN; t.fillRect(0, 0, W, H);
+  // the grid itself, as hairlines: quiet on the page, but the glass picks them up and bends them
+  t.fillStyle = 'rgba(6,42,20,.15)';
+  for (let i = 0; i < 12; i++) { t.fillRect(colX(i), 0, 1, H); t.fillRect(colR(i) - 1, 0, 1, H); }
+  t.fillStyle = 'rgba(6,42,20,.16)'; t.fillRect(M, M - 1, W - 2 * M, 1); t.fillRect(M, H - M, W - 2 * M, 1);
+  t.fillStyle = INK; t.textBaseline = 'alphabetic';
+
+  // the middle: big playful serif across columns 3 to 10, the glass turns in front of it
+  const lines = [['Now you', 0], ['see it,', 1], ['now you', 0], ['don’t.', 1]];
+  const BIG = 196, LEAD = 166, top = Math.round(H / 2 - 1.5 * LEAD + 0.35 * BIG);
+  const midBase = top + LEAD; // the baseline of "see it,": the middle anchors sit on it
+  lines.forEach(([s, it], i) => { t.font = `${it ? 'italic ' : ''}600 ${BIG}px Fraunces`; t.letterSpacing = '-4px';
+    const w = t.measureText(s).width, x = it ? colR(9) - w : colX(2); t.fillText(s, x, top + i * LEAD); });
+  t.letterSpacing = '0px';
+
+  // six anchors on the grid: corners on the margins, the middle pair on the centre line
+  const anchor = (a, b, col, y, align, span = 3) => {
+    t.textAlign = align; const x = align === 'right' ? colR(col) : colX(col);
+    t.font = '600 22px Fraunces'; t.fillText(a, x, y);
+    t.font = 'italic 400 22px Fraunces'; t.fillText(b, x, y + 28);
+  };
+  const capTop = M + 18, baseBot = H - M - 12 - 28;
+  anchor('Thirty posters', 'No. 02 of 30', 0, capTop, 'left');
+  anchor('A glass knot,', 'turning once in eight seconds', 11, capTop, 'right');
+  anchor('Index 1.52', 'crown glass', 0, midBase, 'left');
+  anchor('Seen only', 'through the type', 11, midBase, 'right');
+  anchor('Set in Fraunces,', 'soft and wonky', 0, baseBot, 'left');
+  anchor('12 November 2026', 'prompted in 60 seconds', 11, baseBot, 'right');
+  t.textAlign = 'left';
+
+  // ---------- WebGL: the background, then a glass torus knot that only shows by bending it ----------
+  const cv = document.getElementById('gl'); cv.width = PW; cv.height = PH;
+  const gl = cv.getContext('webgl', { preserveDrawingBuffer: true, antialias: true, premultipliedAlpha: false });
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+  const prog = (vs, fs) => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p); return p; };
+
+  const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tc);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  const bgP = prog(`attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }`,
+    `precision highp float; uniform sampler2D tx; uniform vec2 res; void main(){ gl_FragColor = texture2D(tx, gl_FragCoord.xy / res); }`);
+  const quad = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+
+  // torus knot (2, 3): a tube swept along the knot, normals from the tube frame
+  const P = 2, Q = 3, R0 = 1, TUBE = .36, SEG = 520, RAD = 56;
+  const knot = u => { const qu = Q * u, r = R0 * (2 + Math.cos(qu)) / 3; return [r * Math.cos(P * u), r * Math.sin(P * u), R0 * Math.sin(qu) / 3]; };
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const norm = a => { const l = Math.hypot(...a); return [a[0] / l, a[1] / l, a[2] / l]; };
+  const pos = [], nor = [], idx = [];
+  for (let i = 0; i <= SEG; i++) {
+    const u = i / SEG * Math.PI * 2, c = knot(u), n1 = knot(u + .001), T = norm(sub(n1, c));
+    const N = norm(cross(T, add(c, n1))), B = norm(cross(T, N));
+    for (let j = 0; j <= RAD; j++) { const v = j / RAD * Math.PI * 2, cx = -TUBE * Math.cos(v), cy = TUBE * Math.sin(v);
+      const nn = norm([cx * N[0] + cy * B[0], cx * N[1] + cy * B[1], cx * N[2] + cy * B[2]]);
+      pos.push(c[0] + nn[0] * TUBE, c[1] + nn[1] * TUBE, c[2] + nn[2] * TUBE); nor.push(...nn); }
+  }
+  for (let i = 0; i < SEG; i++) for (let j = 0; j < RAD; j++) { const a = i * (RAD + 1) + j, b = a + RAD + 1; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+  const ext = gl.getExtension('OES_element_index_uint');
+  const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
+  const nb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, nb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(nor), gl.STATIC_DRAW);
+  const ib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(idx), gl.STATIC_DRAW);
+
+  const glassP = prog(`
+    attribute vec3 p; attribute vec3 n; uniform mat3 rot; uniform float asp, scl, cy;
+    varying vec3 vN; varying vec3 vV;
+    void main(){ vec3 q = rot * p; vN = rot * n; vec3 view = q + vec3(0., 0., -4.2); vV = view;
+      float f = 1. / tan(radians(30.) * .5); vec4 c = vec4(view.x * f / asp * scl, view.y * f * scl + cy * -view.z, view.z * (-11. / 9.) - 20. / 9., -view.z);
+      gl_Position = c; }`, `
+    precision highp float; uniform sampler2D tx; uniform vec2 res; varying vec3 vN; varying vec3 vV;
+    void main(){
+      vec3 N = normalize(vN), I = normalize(vV); if (dot(N, I) > 0.) N = -N;
+      vec2 uv = gl_FragCoord.xy / res;
+      float edge = 1. - abs(dot(N, -I));
+      vec3 r = refract(I, N, 1. / 1.52);
+      vec2 off = (r.xy - I.xy) * (.016 + .02 * edge) * vec2(res.y / res.x, 1.);
+      // a little dispersion: red, green and blue bend by different amounts
+      vec3 col = vec3(texture2D(tx, uv + off * 1.00).r, texture2D(tx, uv + off * 1.02).g, texture2D(tx, uv + off * 1.04).b);
+      // the faintest edge, so the shape reads only where the type runs through it
+      float fr = pow(edge, 4.);
+      col = mix(col, col * .9, fr * .5) + vec3(.035) * pow(max(dot(reflect(I, N), normalize(vec3(-.4, .7, .6))), 0.), 40.);
+      gl_FragColor = vec4(col, 1.); }`);
+
+  gl.viewport(0, 0, PW, PH);
+  const rotM = a => { const ty = .5, tz = .3 + .12 * Math.sin(a), cy = Math.cos(a), sy = Math.sin(a), cx = Math.cos(ty), sx = Math.sin(ty), cz = Math.cos(tz), sz = Math.sin(tz);
+    // R = Rz(tz) * Rx(tilt) * Ry(a), column major for GLSL
+    const Ry = [cy, 0, -sy, 0, 1, 0, sy, 0, cy], Rx = [1, 0, 0, 0, cx, sx, 0, -sx, cx], Rz = [cz, sz, 0, -sz, cz, 0, 0, 0, 1];
+    const mul = (A, B) => { const o = []; for (let c = 0; c < 3; c++) for (let r = 0; r < 3; r++) o[c * 3 + r] = A[r] * B[c * 3] + A[3 + r] * B[c * 3 + 1] + A[6 + r] * B[c * 3 + 2]; return o; };
+    return mul(Rz, mul(Rx, Ry)); };
+
+  function draw(sec) {
+    const a = (sec / 8) * Math.PI * 2; // one full turn per loop
+    gl.disable(gl.DEPTH_TEST); gl.useProgram(bgP); gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    let l = gl.getAttribLocation(bgP, 'p'); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform2f(gl.getUniformLocation(bgP, 'res'), PW, PH); gl.uniform1i(gl.getUniformLocation(bgP, 'tx'), 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); gl.disableVertexAttribArray(l);
+    gl.clear(gl.DEPTH_BUFFER_BIT); gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LESS);
+    gl.useProgram(glassP);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb); l = gl.getAttribLocation(glassP, 'p'); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, nb); const ln = gl.getAttribLocation(glassP, 'n'); gl.enableVertexAttribArray(ln); gl.vertexAttribPointer(ln, 3, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix3fv(gl.getUniformLocation(glassP, 'rot'), false, new Float32Array(rotM(a)));
+    gl.uniform1f(gl.getUniformLocation(glassP, 'asp'), W / H); gl.uniform1f(gl.getUniformLocation(glassP, 'scl'), .34); gl.uniform1f(gl.getUniformLocation(glassP, 'cy'), 0.);
+    gl.uniform2f(gl.getUniformLocation(glassP, 'res'), PW, PH); gl.uniform1i(gl.getUniformLocation(glassP, 'tx'), 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_INT, 0);
+    gl.disableVertexAttribArray(l); gl.disableVertexAttribArray(ln); gl.finish();
+  }
+
+  // ---------- Overlay textures: grain and paper fibre, seeded so every frame matches ----------
+  let seed = 202; const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; };
+  const gc = document.getElementById('grain'); gc.width = PW; gc.height = PH; const gx = gc.getContext('2d');
+  const gd = gx.createImageData(PW, PH); for (let i = 0; i < gd.data.length; i += 4) { const v = 128 + (rnd() - .5) * 150; gd.data[i] = gd.data[i + 1] = gd.data[i + 2] = v; gd.data[i + 3] = 255; } gx.putImageData(gd, 0, 0);
+  const fc = document.getElementById('fibre'); fc.width = PW; fc.height = PH; const fx = fc.getContext('2d'); fx.scale(dpr, dpr); fx.lineCap = 'round';
+  for (let i = 0; i < 2600; i++) { const x = rnd() * W, y = rnd() * H, a = rnd() * Math.PI, l = 6 + rnd() * 30;
+    fx.strokeStyle = rnd() < .5 ? `rgba(4,40,16,${.05 + rnd() * .12})` : `rgba(255,255,235,${.08 + rnd() * .16})`; fx.lineWidth = .4 + rnd() * .8;
+    fx.beginPath(); fx.moveTo(x, y); fx.quadraticCurveTo(x + Math.cos(a) * l / 2 + (rnd() - .5) * 6, y + Math.sin(a) * l / 2 + (rnd() - .5) * 6, x + Math.cos(a) * l, y + Math.sin(a) * l); fx.stroke(); }
+  for (let i = 0; i < 90; i++) { const x = rnd() * W, y = rnd() * H, r = 60 + rnd() * 220, g = fx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, `rgba(4,40,16,${.03 + rnd() * .05})`); g.addColorStop(1, 'rgba(4,40,16,0)'); fx.fillStyle = g; fx.fillRect(x - r, y - r, 2 * r, 2 * r); }
+
+  draw(0);
+  return draw;
+})();
+window.__seek = async sec => { const draw = await READY; draw(sec); };
+</script>
+</body>
+</html>

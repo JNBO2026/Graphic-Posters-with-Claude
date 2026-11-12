@@ -1,0 +1,9 @@
+Link sticker
+  Text: Steal the prompt
+  URL: {{LINK}}
+
+Poll sticker
+  Question: Can you see the knot?
+  Options: Clear as day / Only just
+
+Place both stickers in the middle of the frame, clear of the poster's headline. Keep the top 72px and bottom 96px empty, Instagram covers them.

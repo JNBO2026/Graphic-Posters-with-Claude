@@ -1,0 +1,15 @@
+I asked Claude for a glass object you can only see because it bends the type behind it.
+
+Day 02 of 30. 151 words, spoken in a minute. A 12 column grid, text anchoring every corner and both sides, a rotating glass object in the middle, vibrant green, overlay textures, a playful serif.
+
+It wrote the type in Fraunces with the soft and wonky settings switched on, then built a torus knot in WebGL that refracts it. No outline, almost no highlight. You only find the knot where the letters break and bend. All code, no image model.
+
+First pass it overdid it and shredded the words. It caught that in its own audit and dialled the glass back until the type stayed readable. That restraint is the bit I didn’t expect.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+Where would you have put the glass?
+
+we give a sh*t.
+
+#ClaudeCode #AIDesign #GraphicDesign

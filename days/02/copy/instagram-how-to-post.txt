@@ -1,0 +1,12 @@
+Feed (carousel)
+1. New post, select all five in Feed-carousel/ in order: 1 to 5 (1080 × 1440, the tallest the feed shows). 1 is the poster, 5 asks for the follow and the save.
+2. Paste caption.txt.
+3. Make sure the site link is in your bio. The caption says "link in bio".
+4. Saves and shares count for the most, so answer comments fast in the first hour.
+
+Story
+1. Post Story/story.png.
+2. Add the stickers in stickers.txt: the link sticker first, then the poll.
+3. Post it within an hour of the feed post, so people who tap through land on something new.
+
+Dark versions are in dark-version/ if you’d rather.
