@@ -24,32 +24,35 @@ function pack(name, files) { // files: [relative path, Buffer | source path]
   execFileSync('zip', ['-qr', path.join(out, name + '.zip'), name], { cwd: tmp });
 }
 const D = `Day-${day}`;
-const VIDEO = path.join(dir, 'poster.mp4'), motion = fs.existsSync(VIDEO) ? [['motion/poster.mp4', VIDEO]] : [];
+const VIDEO = path.join(dir, 'poster.mp4'), motion = fs.existsSync(VIDEO);
+// animated posters: the branded frames as videos, the poster playing inside them
+const vid = (name, theme) => { const f = path.join(exp, `${name}-${theme}.mp4`); if (!fs.existsSync(f)) throw new Error('missing video ' + f); return f; };
 for (const f of fs.readdirSync(copy)) if (/\[TEMPLATE/.test(fs.readFileSync(path.join(copy, f), 'utf8'))) throw new Error(`copy/${f} still has template text`);
 
 pack(`${D}_LinkedIn`, [
   ['carousel.pdf', pdf('light')],
   ['post-copy.txt', text('linkedin-post.txt')],
   ['first-comment.txt', text('linkedin-first-comment.txt')],
-  ['how-to-post.txt', text('linkedin-how-to-post.txt')],
+  ['how-to-post.txt', text('linkedin-how-to-post.txt') + (motion ? '\nThis poster moves. Post post-video.mp4 instead of the carousel: the same frame as the single image, with the poster playing in it. It gets more reach than a still. Paste the same post-copy.txt and add the same first comment. The carousel is still here if you want it another day.\n' : '')],
   ['single-image/post-image.png', shot('li-single', 'light')],
   ['dark-version/carousel-dark.pdf', pdf('dark')],
   ['dark-version/post-image-dark.png', shot('li-single', 'dark')],
-  ...motion,
+  ...(motion ? [['post-video.mp4', vid('li-single', 'light')], ['dark-version/post-video-dark.mp4', vid('li-single', 'dark')]] : []),
 ]);
 pack(`${D}_Instagram`, [
   ...slides('ig', 'light').map((f, i) => [`Feed-carousel/${i + 1}.png`, f]),
   ['Feed-carousel/caption.txt', text('instagram-caption.txt')],
   ['Story/story.png', shot('story', 'light')],
   ['Story/stickers.txt', text('instagram-story-stickers.txt')],
-  ['how-to-post.txt', text('instagram-how-to-post.txt')],
+  ['how-to-post.txt', text('instagram-how-to-post.txt') + (motion ? '\nThis poster moves. In the carousel, use Feed-carousel/1.mp4 as the first slide instead of 1.png, then 2 to 5 as usual. Post Story/story.mp4 instead of story.png; it also works as a Reel.\n' : '')],
   ...slides('ig', 'dark').map((f, i) => [`dark-version/Feed-carousel/${i + 1}.png`, f]),
   ['dark-version/Story/story.png', shot('story', 'dark')],
-  ...motion,
+  ...(motion ? [['Feed-carousel/1.mp4', vid('ig-1', 'light')], ['Story/story.mp4', vid('story', 'light')],
+    ['dark-version/Feed-carousel/1.mp4', vid('ig-1', 'dark')], ['dark-version/Story/story.mp4', vid('story', 'dark')]] : []),
 ]);
 pack(`${D}_Poster`, [
   ['poster-A3.jpg', path.join(dir, 'poster.jpg')],
-  ...(motion.length ? [['poster-A3.mp4', VIDEO]] : []),
+  ...(motion ? [['poster-A3.mp4', VIDEO]] : []),
   ['prompt.txt', fs.readFileSync(path.join(dir, 'prompt.md'), 'utf8')],
   ['how-it-was-made.txt', (() => { const m = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')); if (!m.process) throw new Error('meta.json has no process'); return m.process.replace(/\[\[([^\]]+)\]\]/g, '$1') + (m.tools ? '\n\nTools: ' + m.tools.join(', ') : '') + ((m.skills || []).length ? '\n\nSkills used (public, free to grab):\n' + m.skills.map(x => `${x.name}: ${x.url}`).join('\n') : '') + '\n'; })()],
   ['link.txt', LINK + '\n'],

@@ -50,7 +50,7 @@ Day-NN_Poster/
 └── link.txt                  its page on the site
 ```
 
-Animated posters also get `motion/poster.mp4` in the LinkedIn and Instagram zips, ready to post as a video or a Reel. The branded frames stay still.
+Animated posters: the branded frames move too. The LinkedIn zip gets `post-video.mp4` (the single image layout with the poster playing in it, 1080 × 1350, post it instead of the carousel), the Instagram zip gets `Feed-carousel/1.mp4` (slide 1 moving) and `Story/story.mp4` (also works as a Reel), each with a dark version. The bare poster loop stays in the Poster zip as `poster-A3.mp4`.
 
 ## And without you doing anything
 

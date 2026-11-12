@@ -88,6 +88,7 @@ The challenge **has not started**. `days/` holds only `_template/`. Day 01's `st
 - James: the poster is the hero, the follow second, the challenge numbers third. Picked **B** (poster over a ledger and an acid follow tile) for single frames.
 - Instagram carousel, five slides at 1080 × 1440: 1 the poster perfectly centred with crop marks and small labels; 2 the prompt's word count and the `keywords` that shaped it; 3 the numbers; 4 how it was made with tool logos; 5 follow and save. Every slide after the first is plain Blame Opal bento.
 - LinkedIn: 4:5 (1080 × 1350) is the tallest a single image renders in the feed, and the same five slides go out as a PDF document carousel. A single 4:5 image is in the zip as a backup. Vendor claims that documents beat images are unsourced, so watch the numbers in the first week.
+- Animated posters (asked for 12 Nov, day 02): the branded frames are supplied as videos, not a bare full bleed poster video. LinkedIn: `post-video.mp4`, the B single frame with the poster playing, posted instead of the carousel. Instagram: slide 1 as `1.mp4`, the Story as `story.mp4`. ffmpeg lays `poster.mp4` over the poster's exact spot in each still frame.
 - Day 01's LinkedIn post is the launch post: what the challenge is, the goal (how far Claude Code on Opus 5.5 gets on direction alone, which visual treatments it's good at, what it sticks to), and a call for suggestions.
 
 ### Brand and voice

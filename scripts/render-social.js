@@ -5,13 +5,15 @@
 //   li-single    LinkedIn single image, 1080 × 1350
 //   story        Instagram Story, 1080 × 1920
 // Output: days/NN/social/export/NAME-THEME.png
+// Animated posters also get NAME-THEME.mp4 for li-single, story and ig-1: the same frame with poster.mp4 playing in the poster's place.
 const { chromium } = require('playwright');
-const path = require('path'), fs = require('fs');
+const path = require('path'), fs = require('fs'), { execFileSync } = require('child_process');
 const day = process.argv[2], root = path.resolve(__dirname, '..');
 const data = require('./social-data.js')(day);
 const out = path.join(root, 'days', day, 'social', 'export');
 const tpl = 'file://' + path.join(root, 'days', '_template', 'social', 'frames.html');
-const jobs = [];
+const jobs = [], holes = {}, MOTION = ['li-single', 'story', 'ig-1'];
+const VIDEO = fs.existsSync(path.join(root, 'days', day, 'poster.mp4')) ? path.join(root, 'days', day, 'poster.mp4') : null;
 for (let s = 1; s <= 5; s++) { jobs.push([`ig-${s}`, 'ig-post', s]); jobs.push([`li-${s}`, 'li-portrait', s]); }
 jobs.push(['li-single', 'li-portrait', 'single'], ['story', 'ig-story', 'single']);
 
@@ -27,10 +29,22 @@ jobs.push(['li-single', 'li-portrait', 'single'], ['story', 'ig-story', 'single'
     // nothing may spill out of its tile
     const spill = await p.evaluate(() => [...document.querySelectorAll('.tile')].filter(t => t.scrollHeight > t.clientHeight + 1 || t.scrollWidth > t.clientWidth + 1).map(t => t.className));
     if (spill.length) errs.push(`${name}-${theme}: text spills out of ${spill.join(', ')}`);
-    await (await p.$('[data-frame]')).screenshot({ path: path.join(out, `${name}-${theme}.png`) });
+    const fr = await p.$('[data-frame]');
+    await fr.screenshot({ path: path.join(out, `${name}-${theme}.png`) });
+    // where the poster sits in the frame, in export pixels, for the video version
+    if (VIDEO && MOTION.includes(name)) holes[`${name}-${theme}`] = await p.evaluate(() => {
+      const f = document.querySelector('[data-frame]').getBoundingClientRect(), i = document.querySelector('[data-frame] img').getBoundingClientRect(), k = 3;
+      const ev = v => Math.round(v * k / 2) * 2; return { x: ev(i.left - f.left), y: ev(i.top - f.top), w: ev(i.width), h: ev(i.height) }; });
     await p.close();
   }
   await b.close();
+  // the moving versions: the branded frame as a still, the poster's own loop laid exactly over its picture
+  for (const [key, h] of Object.entries(holes)) {
+    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-loop', '1', '-i', path.join(out, `${key}.png`), '-i', VIDEO,
+      '-filter_complex', `[1:v]scale=${h.w}:${h.h}:flags=lanczos[p];[0:v][p]overlay=${h.x}:${h.y}:shortest=1,format=yuv420p`,
+      '-r', '30', '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-movflags', '+faststart', path.join(out, `${key}.mp4`)]);
+  }
+  if (Object.keys(holes).length) console.log('videos', Object.keys(holes).length);
   if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
   console.log('exported', jobs.length * 2, 'frames to', out);
 })();
