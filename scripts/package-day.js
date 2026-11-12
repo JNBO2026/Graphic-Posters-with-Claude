@@ -19,7 +19,9 @@ function pack(name, files) { // files: [relative path, Buffer | source path]
   const base = path.join(tmp, name);
   for (const [rel, src] of files) {
     const to = path.join(base, rel); fs.mkdirSync(path.dirname(to), { recursive: true });
-    Buffer.isBuffer(src) || typeof src !== 'string' || !fs.existsSync(src) ? fs.writeFileSync(to, src) : fs.copyFileSync(src, to);
+    // a file path must exist; anything else is file content (text or a Buffer)
+    if (typeof src === 'string' && path.isAbsolute(src) && !src.includes('\n')) { if (!fs.existsSync(src)) throw new Error('missing file for ' + rel + ': ' + src); fs.copyFileSync(src, to); }
+    else fs.writeFileSync(to, src);
   }
   execFileSync('zip', ['-qr', path.join(out, name + '.zip'), name], { cwd: tmp });
 }

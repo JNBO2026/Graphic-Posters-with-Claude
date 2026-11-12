@@ -18,7 +18,9 @@ for (let s = 1; s <= 5; s++) { jobs.push([`ig-${s}`, 'ig-post', s]); jobs.push([
 jobs.push(['li-single', 'li-portrait', 'single']);
 
 (async () => {
-  fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
+  // clear this script's own exports only: the Reel lives here too
+  fs.mkdirSync(out, { recursive: true });
+  for (const f of fs.readdirSync(out)) if (!f.startsWith('reel-')) fs.rmSync(path.join(out, f), { force: true });
   const b = await chromium.launch(), errs = [];
   for (const theme of ['light', 'dark']) for (const [name, fmt, slide] of jobs) {
     const p = await b.newPage({ viewport: { width: 420, height: 700 }, deviceScaleFactor: 3 });
