@@ -40,15 +40,15 @@ pack(`${D}_LinkedIn`, [
   ...(motion ? [['post-video.mp4', vid('li-single', 'light')], ['dark-version/post-video-dark.mp4', vid('li-single', 'dark')]] : []),
 ]);
 pack(`${D}_Instagram`, [
+  ['Reel/reel.mp4', path.join(exp, 'reel-light.mp4')],
   ...slides('ig', 'light').map((f, i) => [`Feed-carousel/${i + 1}.png`, f]),
-  ['Feed-carousel/caption.txt', text('instagram-caption.txt')],
-  ['Story/story.png', shot('story', 'light')],
-  ['Story/stickers.txt', text('instagram-story-stickers.txt')],
-  ['how-to-post.txt', text('instagram-how-to-post.txt') + (motion ? '\nThis poster moves. In the carousel, use Feed-carousel/1.mp4 as the first slide instead of 1.png, then 2 to 5 as usual. Post Story/story.mp4 instead of story.png; it also works as a Reel.\n' : '')],
+  ...(motion ? [['Feed-carousel/1.mp4', vid('ig-1', 'light')]] : []),
+  ['caption.txt', text('instagram-caption.txt')],
+  ['story-stickers.txt', text('instagram-story-stickers.txt')],
+  ['how-to-post.txt', text('instagram-how-to-post.txt') + (motion ? '\nThis poster moves: in the carousel, use Feed-carousel/1.mp4 as the first slide instead of 1.png.\n' : '')],
+  ['dark-version/Reel/reel-dark.mp4', path.join(exp, 'reel-dark.mp4')],
   ...slides('ig', 'dark').map((f, i) => [`dark-version/Feed-carousel/${i + 1}.png`, f]),
-  ['dark-version/Story/story.png', shot('story', 'dark')],
-  ...(motion ? [['Feed-carousel/1.mp4', vid('ig-1', 'light')], ['Story/story.mp4', vid('story', 'light')],
-    ['dark-version/Feed-carousel/1.mp4', vid('ig-1', 'dark')], ['dark-version/Story/story.mp4', vid('story', 'dark')]] : []),
+  ...(motion ? [['dark-version/Feed-carousel/1.mp4', vid('ig-1', 'dark')]] : []),
 ]);
 pack(`${D}_Poster`, [
   ['poster-A3.jpg', path.join(dir, 'poster.jpg')],

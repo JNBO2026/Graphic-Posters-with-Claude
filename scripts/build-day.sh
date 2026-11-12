@@ -5,5 +5,6 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 node scripts/render-poster.js "$1"
 node scripts/render-social.js "$1"
+node scripts/render-reel.js "$1"
 node scripts/package-day.js "$1"
 node scripts/build-site.js

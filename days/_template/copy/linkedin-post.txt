@@ -1,4 +1,4 @@
-[TEMPLATE. Rewrite every word for the day. Keep the shape: two line hook before "see more", short paragraphs, one question at the end, the tagline, three hashtags. No link in the post.]
+[TEMPLATE. Rewrite every word for the day. The first line is everything: it's the only line people see before "see more" under a big caption, so make it stop the scroll on its own (a surprising fact about the poster, a tension, a confession, a number). Under 12 words, no preamble, no "Day NN" in it. Then short paragraphs, one question at the end, the tagline, three hashtags. No link in the post.]
 
 60 seconds to write a prompt. Then I’m not allowed to touch it.
 

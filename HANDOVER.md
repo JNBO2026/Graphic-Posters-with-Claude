@@ -23,21 +23,23 @@ Day-NN_LinkedIn/
 
 ```
 Day-NN_Instagram/
+├── Reel/
+│   └── reel.mp4              10 s, 1080 × 1920: the carousel as one continuous piece of motion, cut to 120 BPM
 ├── Feed-carousel/            1080 × 1440 (3:4)
-│   ├── 1.png                 the poster, centred, crop marks and four small labels
+│   ├── 1.png                 the poster, centred, crop marks and four small labels (1.mp4 too when the poster moves)
 │   ├── 2.png                 the prompt: words in 60 seconds, and the phrases that shaped it
 │   ├── 3.png                 the numbers: word count large, time, edits, made with
 │   ├── 4.png                 how it was made, with the tools and their logos
-│   ├── 5.png                 follow and save
-│   └── caption.txt           the caption, ready to paste
-├── Story/
-│   ├── story.png             1080 × 1920: the poster over the ledger and the follow, clear of Instagram's top and bottom bars
-│   └── stickers.txt          link sticker (site) and a poll, with exact wording
+│   └── 5.png                 follow and save
+├── caption.txt               for the Reel and the carousel
+├── story-stickers.txt        link sticker and a poll, for when you share the carousel to your Story
 ├── how-to-post.txt           order of play and why
 └── dark-version/
-    ├── Feed-carousel/1.png to 5.png
-    └── Story/story.png
+    ├── Reel/reel-dark.mp4
+    └── Feed-carousel/1.png to 5.png
 ```
+
+Song suggestions for the Reel come in the handover message each day.
 
 ## Day-NN_Poster.zip
 
@@ -50,7 +52,7 @@ Day-NN_Poster/
 └── link.txt                  its page on the site
 ```
 
-Animated posters: the branded frames move too. The LinkedIn zip gets `post-video.mp4` (the single image layout with the poster playing in it, 1080 × 1350, post it instead of the carousel), the Instagram zip gets `Feed-carousel/1.mp4` (slide 1 moving) and `Story/story.mp4` (also works as a Reel), each with a dark version. The bare poster loop stays in the Poster zip as `poster-A3.mp4`.
+Animated posters: the branded frames move too. The LinkedIn zip gets `post-video.mp4` (the single image layout with the poster playing in it, 1080 × 1350, post it instead of the carousel), the Instagram zip gets `Feed-carousel/1.mp4` (slide 1 moving), and the poster plays inside the Reel, each with a dark version. The bare poster loop stays in the Poster zip as `poster-A3.mp4`.
 
 ## And without you doing anything
 

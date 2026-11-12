@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Thirty posters reel</title>
+<!-- Thirty posters Reel: 10 seconds, 1080 × 1920, one continuous piece of motion. ?theme=light|dark
+     The carousel's slides become one bento that rearranges itself: tiles grow, shrink and hand content to each other,
+     no cuts and no cross fades. Every change lands on the beat at 120 BPM (0.5 s): 0 poster, 2.5 the words, 5 the numbers, 7.5 follow and save.
+     scripts/render-reel.js passes the day in as window.DATA and calls window.__seek(t) for each frame. -->
+<link rel="stylesheet" href="../../../system/assets/fonts/fonts.css">
+<script src="../../../site/vendor/gsap.min.js"></script>
+<style>
+  :root { --paper:#FAFAF4; --raised:#EEEEE7; --sunken:#E1E1D9; --ink:#101010; --sec:rgba(16,16,16,.68); --line:rgba(16,16,16,.12); --line2:rgba(16,16,16,.24); --ground:#000; --acid:#67FF67; --r:10px; }
+  [data-theme="dark"] { --paper:#1A1A1A; --raised:#262626; --sunken:#121212; --ink:#FAFAF4; --sec:rgba(250,250,244,.62); --line:rgba(250,250,244,.14); --line2:rgba(250,250,244,.28); }
+  * { box-sizing:border-box; margin:0; }
+  html, body { background:#666; }
+  body { font-family:'Instrument Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased; font-kerning:normal; color:var(--ink); padding:20px; }
+  #reel { position:relative; width:360px; height:640px; background:var(--ground); overflow:hidden; }
+  .tile { position:absolute; background:var(--paper); border-radius:var(--r); overflow:hidden; }
+  .lab { font:500 12px/14px 'Instrument Sans'; color:var(--sec); }
+  .num { font-variant-numeric:tabular-nums; }
+  .lock { display:inline-flex; align-items:center; gap:6px; font:600 14px/16px 'Instrument Sans'; color:var(--ink); }
+  .lock svg { height:12px; width:auto; fill:currentColor; }
+  .lu { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; display:block; }
+  .mask { overflow:hidden; display:block; }
+  .mask > * { display:block; }
+  #stage { background:var(--sunken); }
+  #poster { position:absolute; display:block; box-shadow:0 4px 14px rgba(0,0,0,.2); }
+  .mark { position:absolute; background:var(--ink); opacity:.55; }
+  .corner { position:absolute; font:500 12px/14px 'Instrument Sans'; color:var(--sec); white-space:nowrap; }
+  .corner b { color:var(--ink); font-weight:600; }
+  .h-s { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; text-wrap:balance; }
+  .h-l { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.02em; }
+  .body { font:400 16px/24px 'Instrument Sans'; color:var(--sec); }
+  .kws { display:flex; flex-wrap:wrap; gap:6px; }
+  .kw { font:500 14px/16px 'Instrument Sans'; padding:7px 12px; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--line2); display:inline-block; }
+  #kwA { position:absolute; inset:16px; }
+  .big { display:block; font:600 158px/130px 'Instrument Sans'; letter-spacing:-.04em; font-variant-numeric:tabular-nums; margin-left:-6px; white-space:nowrap; }
+  .roll { display:inline-block; height:130px; overflow:hidden; vertical-align:top; }
+  .roll i { display:block; font-style:normal; white-space:pre; }
+  .v { font:600 28px/28px 'Instrument Sans'; letter-spacing:-.01em; font-variant-numeric:tabular-nums; }
+  #f1, #f1 .h { color:#101010; } #f1 .lab { color:rgba(16,16,16,.68); }
+  .acid { background:var(--acid); color:#101010; } .acid .lab { color:rgba(16,16,16,.68); }
+  .h { font:600 18px/18px 'Instrument Sans'; letter-spacing:-.01em; }
+  .logos { display:flex; gap:6px; } .logos svg { width:16px; height:16px; fill:currentColor; }
+</style>
+</head>
+<body>
+<div id="reel"></div>
+<script>
+(async () => {
+  const Q = new URLSearchParams(location.search), D = window.DATA;
+  document.documentElement.dataset.theme = Q.get('theme') === 'dark' ? 'dark' : 'light';
+  const pad = n => String(n).padStart(2, '0'), esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const lock = `<span class="lock"><svg viewBox="${D.mark.vb}">${D.mark.body}</svg>blame opal</span>`;
+  const day = `Day ${pad(D.day)} of ${D.total}`;
+  const LU = { follow: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>', save: '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>' };
+  const lucide = k => `<svg class="lu" viewBox="0 0 24 24">${LU[k]}</svg>`;
+  const digits = String(D.words).split('');
+  const E = (x1, y1, x2, y2) => { const A = (a, b) => 1 - 3 * b + 3 * a, B = (a, b) => 3 * b - 6 * a, C = a => 3 * a;
+    const f = (t, a, b) => ((A(a, b) * t + B(a, b)) * t + C(a)) * t, d = (t, a, b) => 3 * A(a, b) * t * t + 2 * B(a, b) * t + C(a);
+    return x => { if (x <= 0 || x >= 1) return x; let t = x; for (let i = 0; i < 8; i++) { const s = d(t, x1, x2); if (!s) break; t -= (f(t, x1, x2) - x) / s; } return f(t, y1, y2); }; };
+  const HOUSE = E(.2, .7, .2, 1), MOVE = E(.7, 0, .2, 1); // the house easing, and an ease in-out for tiles that travel
+
+  document.getElementById('reel').innerHTML = `
+    <div class="tile" id="stage"><img id="poster" src="${D.frames ? D.frames[0] : D.poster}" alt="">
+      <span class="corner" id="c-day"><span class="mask"><b>${day}</b></span></span>
+      <span class="corner" id="c-lock"><span class="mask">${lock}</span></span>
+      <span class="corner" id="c-words"><span class="mask"><span>${D.words} words in 60 seconds</span></span></span></div>
+    <div class="tile" id="t1" style="padding:16px">
+      <div id="kwA" class="blk"><span class="mask"><span class="lab">The prompt</span></span>
+        <span class="mask" style="margin-top:10px"><span class="h-s">${D.words} words in 60 seconds.</span></span>
+        <span class="mask"><span class="h-s">${D.keywords.length} did the work.</span></span>
+        <div class="kws" style="margin-top:14px">${D.keywords.map(k => `<span class="kw">${esc(k)}</span>`).join('')}</div></div>
+      <div id="numA" class="blk" style="position:absolute;left:16px;right:16px;top:16px;bottom:16px;display:flex;flex-direction:column;justify-content:space-between">
+        <span class="mask"><span class="lab">${day}</span></span>
+        <div><span class="mask"><span class="big">${digits.map(() => `<span class="roll"><i>0\n1\n2\n3\n4\n5\n6\n7\n8\n9</i></span>`).join('')}</span></span>
+          <span class="mask" style="margin-top:8px"><span class="h-s">words, spoken in one minute.</span></span></div></div>
+      <div id="ctaA" class="blk" style="position:absolute;left:16px;right:16px;top:16px;bottom:16px;display:flex;flex-direction:column;justify-content:space-between">
+        <span class="mask"><span class="lab">${day} · ${D.words} words in 60 seconds</span></span>
+        <div><span class="mask"><span class="h-l">Follow for</span></span><span class="mask"><span class="h-l">all 30.</span></span></div></div>
+    </div>
+    <div class="tile" id="t2" style="padding:12px"><div id="s1" class="blk" style="position:absolute;inset:12px;display:flex;flex-direction:column;justify-content:space-between"><span class="lab">Time</span><span class="mask"><span class="v">60 s</span></span></div>
+      <div id="f1" class="blk" style="position:absolute;inset:12px;display:flex;flex-direction:column;gap:14px">${lucide('follow')}<div><span class="lab">Follow</span><div class="h" style="margin-top:4px">@blameopal</div></div></div></div>
+    <div class="tile" id="t3" style="padding:12px"><div id="s2" class="blk" style="position:absolute;inset:12px;display:flex;flex-direction:column;justify-content:space-between"><span class="lab">Edits after</span><span class="mask"><span class="v">0</span></span></div></div>
+    <div class="tile" id="t4" style="padding:12px"><div id="s3" class="blk" style="position:absolute;inset:12px;display:flex;flex-direction:column;justify-content:space-between"><span class="lab">Made with</span><div><div class="logos">${D.tools.map(t => t.svg).join('')}</div><span class="mask" style="margin-top:6px"><span class="h" style="font-size:16px;line-height:18px">${esc(D.made)}</span></span></div></div>
+      <div id="f2" class="blk" style="position:absolute;inset:12px;display:flex;flex-direction:column;gap:14px">${lucide('save')}<div><span class="lab">Save it</span><div class="h" style="margin-top:4px">For the prompt</div></div></div></div>`;
+  await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  await document.fonts.ready;
+
+  // ---------- The four arrangements of the bento. Tiles not in a scene wait just below the frame ----------
+  const OFF = 644;
+  const S = {
+    A: { stage: [2, 2, 356, 636], t1: [2, OFF, 356, 334], t2: [2, OFF, 116, 146], t3: [120, OFF, 118, 146], t4: [240, OFF, 118, 146] },
+    B: { stage: [2, 2, 356, 300], t1: [2, 304, 356, 334], t2: [2, OFF, 116, 146], t3: [120, OFF, 118, 146], t4: [240, OFF, 118, 146] },
+    C: { stage: [2, 2, 356, 236], t1: [2, 240, 356, 250], t2: [2, 492, 116, 146], t3: [120, 492, 118, 146], t4: [240, 492, 118, 146] },
+    D: { stage: [2, 2, 356, 300], t1: [2, 304, 356, 180], t2: [2, 486, 236, 152], t3: [120, OFF, 118, 152], t4: [240, 486, 118, 152] },
+  };
+  const el = id => document.getElementById(id);
+  const box = (id, r) => ({ left: r[0], top: r[1], width: r[2], height: r[3] });
+  for (const id of Object.keys(S.A)) gsap.set(el(id), box(id, S.A[id]));
+
+  const tl = gsap.timeline({ paused: true, defaults: { ease: HOUSE } });
+  const go = (scene, at, dur = .5) => { for (const id of Object.keys(S[scene])) tl.to(el(id), { ...box(id, S[scene][id]), duration: dur, ease: MOVE }, at); };
+  // content arrives line by line from below its own mask, and leaves as one block upwards, clear of the tile
+  const lines = blk => `${blk} .mask > *`;
+  const enter = (blk, at, stagger = .08) => { tl.set(blk, { yPercent: 0 }, at); tl.fromTo(lines(blk), { yPercent: 105 }, { yPercent: 0, duration: .5, stagger }, at); };
+  const leave = (blk, at) => tl.to(blk, { yPercent: -150, duration: .4, ease: MOVE }, at);
+  gsap.set('#numA, #ctaA, #f1, #f2', { yPercent: 150 });
+
+  // 0 to 2.5: the poster alone. Crop marks draw on, labels rise, the poster breathes in a little
+  tl.fromTo('#stage .corner .mask > *', { yPercent: 105 }, { yPercent: 0, duration: .5, stagger: .08 }, .1);
+  // 2.5: the stage gives up its lower half to the words
+  tl.to('#stage .corner .mask > *', { yPercent: -105, duration: .3, stagger: .03, ease: MOVE }, 2.25);
+  go('B', 2.5);
+  tl.fromTo(lines('#kwA'), { yPercent: 105 }, { yPercent: 0, duration: .5, stagger: .08 }, 2.75);
+  tl.fromTo('#kwA .kw', { scale: 0 }, { scale: 1, duration: .35, stagger: .125, ease: E(.3, 1.5, .5, 1) }, 3.25);
+  // 5: the words fold away, the same tile becomes the count, three stat tiles rise underneath
+  tl.to('#kwA .kw', { scale: 0, duration: .25, stagger: { each: .02, from: 'end' }, ease: MOVE }, 4.6);
+  leave('#kwA', 4.8);
+  go('C', 5);
+  enter('#numA', 5.2);
+  // the count rolls up to the word total like the countdown clocks on the site
+  digits.forEach((dg, i) => tl.fromTo(`#numA .roll:nth-child(${i + 1}) i`, { y: 0 }, { y: -130 * +dg, duration: .9 + i * .15, ease: HOUSE }, 5.2));
+  tl.fromTo(lines('#s1') + ',' + lines('#s2') + ',' + lines('#s3'), { yPercent: 105 }, { yPercent: 0, duration: .45, stagger: .08 }, 5.45);
+  // 7.5: the stats hand over: the first tile stretches into the follow tile and turns acid, the middle one drops away, the third becomes save
+  leave('#numA', 7.2); leave('#s1', 7.2); leave('#s2', 7.25); leave('#s3', 7.3);
+  go('D', 7.5);
+  tl.to('#t2', { backgroundColor: '#67FF67', color: '#101010', duration: .3, ease: MOVE }, 7.6);
+  enter('#ctaA', 7.75);
+  enter('#f1', 7.9); enter('#f2', 8);
+  tl.fromTo('#f1 .lu, #f2 .lu, #f1 .lab, #f1 .h, #f2 .lab, #f2 .h', { yPercent: 105 }, { yPercent: 0, duration: .45, stagger: .05 }, 7.9);
+  // 9: one nudge on the save icon, on the beat, then hold
+  tl.to('#f2 .lu', { y: -6, duration: .15, ease: MOVE, yoyo: true, repeat: 1 }, 9);
+  tl.set({}, {}, 10);
+
+  // ---------- The poster sits inside the stage at every size, with its crop marks and labels ----------
+  const st = el('stage'), img = el('poster');
+  st.insertAdjacentHTML('beforeend', Array.from({ length: 8 }, () => '<i class="mark"></i>').join(''));
+  const marks = [...st.querySelectorAll('.mark')];
+  function place(t) {
+    const W = st.offsetWidth, H = st.offsetHeight, k = Math.min(1, Math.max(0, (H - 300) / 336)); // 1 when the stage fills the frame, 0 when it's a band
+    const side = 18 + 22 * k, topPad = 22 + 58 * k, botPad = 22 + 140 * k;
+    let h = H - topPad - botPad, w = h / 1.4142; if (w > W - 2 * side) { w = W - 2 * side; h = w * 1.4142; }
+    const breathe = 1 + .03 * Math.min(1, t / 2.5);
+    w *= breathe; h *= breathe; const x = (W - w) / 2, y = topPad + (H - topPad - botPad - h) / 2;
+    Object.assign(img.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });
+    const draw = Math.min(1, Math.max(0, t / .6)) * k, g = 6, L = 10 * draw;
+    [[x, y, -1, -1], [x + w, y, 1, -1], [x, y + h, -1, 1], [x + w, y + h, 1, 1]].forEach(([cx, cy, dx, dy], i) => {
+      Object.assign(marks[i * 2].style, { left: (dx < 0 ? cx - g - L : cx + g) + 'px', top: cy - .5 + 'px', width: L + 'px', height: '1px' });
+      Object.assign(marks[i * 2 + 1].style, { left: cx - .5 + 'px', top: (dy < 0 ? cy - g - L : cy + g) + 'px', width: '1px', height: L + 'px' }); });
+    const ly = y - 32; Object.assign(el('c-day').style, { left: x + 'px', top: ly + 'px' });
+    Object.assign(el('c-lock').style, { right: W - x - w + 'px', top: ly - 1 + 'px' });
+    Object.assign(el('c-words').style, { left: x + 'px', top: y + h + 18 + 'px' });
+  }
+  // corners that sit on the frame's own edge are square, the rest keep the 10px radius
+  const R = el('reel'), tiles = [...R.querySelectorAll('.tile')];
+  const corners = () => tiles.forEach(t => { const l = t.offsetLeft < 4, r = t.offsetLeft + t.offsetWidth > 356, tp = t.offsetTop < 4, b = t.offsetTop + t.offsetHeight > 636;
+    t.style.borderRadius = [tp && l, tp && r, b && r, b && l].map(q => q ? '0' : '10px').join(' '); });
+  let lastFrame = -1;
+  window.__seek = async t => {
+    tl.seek(t, false); place(t); corners();
+    if (D.frames) { const f = Math.floor(t * 30) % D.frames.length; if (f !== lastFrame) { lastFrame = f; img.src = D.frames[f]; await img.decode().catch(() => {}); } }
+  };
+  await window.__seek(0);
+  document.body.dataset.ready = '1';
+})();
+</script>
+</body>
+</html>

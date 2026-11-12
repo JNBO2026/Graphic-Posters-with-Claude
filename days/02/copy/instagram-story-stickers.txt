@@ -6,4 +6,4 @@ Poll sticker
   Question: Can you see the knot?
   Options: Clear as day / Only just
 
-Place both stickers in the middle of the frame, clear of the poster's headline. Keep the top 72px and bottom 96px empty, Instagram covers them.
+Share the carousel to your Story first, then place both stickers below the poster, clear of the top and bottom bars.

@@ -3,19 +3,19 @@
 //   ig-1..5      Instagram carousel, 1080 × 1440
 //   li-1..5      LinkedIn document carousel, 1080 × 1350 (packed into a PDF by package-day.js)
 //   li-single    LinkedIn single image, 1080 × 1350
-//   story        Instagram Story, 1080 × 1920
+//   (the Instagram Reel is scripts/render-reel.js; there's no Story frame: James shares the carousel to his Story)
 // Output: days/NN/social/export/NAME-THEME.png
-// Animated posters also get NAME-THEME.mp4 for li-single, story and ig-1: the same frame with poster.mp4 playing in the poster's place.
+// Animated posters also get NAME-THEME.mp4 for li-single and ig-1: the same frame with poster.mp4 playing in the poster's place.
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs'), { execFileSync } = require('child_process');
 const day = process.argv[2], root = path.resolve(__dirname, '..');
 const data = require('./social-data.js')(day);
 const out = path.join(root, 'days', day, 'social', 'export');
 const tpl = 'file://' + path.join(root, 'days', '_template', 'social', 'frames.html');
-const jobs = [], holes = {}, MOTION = ['li-single', 'story', 'ig-1'];
+const jobs = [], holes = {}, MOTION = ['li-single', 'ig-1'];
 const VIDEO = fs.existsSync(path.join(root, 'days', day, 'poster.mp4')) ? path.join(root, 'days', day, 'poster.mp4') : null;
 for (let s = 1; s <= 5; s++) { jobs.push([`ig-${s}`, 'ig-post', s]); jobs.push([`li-${s}`, 'li-portrait', s]); }
-jobs.push(['li-single', 'li-portrait', 'single'], ['story', 'ig-story', 'single']);
+jobs.push(['li-single', 'li-portrait', 'single']);
 
 (async () => {
   fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
