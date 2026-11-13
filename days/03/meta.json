@@ -1,0 +1,10 @@
+{
+  "day": 3,
+  "date": "2026-11-13",
+  "started_at": "2026-11-13T08:06:30Z",
+  "title": "Heard through the eye.",
+  "note": "A frog's iris read as heat, with the prompt itself rippling off it in rings of monospaced type.",
+  "process": "[[Flora: Nano Banana Pro]] made the macro photograph of the frog's eye at 4K. [[Claude Code]] cropped it to the iris and remapped every pixel's brightness to a thermal ironbow palette in [[Canvas]], then set the prompt itself in [[Google Fonts]] IBM Plex Mono as fifteen rings around the eye, each bent by a waveform that grows as it travels outwards, cooling from white hot to violet.",
+  "tools": ["Claude Code", "Flora: Nano Banana Pro", "Canvas", "Google Fonts", "Playwright"],
+  "keywords": ["detailed zoomed in photo of a frog's iris", "layers of text", "going around it", "audio effect coming off the eyeball", "incredibly detailed", "generative AI MCPs", "monotype", "heat map"]
+}

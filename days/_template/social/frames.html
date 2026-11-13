@@ -97,7 +97,7 @@
       <div class="tile pad grow"><span class="lab">What shaped the poster</span><div class="kws" style="margin-top:12px">${D.keywords.map(k => `<span class="kw">${esc(k)}</span>`).join('')}</div></div>` + foot(2);
   } else if (slide === '3') {
     html = `<div class="tile pad grow" style="display:flex;flex-direction:column;justify-content:space-between"><span class="lab">${day}</span><div><div class="big">${D.words}</div><p class="h-s" style="margin-top:8px">words, spoken in one minute.</p></div></div>
-      <div class="row" style="height:96px"><div class="tile stat"><span class="lab">Time</span><span class="v">60 s</span></div><div class="tile stat"><span class="lab">Edits after</span><span class="v">0</span></div><div class="tile stat"><span class="lab">Made with</span><span class="v" style="font-size:18px;line-height:18px">${esc(D.made)}</span></div></div>` + foot(3);
+      <div class="row" style="height:96px"><div class="tile stat"><span class="lab">Time</span><span class="v">60 s</span></div><div class="tile stat"><span class="lab">Edits after</span><span class="v">0</span></div><div class="tile stat"><span class="lab">Made with</span><span class="v" style="font-size:16px;line-height:18px;text-wrap:balance">${esc(D.made)}</span></div></div>` + foot(3);
   } else if (slide === '4') {
     html = `<div class="tile pad grow" style="display:flex;flex-direction:column;gap:12px"><span class="lab">How it was made</span><p class="body" id="proc">${esc(D.process)}</p></div>
       <div class="tile pad" style="padding-top:12px;padding-bottom:12px"><div class="kws">${D.tools.map(t => `<span class="tl">${t.svg}${esc(t.label)}</span>`).join('')}</div></div>` + foot(4);

@@ -1,0 +1,9 @@
+Link sticker
+  Text: Steal the prompt
+  URL: {{LINK}}
+
+Poll sticker
+  Question: What gets you first?
+  Options: The eye / The type
+
+Share the carousel to your Story first, then place both stickers below the poster, clear of the top and bottom bars.

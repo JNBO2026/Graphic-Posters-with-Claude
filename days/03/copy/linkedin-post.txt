@@ -1,0 +1,15 @@
+My prompt is now orbiting a frog’s eyeball.
+
+Day 03 of 30. 104 words, spoken in a minute: a zoomed in frog’s iris, incredibly detailed, text coming off it like sound, mono type, the colours of a heat map.
+
+First day it reached for an image model. Flora’s Nano Banana Pro made the eye at 4K. Everything after that is code: every pixel re-read as heat, then my own prompt set in fifteen rings round the iris, each one bent by a waveform that gets louder the further it travels.
+
+I said “monotype”. It read that as monospaced and set the lot in IBM Plex Mono. Fair call.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+Would you have used the prompt as the type, or written something new?
+
+we give a sh*t.
+
+#ClaudeCode #AIDesign #GraphicDesign

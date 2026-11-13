@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Day 03: Heard through the eye.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#04020C; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script src="eye.js"></script>
+<script>
+  // the prompt itself is the sound coming off the eye
+  window.PROMPT = "So I want you to create a detailed zoomed in photo of a frog's iris, and emanating from around this iris, I want there to be layers of text that are going around it and emanating almost like you would kind of have with an audio effect coming off the eyeball. Make sure that the eye is incredibly detailed. You can use any of my generative AI MCPs to generate this visual should you need to. The typography around the outside, I would like this to be monotype. And I would like the treatment of the image and colors to follow a heat map.";
+
+window.__ready = (async () => {
+  const W = 1240, H = 1754, M = 64, dpr = window.devicePixelRatio || 1;
+  const CX = W / 2, CY = 812, IRIS = 300; // the eye's centre and the radius of the iris disc
+  const FONT = 'IBM Plex Mono';
+  await Promise.all(['400 14px', '500 14px', '600 14px'].map(w => document.fonts.load(`${w} "${FONT}"`)));
+
+  // ---------- The heat map: an ironbow thermal palette, cold to hot ----------
+  const STOPS = [[0, [4, 2, 12]], [.14, [22, 8, 70]], [.3, [92, 10, 132]], [.46, [186, 22, 108]], [.6, [236, 64, 40]], [.74, [250, 140, 18]], [.88, [255, 214, 70]], [1, [255, 252, 232]]];
+  const heat = t => { t = Math.min(1, Math.max(0, t)); let i = 0; while (i < STOPS.length - 2 && t > STOPS[i + 1][0]) i++;
+    const [a, ca] = STOPS[i], [b, cb] = STOPS[i + 1], k = (t - a) / (b - a); return ca.map((v, j) => Math.round(v + (cb[j] - v) * k)); };
+  const LUT = Array.from({ length: 256 }, (_, i) => heat(i / 255));
+  const rgb = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+  const cv = document.getElementById('c'); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  const x = cv.getContext('2d'); x.scale(dpr, dpr);
+  x.fillStyle = rgb(heat(0)); x.fillRect(0, 0, W, H);
+
+  // ---------- The eye: the photograph, read as heat ----------
+  const img = new Image(); img.src = window.EYE; await img.decode();
+  const S = Math.round(IRIS * 2 * 1.06 * dpr); // the eye drawn at device resolution, a touch larger than the disc
+  const ec = document.createElement('canvas'); ec.width = ec.height = S; const ex = ec.getContext('2d');
+  const crop = { x: .5, y: .5, s: 1 }; // eye.js is already cropped to the eye // centre and size of the iris in the source, as fractions
+  const sw = img.width * crop.s; ex.drawImage(img, img.width * crop.x - sw / 2, img.height * crop.y - sw / 2, sw, sw, 0, 0, S, S);
+  const d = ex.getImageData(0, 0, S, S), p = d.data, lum = new Float32Array(S * S);
+  for (let i = 0, n = 0; i < p.length; i += 4, n++) lum[n] = .2126 * p[i] + .7152 * p[i + 1] + .0722 * p[i + 2];
+  // stretch the tones between the 1st and 99.5th percentile so the whole palette gets used
+  const sorted = Float32Array.from(lum).sort(), lo = sorted[Math.floor(lum.length * .01)], hi = sorted[Math.floor(lum.length * .995)];
+  for (let n = 0, i = 0; n < lum.length; n++, i += 4) {
+    const r = Math.hypot(n % S - S / 2, Math.floor(n / S) - S / 2) / (S / 2);
+    let t = (lum[n] - lo) / (hi - lo); t = Math.pow(Math.min(1, Math.max(0, t)), .9);
+    t *= 1 - Math.pow(Math.max(0, r - .86) / .14, 2) * .9; // cools toward the rim of the disc
+    const c = LUT[Math.max(0, Math.min(255, Math.round(t * 255)))]; p[i] = c[0]; p[i + 1] = c[1]; p[i + 2] = c[2]; p[i + 3] = r > 1 ? 0 : 255;
+  }
+  ex.putImageData(d, 0, 0);
+
+  // ---------- Sound coming off the eye: rings of monospaced type, bent by a waveform that grows as it travels ----------
+  const words = (window.PROMPT || '').replace(/\s+/g, ' ').trim().split(' ');
+  const RINGS = 15, R0 = IRIS + 26, GAP = 31;
+  // a few sine partials, like the shape of a sound, offset ring to ring so the waves read as moving outwards
+  const wave = (a, i) => Math.sin(a * 6 + i * .22) * .55 + Math.sin(a * 11 - i * .3) * .3 + Math.sin(a * 3 + i * .12) * .4 + Math.sin(a * 17 + i * .5) * .15;
+  // the swell: louder on some bearings than others, like a level meter
+  const env = a => .55 + .45 * Math.pow(Math.sin(a * 2 + .6) * .5 + .5, 1.5);
+  let w = 0;
+  x.textBaseline = 'middle'; x.textAlign = 'center';
+  for (let i = 0; i < RINGS; i++) {
+    const f = i / (RINGS - 1), size = 13 + f * 5, amp = 3 + Math.pow(f, 1.35) * 58, base = R0 + i * GAP + Math.pow(f, 1.3) * 26;
+    x.font = `${i < 3 ? 600 : 500} ${size}px "${FONT}"`;
+    const col = heat(.94 - f * .72);
+    // fill this ring with the prompt, word after word, carrying on from the last ring
+    let a = -Math.PI / 2 + i * .21;
+    let s = '';
+    while (true) { const nxt = words[w % words.length] + ' '; const len = x.measureText(s + nxt).width; if (len / base > Math.PI * 2 - .04) break; s += nxt; w++; }
+    // track the ring out so its text closes up all the way round, no gap where it starts and ends
+    const track = (Math.PI * 2 * base - x.measureText(s).width) / s.length;
+    for (const ch of s) {
+      const cw = x.measureText(ch).width + track, mid = a + cw / 2 / base;
+      const r = base + amp * wave(mid, i) * env(mid);
+      // past the top and bottom of the page the ring is simply cut by the margin
+      const px = CX + Math.cos(mid) * r, py = CY + Math.sin(mid) * r;
+      if (px > M && px < W - M && py > M + 64 && py < H - M - 132) {
+        x.save(); x.translate(px, py); x.rotate(mid + Math.PI / 2); x.fillStyle = rgb(col, 1 - f * .25); x.fillText(ch, 0, 0); x.restore();
+      }
+      a += cw / base;
+    }
+  }
+
+  // the eye goes over the type, with a hot halo where they meet
+  const g = x.createRadialGradient(CX, CY, IRIS * .9, CX, CY, IRIS * 1.14);
+  g.addColorStop(0, rgb(heat(.55), .55)); g.addColorStop(1, rgb(heat(.2), 0));
+  x.fillStyle = g; x.beginPath(); x.arc(CX, CY, IRIS * 1.14, 0, 7); x.fill();
+  x.save(); x.beginPath(); x.arc(CX, CY, IRIS, 0, 7); x.clip();
+  x.drawImage(ec, CX - IRIS * 1.06, CY - IRIS * 1.06, IRIS * 2.12, IRIS * 2.12); x.restore();
+
+  // ---------- The instrument: a thermal camera's readout around the page ----------
+  const ink = rgb(heat(.9)), dim = rgb(heat(.62));
+  const txt = (s, X, Y, align = 'left', weight = 500, size = 14, col = ink) => { x.font = `${weight} ${size}px "${FONT}"`; x.textAlign = align; x.textBaseline = 'alphabetic'; x.fillStyle = col; x.fillText(s, X, Y); };
+  txt('THIRTY POSTERS', M, M + 14); txt('NO. 03 / 30', M, M + 34, 'left', 400, 14, dim);
+  txt('IRIS / RANA SP.', W - M, M + 14, 'right'); txt('MACRO, THERMAL READ', W - M, M + 34, 'right', 400, 14, dim);
+  // crosshair ticks on the eye, like a camera's target
+  x.strokeStyle = rgb(heat(.9), .9); x.lineWidth = 1.5;
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { x.beginPath(); x.moveTo(CX + dx * (IRIS + 6), CY + dy * (IRIS + 6)); x.lineTo(CX + dx * (IRIS + 18), CY + dy * (IRIS + 18)); x.stroke(); }
+  // the scale: the palette as a bar, cold to hot, with its readings
+  const by = H - M - 54, bw = W - 2 * M;
+  for (let i = 0; i < bw; i++) { x.fillStyle = rgb(heat(i / bw)); x.fillRect(M + i, by, 1.2, 12); }
+  [['18.0°', 0], ['21.5°', .25], ['25.0°', .5], ['28.5°', .75], ['32.0°C', 1]].forEach(([s, k]) => txt(s, M + bw * k, by - 10, k === 0 ? 'left' : k === 1 ? 'right' : 'center', 400, 13, dim));
+  txt('HEARD THROUGH THE EYE', M, H - M, 'left', 600, 14);
+  txt('13.11.2026', W - M, H - M, 'right', 400, 14, dim);
+  document.body.dataset.ready = '1';
+})();
+</script>
+</body>
+</html>
