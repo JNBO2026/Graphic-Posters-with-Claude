@@ -1,0 +1,10 @@
+{
+  "day": 4,
+  "date": "2026-11-14",
+  "started_at": "2026-11-14T03:10:00Z",
+  "title": "Resolution.",
+  "note": "A supercar built from 3.2 million dots: a photograph from a distance, stippling up close, seen through the word itself.",
+  "process": "[[Flora: Nano Banana Pro]] made the black and white studio photograph of an unbranded supercar at 4K. [[Claude Code]] turned it into 3,273,408 dots in [[Canvas]], one per half pixel, placed by error diffusion with a little noise so they never line up. The top half shows them all; the bottom half redraws the dots around the front wheel eight times larger. The word RESOLUTION, in [[Google Fonts]] Anton with each letter fitted to its own cell, masks both.",
+  "tools": ["Claude Code", "Flora: Nano Banana Pro", "Canvas", "Google Fonts", "Playwright"],
+  "keywords": ["supercar", "created completely out of pixels", "stippling", "almost going to look like a black and white photograph", "50-50 split", "close-up showing all of the stippling", "extremely high resolution", "typography resolution", "mask the image", "filling the whole page"]
+}

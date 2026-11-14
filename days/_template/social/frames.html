@@ -43,8 +43,9 @@
 
   /* slide 2: keyword pills */
   .kws { display:flex; flex-wrap:wrap; gap:6px; align-content:flex-start; }
-  .kw { font:500 14px/16px 'Instrument Sans'; padding:7px 12px; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--line2); }
+  .kw { font:500 14px/16px 'Instrument Sans'; padding:7px 12px; border-radius:16px; box-shadow:inset 0 0 0 1.5px var(--line2); display:inline-block; max-width:100%; }
 
+  .kws.tight { gap:5px; } .kws.tight .kw { font:500 12px/14px 'Instrument Sans'; padding:5px 10px; }
   /* slide 3: numbers */
   .big { font:600 158px/130px 'Instrument Sans'; letter-spacing:-.04em; font-variant-numeric:tabular-nums; margin-left:-6px; }
   .stat { flex:1; padding:12px; display:flex; flex-direction:column; justify-content:space-between; gap:12px; }
@@ -127,6 +128,8 @@
     lab(`${D.words} words in 60 seconds`, `left:${x}px;bottom:${ty}px`);
     lab(`1 / ${N}`, `right:${W - x - w}px;bottom:${ty}px`);
   }
+  // many or long key phrases: the pills tighten so they always fit
+  const kwt = document.querySelector('.tile.grow > .kws'); if (kwt && (kwt.parentElement.scrollHeight > kwt.parentElement.clientHeight || kwt.scrollWidth > kwt.clientWidth || [...kwt.children].some(k => k.offsetHeight > 34))) kwt.classList.add('tight');
   // long write-ups step down to body small so they always fit
   const proc = document.getElementById('proc');
   if (proc && proc.parentElement.scrollHeight > proc.parentElement.clientHeight) proc.classList.add('sm');

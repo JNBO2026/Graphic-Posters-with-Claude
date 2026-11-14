@@ -1,0 +1,13 @@
+Reel (the one for reach)
+1. New Reel, upload Reel/reel.mp4 (10 seconds, 1080 × 1920). Every change in it lands on a 120 BPM beat, so pick one of the songs from the handover and line the start of the track up with the first frame.
+2. Paste caption.txt. Pick the poster moment (around 1 second in) as the cover.
+3. Turn on "Also share to feed".
+
+Carousel (the one for saves)
+1. New post, select all five in Feed-carousel/ in order: 1 to 5 (1080 × 1440). 1 is the poster, 5 asks for the follow and the save.
+2. Paste caption.txt. Make sure the site link is in your bio. The caption says "link in bio".
+
+Story
+Share the carousel to your Story, then add the stickers in story-stickers.txt: the link sticker first, then the poll.
+
+Saves and shares count for the most, so answer comments fast in the first hour. Dark versions are in dark-version/ if you’d rather.

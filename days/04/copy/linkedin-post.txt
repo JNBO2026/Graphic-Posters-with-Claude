@@ -1,0 +1,15 @@
+This supercar is 3,273,408 dots. I counted. Well, Claude did.
+
+Day 04 of 30. 107 words, spoken in a minute: a supercar made completely out of pixels, stippled so densely it passes for a black and white photograph. Then a 50/50 split, with the bottom half zoomed in to show the dots doing the work. And the word resolution masking the lot.
+
+Flora’s Nano Banana Pro made the photograph. Everything after that is code. Every dot is either on or off, one per half pixel, placed so they never quite line up. The bottom half is the front wheel, the same dots, eight times closer.
+
+From across the room it’s a photo. Up close it’s a lie made of full stops.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+How close do you have to get before you stop seeing the car?
+
+we give a sh*t.
+
+#ClaudeCode #AIDesign #GraphicDesign

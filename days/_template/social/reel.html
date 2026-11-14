@@ -33,8 +33,9 @@
   .h-l { font:600 44px/44px 'Instrument Sans'; letter-spacing:-.02em; }
   .body { font:400 16px/24px 'Instrument Sans'; color:var(--sec); }
   .kws { display:flex; flex-wrap:wrap; gap:6px; }
-  .kw { font:500 14px/16px 'Instrument Sans'; padding:7px 12px; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--line2); display:inline-block; }
+  .kw { font:500 14px/16px 'Instrument Sans'; padding:7px 12px; border-radius:16px; box-shadow:inset 0 0 0 1.5px var(--line2); display:inline-block; max-width:100%; }
   #kwA { position:absolute; inset:16px; }
+  .kws.tight { gap:5px; } .kws.tight .kw { font:500 12px/14px 'Instrument Sans'; padding:5px 10px; }
   .big { display:block; font:600 158px/130px 'Instrument Sans'; letter-spacing:-.04em; font-variant-numeric:tabular-nums; margin-left:-6px; white-space:nowrap; }
   .roll { display:inline-block; height:130px; overflow:hidden; vertical-align:top; }
   .roll i { display:block; font-style:normal; white-space:pre; }
@@ -87,6 +88,9 @@
       <div id="f2" class="blk" style="position:absolute;inset:12px;display:flex;flex-direction:column;gap:14px">${lucide('save')}<div><span class="lab">Save it</span><div class="h" style="margin-top:4px">For the prompt</div></div></div></div>`;
   await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
   await document.fonts.ready;
+
+  // many or long key phrases: the pills tighten so they fit the words tile (302 px of content height)
+  if (document.getElementById('kwA').scrollHeight > 302 || [...document.querySelectorAll('#kwA .kw')].some(k => k.offsetHeight > 34)) document.querySelector('#kwA .kws').classList.add('tight');
 
   // ---------- The four arrangements of the bento. Tiles not in a scene wait just below the frame ----------
   const OFF = 644;

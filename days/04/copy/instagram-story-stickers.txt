@@ -1,0 +1,9 @@
+Link sticker
+  Text: Steal the prompt
+  URL: {{LINK}}
+
+Poll sticker
+  Question: Photo or dots?
+  Options: Photo / Dots
+
+Share the carousel to your Story first, then place both stickers below the poster, clear of the top and bottom bars.
