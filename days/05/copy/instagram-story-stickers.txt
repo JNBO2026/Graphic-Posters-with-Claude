@@ -1,0 +1,9 @@
+Link sticker
+  Text: Steal the prompt
+  URL: {{LINK}}
+
+Poll sticker
+  Question: Which one do you need today?
+  Options: Start before ready / Done beats perfect
+
+Share the carousel to your Story first, then place both stickers below the poster, clear of the top and bottom bars.

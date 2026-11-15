@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Day 05: Motivation on loop.</title>
+<meta name="poster-motion" content="12">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@500;700&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#0E0F12; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<script src="three.min.js"></script><!-- three.js r160, MIT -->
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, LOOP = 12, dpr = window.devicePixelRatio || 1;
+  await Promise.all(['400 100px "Archivo Black"', '500 20px "JetBrains Mono"', '700 20px "JetBrains Mono"'].map(f => document.fonts.load(f)));
+
+  // ---------- The board: 8 flaps across, 5 rows. Row one counts the loop, rows two to five carry the message ----------
+  const COLS = 8, ROWS = 5;
+  const MSGS = [
+    ['LOOP 1/3', 'START', 'BEFORE', 'YOU FEEL', 'READY'],
+    ['LOOP 2/3', 'DONE', 'BEATS', 'PERFECT', 'TODAY'],
+    ['LOOP 3/3', 'SHOW UP', 'AGAIN', 'TOMORROW', 'TOO'],
+  ];
+  const CHARS = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ123/';
+  const FLIP_AT = [2.4, 6.4, 10.4], STEP = .13;   // each message holds, then the board flips to the next; one flap takes 0.13 s
+
+  // ---------- Every character gets its own colour and its own pattern. The letter itself stays plain, big and high contrast ----------
+  const COLOURS = ['#E63946', '#F4A261', '#2A9D8F', '#E9C46A', '#3A86FF', '#FF006E', '#8338EC', '#06D6A0', '#FB5607', '#118AB2', '#FFBE0B', '#9B5DE5', '#00BBF9', '#F15BB5', '#80B918', '#EF476F', '#0077B6', '#FF7B00', '#43AA8B', '#D62828', '#7209B7', '#F9C74F', '#4361EE', '#F3722C', '#2EC4B6', '#C1121F', '#FFD166', '#4CC9F0', '#B5179E', '#52B788'];
+  const TW = 384, TH = 576;
+  const lum = h => { const [r, g, b] = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * r + .7152 * g + .0722 * b; };
+  const PATTERNS = [
+    (x, c) => { for (let i = -TH; i < TW; i += 44) { x.beginPath(); x.moveTo(i, TH); x.lineTo(i + TH, 0); x.lineTo(i + TH + 18, 0); x.lineTo(i + 18, TH); x.fill(); } },            // diagonal stripes
+    (x, c) => { for (let yy = 22; yy < TH; yy += 44) for (let xx = 22 + (yy / 44 % 2) * 22; xx < TW; xx += 44) { x.beginPath(); x.arc(xx, yy, 7, 0, 7); x.fill(); } },                 // dots
+    (x, c) => { for (let i = 0; i < TW; i += 48) x.fillRect(i, 0, 6, TH); for (let i = 0; i < TH; i += 48) x.fillRect(0, i, TW, 6); },                                              // grid
+    (x, c) => { x.lineWidth = 10; for (let r = 40; r < 520; r += 46) { x.beginPath(); x.arc(TW / 2, TH / 2, r, 0, 7); x.stroke(); } },                                              // rings
+    (x, c) => { for (let i = 0; i < TH; i += 56) x.fillRect(0, i, TW, 20); },                                                                                                       // bands
+    (x, c) => { x.lineWidth = 12; for (let yy = -20; yy < TH + 60; yy += 52) { x.beginPath(); for (let xx = 0; xx <= TW; xx += 48) x.lineTo(xx, yy + (xx / 48 % 2 ? 26 : 0)); x.stroke(); } }, // zigzag
+    (x, c) => { for (let yy = 0; yy < TH; yy += 64) for (let xx = (yy / 64 % 2) * 64; xx < TW; xx += 128) x.fillRect(xx, yy, 64, 64); },                                            // checks
+    (x, c) => { x.beginPath(); x.arc(0, TH, 330, 0, 7); x.fill(); x.beginPath(); x.arc(TW, 0, 170, 0, 7); x.fill(); },                                                              // corner circles
+    (x, c) => { x.lineWidth = 9; for (let yy = 10; yy < TH + 30; yy += 40) { x.beginPath(); for (let xx = 0; xx <= TW; xx += 6) x.lineTo(xx, yy + Math.sin(xx / 30) * 12); x.stroke(); } }, // waves
+    (x, c) => { for (let i = 0; i < TW; i += 40) x.fillRect(i, 0, 14, TH); },                                                                                                       // pinstripes
+    (x, c) => { for (let yy = 0; yy < TH; yy += 72) for (let xx = (yy / 72 % 2) * 36; xx < TW + 36; xx += 72) { x.beginPath(); x.moveTo(xx, yy); x.lineTo(xx + 30, yy + 36); x.lineTo(xx, yy + 72); x.lineTo(xx - 30, yy + 36); x.fill(); } }, // diamonds
+    (x, c) => { x.beginPath(); x.moveTo(0, 0); x.lineTo(TW, 0); x.lineTo(0, TH); x.fill(); },                                                                                       // half split
+    (x, c) => { for (let yy = 30; yy < TH; yy += 60) for (let xx = 30; xx < TW; xx += 60) { x.fillRect(xx - 16, yy - 3, 32, 6); x.fillRect(xx - 3, yy - 16, 6, 32); } },            // plus signs
+  ];
+  const tex = {}, mat = {};
+  [...CHARS].forEach((ch, i) => {
+    const cv = document.createElement('canvas'); cv.width = TW; cv.height = TH; const x = cv.getContext('2d');
+    if (ch === ' ') { x.fillStyle = '#1B1C21'; x.fillRect(0, 0, TW, TH); x.fillStyle = 'rgba(255,255,255,.035)'; for (let yy = 16; yy < TH; yy += 32) for (let xx = 16; xx < TW; xx += 32) x.fillRect(xx, yy, 3, 3); }
+    else {
+      const bg = COLOURS[(i - 1) % COLOURS.length], dark = lum(bg) > .3;
+      x.fillStyle = bg; x.fillRect(0, 0, TW, TH);
+      // the pattern sits tone on tone, never loud enough to fight the letter
+      x.fillStyle = x.strokeStyle = dark ? 'rgba(0,0,0,.13)' : 'rgba(255,255,255,.15)'; PATTERNS[(i - 1) % PATTERNS.length](x, i);
+      if (i > PATTERNS.length) { x.fillStyle = dark ? 'rgba(0,0,0,.1)' : 'rgba(255,255,255,.12)'; x.fillRect(0, 0, TW, 26); x.fillRect(0, TH - 26, TW, 26); } // second lap of patterns gets a rule top and bottom
+      x.fillStyle = dark ? '#111114' : '#FFF8E8'; x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.font = '400 400px "Archivo Black"';
+      const m = x.measureText(ch), s = Math.min(1, (TW - 56) / (m.actualBoundingBoxLeft + m.actualBoundingBoxRight));
+      x.save(); x.translate(TW / 2, TH / 2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2 * s); x.scale(s, s); x.fillText(ch, (m.actualBoundingBoxLeft - m.actualBoundingBoxRight) / 2, 0); x.restore();
+    }
+    const base = new THREE.CanvasTexture(cv); base.colorSpace = THREE.SRGBColorSpace; base.anisotropy = 8;
+    const half = top => { const t = base.clone(); t.repeat.set(1, .5); t.offset.set(0, top ? .5 : 0); t.needsUpdate = true;
+      return new THREE.MeshStandardMaterial({ map: t, roughness: .62, metalness: 0, shadowSide: THREE.DoubleSide }); };
+    mat[ch] = { top: half(true), bot: half(false) };
+  });
+
+  // ---------- The scene ----------
+  const canvas = document.getElementById('gl');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(dpr); renderer.setSize(W, H, false);
+  renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const scene = new THREE.Scene(); scene.background = new THREE.Color('#0E0F12');
+  const cam = new THREE.PerspectiveCamera(24, W / H, 1, 100);
+
+  const std = (color, rough = .7, metal = 0) => new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal });
+  const box = (w, h, d, m, x, y, z, cast = true, recv = true) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.castShadow = cast; o.receiveShadow = recv; scene.add(o); return o; };
+
+  const FW = 1, FH = .74, G = .012, PX = 1.12, PY = 1.66;           // flap width and height, the split, the pitch
+  const BX = -(COLS - 1) * PX / 2, BY = 3.2 - PY / 2;               // centre of the first module
+  // wall, case, the recess the flaps sit in
+  box(40, 40, .2, std('#0E0F12', .95), 0, 0, -1.2, false, true);
+  box(9.62, 13.04, .9, std('#1A1B20', .55, .3), 0, 0, -.62);
+  box(9.2, 8.52, .1, std('#0B0B0E', .9), 0, 3.2 - ROWS * PY / 2, -.14, false, true);
+  // slats between the rows and dividers between the columns: they stand proud, so the moving light drags their shadows across the flaps
+  const railM = std('#2A2C33', .45, .55);
+  for (let r = 0; r <= ROWS; r++) box(9.24, .1, .44, railM, 0, 3.2 - r * PY, .04);
+  for (let c = 0; c <= COLS; c++) box(.07, ROWS * PY, .4, railM, BX - PX / 2 + c * PX, 3.2 - ROWS * PY / 2, -.02);
+  // spindles and bearing caps
+  const spM = std('#8D9099', .3, .9), capM = std('#C9CBD1', .25, 1);
+  for (let r = 0; r < ROWS; r++) { const s = new THREE.Mesh(new THREE.CylinderGeometry(.022, .022, 9.1, 12), spM); s.rotation.z = Math.PI / 2; s.position.set(0, BY - r * PY, -.03); s.castShadow = true; scene.add(s); }
+  // screws on the case
+  for (const [sx, sy] of [[-4.55, 6.24], [4.55, 6.24], [-4.55, -6.24], [4.55, -6.24], [-4.55, 3.42], [4.55, 3.42], [-4.55, -5.32], [4.55, -5.32]]) { const s = new THREE.Mesh(new THREE.CylinderGeometry(.07, .07, .05, 20), capM); s.rotation.x = Math.PI / 2; s.position.set(sx, sy, -.15); s.castShadow = true; scene.add(s); }
+
+  // the title plate, enamel yellow on black like a station sign
+  const plate = (w, h, y, draw) => { const cv = document.createElement('canvas'); cv.width = 2048; cv.height = Math.round(2048 * h / w); const x = cv.getContext('2d'); draw(x, cv.width, cv.height);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+    box(w + .1, h + .1, .08, std('#2A2C33', .45, .55), 0, y, -.16);
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: t, roughness: .38 })); p.position.set(0, y, -.118); p.receiveShadow = true; scene.add(p); };
+  plate(9.1, 2.5, 4.83, (x, w, h) => { x.fillStyle = '#0C0C0F'; x.fillRect(0, 0, w, h);
+    x.fillStyle = '#FFD23F'; x.textBaseline = 'alphabetic'; x.font = '400 232px "Archivo Black"'; x.letterSpacing = '-4px';
+    x.textAlign = 'left'; x.fillText('MOTIVATION', 70, 268); x.fillText('ON LOOP', 70, 488);
+    x.letterSpacing = '2px'; x.font = '700 34px "JetBrains Mono"'; x.textAlign = 'right'; x.fillStyle = '#FFF8E8';
+    x.fillText('PLATFORM 05', w - 70, 344); x.fillStyle = 'rgba(255,248,232,.6)'; x.font = '500 34px "JetBrains Mono"';
+    x.fillText('DEPARTS: NOW', w - 70, 392); x.fillText('CALLING AT: TODAY', w - 70, 440); x.fillText('ALL DAY, EVERY DAY', w - 70, 488);
+    // the loop arrow: a ring with a gap and a head
+    x.strokeStyle = '#FFD23F'; x.lineWidth = 16; x.lineCap = 'butt'; x.beginPath(); x.arc(w - 150, 180, 70, -.2, Math.PI * 1.5); x.stroke();
+    x.beginPath(); x.moveTo(w - 152, 80); x.lineTo(w - 108, 110); x.lineTo(w - 152, 140); x.closePath(); x.fill(); });
+  plate(9.1, .62, -5.74, (x, w, h) => { x.fillStyle = '#0C0C0F'; x.fillRect(0, 0, w, h); x.textBaseline = 'middle'; x.letterSpacing = '2px'; x.font = '500 34px "JetBrains Mono"';
+    x.fillStyle = 'rgba(255,248,232,.6)'; x.textAlign = 'left'; x.fillText('THIRTY POSTERS  05 / 30', 70, h / 2 + 2);
+    x.textAlign = 'center'; x.fillText('3 MESSAGES  40 FLAPS  12 S', w / 2, h / 2 + 2); x.textAlign = 'right'; x.fillText('15.11.2026', w - 70, h / 2 + 2); });
+
+  // ---------- The flaps. Each module: a fixed top half, a fixed bottom half, and one leaf that falls from one to the other ----------
+  const flapG = new THREE.PlaneGeometry(FW, FH), edgeM = std('#101014', .6);
+  const mods = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    const g = new THREE.Group(); g.position.set(BX + c * PX, BY - r * PY, 0); scene.add(g);
+    const top = new THREE.Mesh(flapG, mat[' '].top), bot = new THREE.Mesh(flapG, mat[' '].bot);
+    top.position.y = FH / 2 + G; bot.position.y = -FH / 2 - G; top.receiveShadow = bot.receiveShadow = true; top.castShadow = bot.castShadow = true;
+    const leaf = new THREE.Group(); leaf.position.z = .012;
+    const front = new THREE.Mesh(flapG, mat[' '].top), back = new THREE.Mesh(flapG, mat[' '].bot), body = new THREE.Mesh(new THREE.BoxGeometry(FW, FH, .012), edgeM);
+    front.position.set(0, FH / 2 + G, .008); back.position.set(0, FH / 2 + G, -.008); back.rotation.x = Math.PI; body.position.y = FH / 2 + G;
+    for (const o of [front, back, body]) { o.castShadow = true; o.receiveShadow = true; }
+    leaf.add(front, back, body); g.add(top, bot, leaf);
+    mods.push({ r, c, top, bot, leaf, front, back });
+  }
+  const charAt = (m, r, c) => (MSGS[m][r][c] || ' ');
+  const hash = n => { let t = Math.imul(n ^ 0x9E3779B9, 0x85EBCA6B); t ^= t >>> 13; t = Math.imul(t, 0xC2B2AE35); return ((t ^ t >>> 16) >>> 0) / 4294967296; };
+  // the run of characters a flap passes through on its way from one message to the next
+  const runs = mods.map((m, i) => [0, 1, 2].map(k => { const a = charAt(k, m.r, m.c), b = charAt((k + 1) % 3, m.r, m.c); if (a === b) return [a];
+    const n = 3 + Math.floor(hash(i * 31 + k * 7) * 5), seq = [a]; for (let s = 1; s < n; s++) { let ch, tries = 0; do ch = CHARS[1 + Math.floor(hash(i * 131 + k * 17 + s * 53 + tries++ * 977) * 26)]; while (ch === seq[seq.length - 1] || ch === b); seq.push(ch); } seq.push(b); return seq; }));
+
+  // ---------- Light: one key light that travels right round the board once per loop, so every shadow keeps moving ----------
+  scene.add(new THREE.HemisphereLight('#DDE6FF', '#20140C', .55));
+  const key = new THREE.DirectionalLight('#FFF1DC', 3.1); key.castShadow = true; key.shadow.mapSize.set(4096, 4096);
+  Object.assign(key.shadow.camera, { left: -7, right: 7, top: 8.5, bottom: -8.5, near: 1, far: 50 }); key.shadow.bias = -.0004; key.shadow.normalBias = .012; key.shadow.radius = 3;
+  scene.add(key, key.target);
+  const fill = new THREE.DirectionalLight('#9EC1FF', .5); fill.position.set(0, -2, 14); scene.add(fill);
+
+  function draw(t) {
+    t = ((t % LOOP) + LOOP) % LOOP;
+    mods.forEach((m, i) => {
+      // which message, or which flip, is this flap in?
+      let cur = charAt(0, m.r, m.c), nxt = null, ang = 0;
+      for (let k = 0; k < 3; k++) { const seq = runs[i][k], u = (t - FLIP_AT[k] - m.c * .035 - m.r * .06) / STEP;
+        if (u < 0) break; const n = seq.length - 1;
+        if (u >= n) { cur = seq[n]; nxt = null; continue; }
+        const s = Math.floor(u), f = u - s; cur = seq[s]; nxt = seq[s + 1]; ang = Math.PI * Math.pow(f, 1.7); } // it falls like a leaf under gravity: slow off the top, fast into the bottom
+      if (nxt === null) { m.top.material = mat[cur].top; m.bot.material = mat[cur].bot; m.leaf.visible = false; }
+      else { m.top.material = mat[nxt].top; m.bot.material = mat[cur].bot; m.front.material = mat[cur].top; m.back.material = mat[nxt].bot; m.leaf.visible = true; m.leaf.rotation.x = ang; }
+    });
+    const a = t / LOOP * Math.PI * 2 + Math.PI * .75;
+    key.position.set(Math.cos(a) * 10, Math.sin(a) * 8 + 2, 7.5);
+    // the camera drifts a little too, so the depth of the case and the slats reads
+    const b = t / LOOP * Math.PI * 2; cam.position.set(Math.sin(b) * 1.1, Math.cos(b) * .7 - .2, 36.2); cam.lookAt(0, 0, 0);
+    renderer.render(scene, cam); renderer.getContext().finish();
+  }
+  draw(0);
+  document.body.dataset.ready = '1';
+  return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>

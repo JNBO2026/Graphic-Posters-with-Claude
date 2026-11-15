@@ -1,0 +1,17 @@
+I told Claude not to just use code. It built a train station.
+
+Day 05 of 30. 122 words, spoken in a minute: a split-flap display, the kind that clatters through departures, flipping through three motivational messages. Every character its own colour and design. Real 3D. Light that moves so the shadows change.
+
+It built the whole board in three.js: 40 modules, each with a leaf that actually falls from the top half to the bottom, inside a case with slats and spindles. One light circles the board every 12 seconds, so no two frames cast the same shadow.
+
+The voice to text heard “Vesta flat split”. It worked out I meant split-flap and got on with it.
+
+Start before you feel ready. Done beats perfect today. Show up again tomorrow too. On loop, as asked.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+Which of the three do you need to hear this week?
+
+we give a sh*t.
+
+#ClaudeCode #ThreeJS #MotionDesign

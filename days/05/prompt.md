@@ -1,0 +1,3 @@
+I need you to create a detailed illustration of a Vesta flat split display, the ones that you would typically have at a train station where the characters flip over. I want this to animate through three motivational messages and I want every single character to have a very distinct design and colour to it whilst keeping the messaging very clear and precise.
+
+Make sure that somewhere in this design it's titled "Motivation on Loop". Try and utilise 3D techniques as much as possible in this. Even shift the light so that different shadows are cast as the letters flip through. Try and push the boundaries on this. Do not just use code. Try and implement industry-leading techniques like three.js and WebGL.

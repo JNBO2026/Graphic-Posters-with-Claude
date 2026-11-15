@@ -1,0 +1,10 @@
+{
+  "day": 5,
+  "date": "2026-11-15",
+  "started_at": "2026-11-15T09:01:30Z",
+  "title": "Motivation on loop.",
+  "note": "A split-flap station board in real 3D, flipping through three messages while the light circles it.",
+  "process": "Code only, no generative model. [[Claude Code]] built the board as a real 3D scene in [[Three.js]] and [[WebGL]]: 40 split-flap modules, each with two fixed halves and a leaf that falls between them, inside a case with slats, spindles and a title plate. One light travels right round the board every 12 seconds, casting soft shadows from the slats and the falling flaps. Each of the 30 characters has its own colour and pattern, drawn in [[Canvas]] with [[Google Fonts]] Archivo Black, and [[FFmpeg]] turned the frames into the loop.",
+  "tools": ["Claude Code", "Three.js", "WebGL", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["Vesta flat split display", "characters flip over", "three motivational messages", "very distinct design and colour", "very clear and precise", "Motivation on Loop", "3D techniques", "shift the light", "different shadows are cast", "three.js and WebGL"]
+}

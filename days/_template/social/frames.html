@@ -45,6 +45,7 @@
   .kws { display:flex; flex-wrap:wrap; gap:6px; align-content:flex-start; }
   .kw { font:500 14px/16px 'Instrument Sans'; padding:7px 12px; border-radius:16px; box-shadow:inset 0 0 0 1.5px var(--line2); display:inline-block; max-width:100%; }
 
+  .kws.tightest { gap:4px; } .kws.tightest .kw { padding:4px 9px; }
   .kws.tight { gap:5px; } .kws.tight .kw { font:500 12px/14px 'Instrument Sans'; padding:5px 10px; }
   /* slide 3: numbers */
   .big { font:600 158px/130px 'Instrument Sans'; letter-spacing:-.04em; font-variant-numeric:tabular-nums; margin-left:-6px; }
@@ -110,6 +111,8 @@
   }
   document.getElementById('out').innerHTML = `<div class="frame ${fmt}" data-frame data-format="${fmt}">${html}</div>`;
   await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  // fonts first: everything below measures text
+  await Promise.all(['400 14px', '500 14px', '600 14px'].map(f => document.fonts.load(`${f} "Instrument Sans"`))); await document.fonts.ready;
 
   // slide 1: the poster exactly centred, the same margin left and right, with crop marks and labels sitting on its edges
   const st = document.getElementById('stage');
@@ -129,7 +132,12 @@
     lab(`1 / ${N}`, `right:${W - x - w}px;bottom:${ty}px`);
   }
   // many or long key phrases: the pills tighten so they always fit
-  const kwt = document.querySelector('.tile.grow > .kws'); if (kwt && (kwt.parentElement.scrollHeight > kwt.parentElement.clientHeight || kwt.scrollWidth > kwt.clientWidth || [...kwt.children].some(k => k.offsetHeight > 34))) kwt.classList.add('tight');
+  const kwt = document.querySelector('.tile.grow > .kws');
+  if (kwt) { const over = () => kwt.parentElement.scrollHeight > kwt.parentElement.clientHeight + 1 || kwt.scrollWidth > kwt.clientWidth;
+    if (over() || [...kwt.children].some(k => k.offsetHeight > 34)) kwt.classList.add('tight');
+    if (over()) kwt.classList.add('tightest');
+    // still too many: drop from the end and say how many more there are
+    let cut = 0; while (over() && kwt.children.length > 2) { if (cut) kwt.lastElementChild.remove(); kwt.lastElementChild.remove(); cut++; kwt.insertAdjacentHTML('beforeend', `<span class="kw">+${cut} more</span>`); } }
   // long write-ups step down to body small so they always fit
   const proc = document.getElementById('proc');
   if (proc && proc.parentElement.scrollHeight > proc.parentElement.clientHeight) proc.classList.add('sm');
@@ -137,7 +145,6 @@
   const F = document.querySelector('.frame').getBoundingClientRect();
   document.querySelectorAll('.frame .tile').forEach(t => { const r = t.getBoundingClientRect(), Lf = r.left - F.left < 4, R = F.right - r.right < 4, T = r.top - F.top < 4, B = F.bottom - r.bottom < 4;
     t.style.borderRadius = [T && Lf, T && R, B && R, B && Lf].map(sq => sq ? '0' : 'var(--r)').join(' '); });
-  await document.fonts.ready;
   document.body.dataset.ready = '1';
 })();
 </script>
