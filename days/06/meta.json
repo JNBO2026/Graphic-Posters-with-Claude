@@ -1,0 +1,11 @@
+{
+  "day": 6,
+  "date": "2026-11-16",
+  "started_at": "2026-11-16T07:15:00Z",
+  "title": "bruh.",
+  "note": "An anime London rider on a lime green e-bike, turning a full circle behind and through the word bruh, dithered like an old screen.",
+  "process": "[[Flora: Nano Banana Pro]] designed the character, an anime London youth in a colour-blocked hoodie on a lime green rental e-bike, as a 3D render, then put them on flat magenta. [[Flora: Kling v4]] turned that into a 10 second 360 degree turntable that ends where it starts. [[Claude Code]] keys the rider out of the magenta in a [[WebGL]] shader, sets bruh in [[Google Fonts]] Unbounded behind them with a hairline outline in front, and dithers the whole poster against a Bayer matrix shifted per colour channel, coarse on the background and fine on the rider.",
+  "made": "Nano Banana Pro + Kling",
+  "tools": ["Claude Code", "Flora: Nano Banana Pro", "Flora: Kling v4", "WebGL", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["hyper-realistic 3D character", "anime character", "rotating in the middle", "vibrant", "London youth with a hoodie", "riding a Lime bike", "typography across the middle", "bruh", "grain textures", "dithering"]
+}

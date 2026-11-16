@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
+<!-- frames/ is made from turntable.mp4 (Flora, Kling v4): ffmpeg -i turntable.mp4 -vf fps=30 -t 10 -q:v 2 frames/f%04d.jpg -->
 <meta charset="utf-8">
 <title>Day 06: bruh.</title>
 <meta name="poster-motion" content="10">
@@ -32,6 +33,10 @@ const READY = (async () => {
   const m = t.measureText('bruh'), gw = m.actualBoundingBoxLeft + m.actualBoundingBoxRight, gh = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
   const s = (W - 2 * M) / gw, cy = window.TYPE_Y || H * .5;
   t.save(); t.translate(M, cy - gh * s / 2); t.scale(s, s); t.fillText('bruh', m.actualBoundingBoxLeft, m.actualBoundingBoxAscent); t.restore();
+  // the same word again as a hairline outline, laid over the rider, so it still reads where they cross it
+  const oc = document.createElement('canvas'); oc.width = PW; oc.height = PH; const o = oc.getContext('2d'); o.scale(dpr, dpr);
+  o.font = '900 400px Unbounded'; o.letterSpacing = '-18px'; o.textBaseline = 'alphabetic'; o.strokeStyle = '#FFF4E4'; o.lineJoin = 'round';
+  o.save(); o.translate(M, cy - gh * s / 2); o.scale(s, s); o.lineWidth = 2.6 / s; o.strokeText('bruh', m.actualBoundingBoxLeft, m.actualBoundingBoxAscent); o.restore();
   t.letterSpacing = '1px';
   const lab = (a, b, x, y, align) => { t.textAlign = align; t.font = '700 22px "JetBrains Mono"'; t.fillText(a, x, y); t.font = '500 22px "JetBrains Mono"'; t.globalAlpha = .72; t.fillText(b, x, y + 30); t.globalAlpha = 1; };
   lab('THIRTY POSTERS', '06 / 30', M, M + 18, 'left');
@@ -46,7 +51,7 @@ const READY = (async () => {
   const pr = gl.createProgram();
   gl.attachShader(pr, sh(gl.VERTEX_SHADER, `attribute vec2 p; varying vec2 uv; void main(){ uv = p * .5 + .5; gl_Position = vec4(p, 0., 1.); }`));
   gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, `
-    precision highp float; varying vec2 uv; uniform sampler2D tRide, tType; uniform vec2 res; uniform vec4 box; uniform float cell;
+    precision highp float; varying vec2 uv; uniform sampler2D tRide, tType, tLine; uniform vec2 res; uniform vec4 box; uniform float cell;
     float bay(vec2 p){ p = mod(floor(p), 8.); float v = 0., m = 1.;
       for (int i = 0; i < 3; i++) { float bx = mod(floor(p.x / m), 2.), by = mod(floor(p.y / m), 2.); v = v * 4. + (by * 2. + mod(bx + by, 2.)); m *= 2.; }
       return (v + .5) / 64.; }
@@ -66,6 +71,7 @@ const READY = (async () => {
         a *= smoothstep(0., .015, ru.x) * smoothstep(0., .015, 1. - ru.x) * smoothstep(0., .015, ru.y) * smoothstep(0., .015, 1. - ru.y);
       }
       col = mix(col, rc, a);
+      vec4 ln = texture2D(tLine, pu); col = mix(col, vec3(1., .957, .894), ln.a * a);   // the outline only shows where the rider covers the word
       // the dither: each channel quantised against an 8 x 8 Bayer matrix, the matrix shifted per channel so the grain breaks into colour like an old screen
       float lv = mix(3., 10., a);                                 // the background gets three levels a channel, the rider ten
       vec3 thr = vec3(bay(cp), bay(cp + vec2(3., 1.)), bay(cp + vec2(1., 5.)));
@@ -80,8 +86,8 @@ const READY = (async () => {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     if (src) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src); return tx; };
-  const rideTex = mk(0, null); mk(1, tc);
-  gl.uniform1i(gl.getUniformLocation(pr, 'tRide'), 0); gl.uniform1i(gl.getUniformLocation(pr, 'tType'), 1);
+  const rideTex = mk(0, null); mk(1, tc); mk(2, oc);
+  gl.uniform1i(gl.getUniformLocation(pr, 'tRide'), 0); gl.uniform1i(gl.getUniformLocation(pr, 'tType'), 1); gl.uniform1i(gl.getUniformLocation(pr, 'tLine'), 2);
   gl.uniform2f(gl.getUniformLocation(pr, 'res'), PW, PH); gl.uniform1f(gl.getUniformLocation(pr, 'cell'), 2 * dpr);
   // where the video sits on the page, as fractions: centred, as wide as the margins allow
   const B = window.RIDE_BOX || { x: 72, y: 330, w: 1096, h: 1096 };

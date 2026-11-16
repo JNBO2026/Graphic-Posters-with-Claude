@@ -1,0 +1,15 @@
+A full 3D turnaround, all to say bruh.
+
+Day 06 of 30. 101 words, spoken in a minute: a hyper-real anime character, Unreal or Octane quality, a London kid in a hoodie on a Lime-style bike, rotating in the middle. Vibrant. The word bruh across the middle. Dithered grain.
+
+First day using two models in a row. Nano Banana Pro designed the character as a 3D render. Kling turned it into a 360 degree turntable that lands back where it started, so it loops. Then code: keying the rider off a magenta background, setting bruh behind them with an outline in front so it still reads, and a dither I’ve not seen before, each colour channel shifted so the grain splits like an old telly.
+
+Honest bit: it also built a proper 3D model, then couldn’t download it. The turntable is a video of the render, not a live model.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+Which would you rather: real-time 3D, or a render that looks this good?
+
+we give a sh*t.
+
+#ClaudeCode #3DDesign #MotionDesign

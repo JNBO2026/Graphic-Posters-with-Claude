@@ -63,6 +63,8 @@
   .follow .h { font:600 18px/18px 'Instrument Sans'; letter-spacing:-.01em; }
   .plats { display:flex; align-items:center; gap:8px; }
   .ledger { padding:4px 12px; display:flex; flex-direction:column; justify-content:center; }
+  .lr > span:first-child { white-space:nowrap; flex:none; }
+  .lr .mw { min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; margin-left:8px; }
   .lr { display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; box-shadow:inset 0 -1px 0 var(--line); font:500 12px/14px 'Instrument Sans'; }
   .lr:last-child { box-shadow:none; } .lr span:first-child { color:var(--sec); }
   /* story: Instagram covers the top 72 px and bottom 96 px of 1920, so nothing that reads sits there */
@@ -90,7 +92,7 @@
   if (slide === 'single') {
     html = `<div class="tile poster"><img src="${D.poster}" alt=""></div>
       <div class="row last" style="height:${fmt === 'ig-story' ? 152 : 112}px">
-        <div class="tile ledger" style="flex:1.5"><div class="lr"><span>${day}</span><span class="num">${D.date}</span></div><div class="lr"><span>Prompt</span><span class="num">${D.words} words</span></div><div class="lr"><span>Time to prompt</span><span class="num">60 seconds</span></div><div class="lr"><span>Made with</span><span>${esc(D.made)}</span></div></div>
+        <div class="tile ledger" style="flex:1.5"><div class="lr"><span>${day}</span><span class="num">${D.date}</span></div><div class="lr"><span>Prompt</span><span class="num">${D.words} words</span></div><div class="lr"><span>Time to prompt</span><span class="num">60 seconds</span></div><div class="lr"><span>Made with</span><span class="mw">${esc(D.made)}</span></div></div>
         <div class="tile follow acid" style="flex:1"><span class="lab">Follow all 30</span><span class="h">@blameopal</span>${plats}</div></div>`;
   } else if (slide === '1') {
     html = `<div class="tile stage" id="stage"><img id="pimg" src="${D.poster}" alt=""></div>`;
@@ -99,7 +101,7 @@
       <div class="tile pad grow"><span class="lab">What shaped the poster</span><div class="kws" style="margin-top:12px">${D.keywords.map(k => `<span class="kw">${esc(k)}</span>`).join('')}</div></div>` + foot(2);
   } else if (slide === '3') {
     html = `<div class="tile pad grow" style="display:flex;flex-direction:column;justify-content:space-between"><span class="lab">${day}</span><div><div class="big">${D.words}</div><p class="h-s" style="margin-top:8px">words, spoken in one minute.</p></div></div>
-      <div class="row" style="height:96px"><div class="tile stat"><span class="lab">Time</span><span class="v">60 s</span></div><div class="tile stat"><span class="lab">Edits after</span><span class="v">0</span></div><div class="tile stat"><span class="lab">Made with</span><span class="v" style="font-size:16px;line-height:18px;text-wrap:balance">${esc(D.made)}</span></div></div>` + foot(3);
+      <div class="row" style="height:96px"><div class="tile stat"><span class="lab">Time</span><span class="v">60 s</span></div><div class="tile stat"><span class="lab">Edits after</span><span class="v">0</span></div><div class="tile stat"><span class="lab">Made with</span><span class="v mwv" style="font-size:16px;line-height:18px;text-wrap:balance">${esc(D.made)}</span></div></div>` + foot(3);
   } else if (slide === '4') {
     html = `<div class="tile pad grow" style="display:flex;flex-direction:column;gap:12px"><span class="lab">How it was made</span><p class="body" id="proc">${esc(D.process)}</p></div>
       <div class="tile pad" style="padding-top:12px;padding-bottom:12px"><div class="kws">${D.tools.map(t => `<span class="tl">${t.svg}${esc(t.label)}</span>`).join('')}</div></div>` + foot(4);
@@ -138,6 +140,9 @@
     if (over()) kwt.classList.add('tightest');
     // still too many: drop from the end and say how many more there are
     let cut = 0; while (over() && kwt.children.length > 2) { if (cut) kwt.lastElementChild.remove(); kwt.lastElementChild.remove(); cut++; kwt.insertAdjacentHTML('beforeend', `<span class="kw">+${cut} more</span>`); } }
+  // a long Made with steps down a size in its stat tile, then a second, so it never spills
+  const mwv = document.querySelector('.mwv'); if (mwv) { const t = mwv.closest('.tile'), over = () => t.scrollHeight > t.clientHeight + 1;
+    if (over()) Object.assign(mwv.style, { fontSize: '14px', lineHeight: '16px' }); if (over()) Object.assign(mwv.style, { fontSize: '12px', lineHeight: '14px' }); }
   // long write-ups step down to body small so they always fit
   const proc = document.getElementById('proc');
   if (proc && proc.parentElement.scrollHeight > proc.parentElement.clientHeight) proc.classList.add('sm');
