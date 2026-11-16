@@ -24,9 +24,11 @@ module.exports = function socialData(day) {
   const crop = meta.social_crop || { x: .06, y: .05, w: .5 };
   // the visual development log, when there is one: days/NN/dev/dev.json, each step an image, a verdict (kept, cut, fixed) and one line on why
   const devFile = path.join(dir, 'dev', 'dev.json');
-  const dev = fs.existsSync(devFile) ? JSON.parse(fs.readFileSync(devFile, 'utf8')).map(d => ({ ...d, img: 'file://' + path.join(dir, 'dev', d.img) })) : [];
+  const dev = fs.existsSync(devFile) ? JSON.parse(fs.readFileSync(devFile, 'utf8')).map(d => ({ ...d, img: 'file://' + path.join(dir, 'dev', d.img), zoom: d.zoom ? 'file://' + path.join(dir, 'dev', d.zoom) : null })) : [];
+  // Instagram grid checkerboard: odd days dark, even days light (day 05 dark, day 06 light). THEME=light|dark overrides
+  const theme = process.env.THEME || (meta.day % 2 === 0 ? 'light' : 'dark');
   return {
-    dev,
+    theme, dev,
     day: meta.day, total: 30, title: meta.title, words: prompt.split(/\s+/).length, made, prompt,
     keywords: (meta.keywords || []).map(k => typeof k === 'string' ? k : k.text),
     process: (meta.process || '').replace(/\[\[([^\]]+)\]\]/g, '$1'), tools,

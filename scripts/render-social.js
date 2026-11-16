@@ -1,10 +1,10 @@
 // Usage: node scripts/render-social.js 01
 // Renders the day's social frames from days/_template/social/frames.html, light and dark, at full size (scale 3):
-//   ig-1..5      Instagram carousel, 1080 × 1440
-//   li-1..5      LinkedIn document carousel, 1080 × 1350 (packed into a PDF by package-day.js)
+//   ig-1..N      Instagram carousel, 1080 × 1440 (5, plus the development slides when days/NN/dev/dev.json exists)
+//   li-1..N      LinkedIn document carousel, 1080 × 1350 (packed into a PDF by package-day.js)
 //   li-single    LinkedIn single image, 1080 × 1350
 //   (the Instagram Reel is scripts/render-reel.js; there's no Story frame: James shares the carousel to his Story)
-// Output: days/NN/social/export/NAME-THEME.png
+// Output: days/NN/social/export/NAME-THEME.png, in the day's theme only (odd days dark, even days light, see social-data.js)
 // Animated posters also get NAME-THEME.mp4 for li-single and ig-1: the same frame with poster.mp4 playing in the poster's place.
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs'), { execFileSync } = require('child_process');
@@ -14,15 +14,20 @@ const out = path.join(root, 'days', day, 'social', 'export');
 const tpl = 'file://' + path.join(root, 'days', '_template', 'social', 'frames.html');
 const jobs = [], holes = {}, MOTION = ['li-single', 'ig-1'];
 const VIDEO = fs.existsSync(path.join(root, 'days', day, 'poster.mp4')) ? path.join(root, 'days', day, 'poster.mp4') : null;
-for (let s = 1; s <= 5; s++) { jobs.push([`ig-${s}`, 'ig-post', s]); jobs.push([`li-${s}`, 'li-portrait', s]); }
+// the carousel: poster, words, numbers, how it was made, then the development (a contact sheet, and a before and after for each
+// real choice or graphic fix in the log), then follow and save. Frame 1 never changes
+const pairs = (data.dev || []).filter(d => d.then != null).length;
+const order = ['1', '2', '3', '4', ...(data.dev.length ? ['dev&dev=a', ...Array.from({ length: pairs }, (_, i) => `dev&dev=b&pair=${i}`)] : []), '5'];
+order.forEach((sl, i) => { jobs.push([`ig-${i + 1}`, 'ig-post', `${sl}&pg=${i + 1}&of=${order.length}`]); jobs.push([`li-${i + 1}`, 'li-portrait', `${sl}&pg=${i + 1}&of=${order.length}`]); });
 jobs.push(['li-single', 'li-portrait', 'single']);
 
 (async () => {
   // clear this script's own exports only: the Reel lives here too
   fs.mkdirSync(out, { recursive: true });
   for (const f of fs.readdirSync(out)) if (!f.startsWith('reel-')) fs.rmSync(path.join(out, f), { force: true });
+  fs.writeFileSync(path.join(out, 'slides.json'), JSON.stringify({ theme: data.theme, count: order.length }));
   const b = await chromium.launch(), errs = [];
-  for (const theme of ['light', 'dark']) for (const [name, fmt, slide] of jobs) {
+  for (const theme of [data.theme]) for (const [name, fmt, slide] of jobs) {
     const p = await b.newPage({ viewport: { width: 420, height: 700 }, deviceScaleFactor: 3 });
     p.on('pageerror', e => errs.push(`${name}: ${e.message}`));
     await p.addInitScript(d => { window.DATA = d; }, data);
@@ -48,5 +53,5 @@ jobs.push(['li-single', 'li-portrait', 'single']);
   }
   if (Object.keys(holes).length) console.log('videos', Object.keys(holes).length);
   if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
-  console.log('exported', jobs.length * 2, 'frames to', out);
+  console.log('exported', jobs.length, data.theme, 'frames to', out);
 })();

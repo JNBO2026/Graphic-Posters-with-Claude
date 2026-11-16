@@ -1,5 +1,6 @@
 // Usage: node scripts/render-reel.js 02
-// The Instagram Reel: days/_template/social/reel.html played frame by frame, 10 s at 30 fps, 1080 × 1920, light and dark.
+// The Instagram Reel: days/_template/social/reel.html played frame by frame at 30 fps, 1080 × 1920, in the day's theme:
+// 10 s, or 12.5 s when the day has a development log.
 // Animated posters play inside it: their poster.mp4 frames are swapped in as the Reel runs.
 // Output: days/NN/social/export/reel-light.mp4 and reel-dark.mp4
 const { chromium } = require('playwright');
@@ -8,7 +9,7 @@ const day = process.argv[2], root = path.resolve(__dirname, '..'), dir = path.jo
 const data = require('./social-data.js')(day);
 const out = path.join(dir, 'social', 'export'); fs.mkdirSync(out, { recursive: true });
 const tpl = 'file://' + path.join(root, 'days', '_template', 'social', 'reel.html');
-const SECS = 10, FPS = 30;
+const FPS = 30;
 (async () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'reel-'));
   const video = path.join(dir, 'poster.mp4');
@@ -18,13 +19,14 @@ const SECS = 10, FPS = 30;
     data.frames = fs.readdirSync(pf).sort().map(f => 'file://' + path.join(pf, f));
   }
   const b = await chromium.launch(), errs = [];
-  for (const theme of ['light', 'dark']) {
+  for (const theme of [data.theme]) {
     const p = await b.newPage({ viewport: { width: 400, height: 680 }, deviceScaleFactor: 3 });
     p.on('pageerror', e => errs.push(e.message));
     await p.addInitScript(d => { window.DATA = d; }, data);
     await p.goto(`${tpl}?theme=${theme}`);
     await p.waitForFunction(() => document.body.dataset.ready, null, { timeout: 20000 });
     const frames = path.join(tmp, theme); fs.mkdirSync(frames);
+    const SECS = await p.evaluate(() => window.REEL_SECS || 10);
     const reel = await p.$('#reel');
     for (let i = 0; i < SECS * FPS; i++) {
       await p.evaluate(t => window.__seek(t), i / FPS);
@@ -36,5 +38,5 @@ const SECS = 10, FPS = 30;
   }
   await b.close(); fs.rmSync(tmp, { recursive: true, force: true });
   if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
-  console.log('reel: 10 s, light and dark, in', out);
+  console.log('reel:', data.theme, 'in', out);
 })();

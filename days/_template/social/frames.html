@@ -75,7 +75,7 @@
   .pair { display:grid; grid-template-columns:1fr 1fr; gap:2px; flex:1; min-height:0; }
   .pair .tile { padding:10px; display:flex; flex-direction:column; gap:8px; }
   .pair .ph { flex:1; min-height:0; }
-  .pair .ph img { object-fit:contain; }
+  .pair .ph img { object-fit:contain; } .pair .ph.zoom img { object-fit:cover; }
   /* option C: the ledger */
   .devrow { display:grid; grid-template-columns:44px 1fr auto; gap:10px; align-items:center; padding:6px 0; box-shadow:inset 0 -1px 0 var(--line); }
   .devrow:last-child { box-shadow:none; }
@@ -148,7 +148,7 @@
       const pairs = dv.filter(d => d.then != null && dv[d.then]).map(d => [d, dv[d.then]]);
       const pr = pairs[+(Q.get('pair') || 0)] || pairs[0];
       html = `<div class="tile pad"><span class="lab">The good, the bad and the ugly · ${+(Q.get('pair') || 0) + 1} of ${pairs.length}</span><p class="h-s" style="margin-top:10px">${esc(pr[0].why)}</p></div>
-        <div class="pair"><div class="tile"><span class="lab">${esc(pr[0].step)}</span>${ph(pr[0], null)}</div><div class="tile"><span class="lab">${esc(pr[1].step)}</span>${ph(pr[1], null)}</div></div>` + foot(PG);
+        <div class="pair"><div class="tile"><span class="lab">${esc(pr[0].step)}</span>${ph({ ...pr[0], img: pr[0].zoom || pr[0].img }, null).replace('class="ph', pr[0].zoom ? 'class="ph zoom' : 'class="ph')}</div><div class="tile"><span class="lab">${esc(pr[1].step)}</span>${ph({ ...pr[1], img: pr[1].zoom || pr[1].img }, null).replace('class="ph', pr[1].zoom ? 'class="ph zoom' : 'class="ph')}</div></div>` + foot(PG);
     }
   } else if (slide === '5') {
     html = `<div class="tile pad grow" style="display:flex;flex-direction:column;justify-content:space-between"><span class="lab">${day} · ${D.words} words in 60 seconds</span>
