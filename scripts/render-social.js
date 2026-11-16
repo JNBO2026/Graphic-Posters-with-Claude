@@ -16,7 +16,7 @@ const jobs = [], holes = {}, MOTION = ['li-single', 'ig-1'];
 const VIDEO = fs.existsSync(path.join(root, 'days', day, 'poster.mp4')) ? path.join(root, 'days', day, 'poster.mp4') : null;
 // the carousel: poster, words, numbers, how it was made, then the development (a contact sheet, and a before and after for each
 // real choice or graphic fix in the log), then follow and save. Frame 1 never changes
-const pairs = (data.dev || []).filter(d => d.then != null).length;
+const pairs = Math.min(2, (data.dev || []).filter(d => d.then != null).length); // at most two before and afters, so the carousel stays at 8 or under
 const order = ['1', '2', '3', '4', ...(data.dev.length ? ['dev&dev=a', ...Array.from({ length: pairs }, (_, i) => `dev&dev=b&pair=${i}`)] : []), '5'];
 order.forEach((sl, i) => { jobs.push([`ig-${i + 1}`, 'ig-post', `${sl}&pg=${i + 1}&of=${order.length}`]); jobs.push([`li-${i + 1}`, 'li-portrait', `${sl}&pg=${i + 1}&of=${order.length}`]); });
 jobs.push(['li-single', 'li-portrait', 'single']);

@@ -1,5 +1,5 @@
 Reel (the one for reach)
-1. New Reel, upload Reel/reel.mp4 (10 seconds, or 12.5 with the development, 1080 × 1920). Every change in it lands on a 120 BPM beat, so pick one of the songs from the handover and line the start of the track up with the first frame.
+1. New Reel, upload Reel/reel.mp4 (always light, about 27 seconds, 1080 × 1920). Every change in it lands on a 120 BPM beat, so pick one of the songs from the handover and line the start of the track up with the first frame.
 2. Paste caption.txt. Pick the poster moment (around 1 second in) as the cover.
 3. Turn on "Also share to feed".
 
@@ -12,4 +12,4 @@ Share the carousel to your Story, then add the stickers in story-stickers.txt: t
 
 Saves and shares count for the most, so answer comments fast in the first hour.
 
-Today’s files are all in one theme, light on even days, dark on odd days, so the grid keeps its checkerboard.
+The carousel is in one theme, light on even days, dark on odd days, so the grid keeps its checkerboard. The Reel is always light.

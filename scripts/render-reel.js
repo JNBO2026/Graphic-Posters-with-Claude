@@ -19,7 +19,7 @@ const FPS = 30;
     data.frames = fs.readdirSync(pf).sort().map(f => 'file://' + path.join(pf, f));
   }
   const b = await chromium.launch(), errs = [];
-  for (const theme of [data.theme]) {
+  for (const theme of ['light']) { // Reels are always light (James); the carousel alternates
     const p = await b.newPage({ viewport: { width: 400, height: 680 }, deviceScaleFactor: 3 });
     p.on('pageerror', e => errs.push(e.message));
     await p.addInitScript(d => { window.DATA = d; }, data);
@@ -38,5 +38,5 @@ const FPS = 30;
   }
   await b.close(); fs.rmSync(tmp, { recursive: true, force: true });
   if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
-  console.log('reel:', data.theme, 'in', out);
+  console.log('reel: light,', 'in', out);
 })();

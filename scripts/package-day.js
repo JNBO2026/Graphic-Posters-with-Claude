@@ -42,7 +42,7 @@ pack(`${D}_LinkedIn`, [
   ['single-image/post-image.png', shot('li-single', TH)],
 ]);
 pack(`${D}_Instagram`, [
-  ['Reel/reel.mp4', path.join(exp, `reel-${TH}.mp4`)],
+  ['Reel/reel.mp4', path.join(exp, 'reel-light.mp4')], // Reels are always light
   ...slides('ig', TH).map((f, i) => [`Feed-carousel/${i + 1}.png`, f]),
   ...(motion ? [['Feed-carousel/1.mp4', vid('ig-1', TH)]] : []),
   ['caption.txt', text('instagram-caption.txt')],

@@ -24,7 +24,7 @@ Day-NN_LinkedIn/
 ```
 Day-NN_Instagram/
 ├── Reel/
-│   └── reel.mp4              1080 × 1920, 10 s (12.5 s with the development), cut to 120 BPM
+│   └── reel.mp4              1080 × 1920, always light, every scene held 4.5 s (about 27 s), cut to 120 BPM
 ├── Feed-carousel/            1080 × 1440 (3:4), in number order
 │   ├── 1.png                 the poster, centred, crop marks and four small labels (1.mp4 too when the poster moves)
 │   ├── 2.png                 the prompt: words in 60 seconds, and the phrases that shaped it
