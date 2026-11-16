@@ -27,8 +27,13 @@ module.exports = function socialData(day) {
   const dev = fs.existsSync(devFile) ? JSON.parse(fs.readFileSync(devFile, 'utf8')).map(d => ({ ...d, img: 'file://' + path.join(dir, 'dev', d.img), zoom: d.zoom ? 'file://' + path.join(dir, 'dev', d.zoom) : null })) : [];
   // Instagram grid checkerboard: odd days dark, even days light (day 05 dark, day 06 light). THEME=light|dark overrides
   const theme = process.env.THEME || (meta.day % 2 === 0 ? 'light' : 'dark');
+  // the poster's layers for the Reel's exploded view: days/NN/layers.json plus the files scripts/render-layers.js makes
+  const layFile = path.join(dir, 'layers.json'), layDir = path.join(dir, 'layers');
+  const layers = fs.existsSync(layFile) && fs.existsSync(layDir) ? JSON.parse(fs.readFileSync(layFile, 'utf8')).map(l => ({ ...l,
+    src: l.animated ? null : 'file://' + path.join(layDir, l.key + '.png'),
+    frames: l.animated ? fs.readdirSync(path.join(layDir, l.key)).sort().map(f => 'file://' + path.join(layDir, l.key, f)) : null })) : [];
   return {
-    theme, dev,
+    theme, dev, layers,
     day: meta.day, total: 30, title: meta.title, words: prompt.split(/\s+/).length, made, prompt,
     keywords: (meta.keywords || []).map(k => typeof k === 'string' ? k : k.text),
     process: (meta.process || '').replace(/\[\[([^\]]+)\]\]/g, '$1'), tools,

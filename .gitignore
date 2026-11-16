@@ -3,3 +3,4 @@ node_modules/
 dist/
 days/*/handover/
 days/*/frames/
+days/*/layers/

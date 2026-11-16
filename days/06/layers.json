@@ -1,0 +1,7 @@
+[
+  { "key": "bg", "name": "Background", "note": "Violet into hot pink, cut down to three tones a channel", "by": "WebGL shader" },
+  { "key": "type", "name": "bruh", "note": "Unbounded 900, stretched margin to margin", "by": "Google Fonts + Canvas" },
+  { "key": "ride", "name": "The rider", "note": "Designed, then turned a full 360", "by": "Nano Banana Pro + Kling v4", "animated": true },
+  { "key": "line", "name": "Outline", "note": "Added so the word still reads through the rider", "by": "Canvas" },
+  { "key": "grain", "name": "Dither", "note": "8 by 8 Bayer, shifted per colour channel", "by": "WebGL shader" }
+]

@@ -2,7 +2,8 @@
 // The Instagram Reel: days/_template/social/reel.html played frame by frame at 30 fps, 1080 × 1920, in the day's theme:
 // 10 s, or 12.5 s when the day has a development log.
 // Animated posters play inside it: their poster.mp4 frames are swapped in as the Reel runs.
-// Output: days/NN/social/export/reel-light.mp4 and reel-dark.mp4
+// Output: days/NN/social/export/reel-light.mp4
+// LV=stack|fan|xray tries the exploded-layer opening (needs days/NN/layers.json and scripts/render-layers.js): reel-light-LV.mp4
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs'), os = require('os'), { execFileSync } = require('child_process');
 const day = process.argv[2], root = path.resolve(__dirname, '..'), dir = path.join(root, 'days', day);
@@ -23,7 +24,7 @@ const FPS = 30;
     const p = await b.newPage({ viewport: { width: 400, height: 680 }, deviceScaleFactor: 3 });
     p.on('pageerror', e => errs.push(e.message));
     await p.addInitScript(d => { window.DATA = d; }, data);
-    await p.goto(`${tpl}?theme=${theme}`);
+    await p.goto(`${tpl}?theme=${theme}${process.env.LV ? '&lv=' + process.env.LV : ''}`);
     await p.waitForFunction(() => document.body.dataset.ready, null, { timeout: 20000 });
     const frames = path.join(tmp, theme); fs.mkdirSync(frames);
     const SECS = await p.evaluate(() => window.REEL_SECS || 10);
@@ -34,7 +35,7 @@ const FPS = 30;
     }
     await p.close();
     execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(frames, 'f%04d.png'),
-      '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', path.join(out, `reel-${theme}.mp4`)]);
+      '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', path.join(out, `reel-${theme}${process.env.LV ? '-' + process.env.LV : ''}.mp4`)]);
   }
   await b.close(); fs.rmSync(tmp, { recursive: true, force: true });
   if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
