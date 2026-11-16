@@ -19,7 +19,15 @@ const W = 1240, H = 1754;
 
 (async () => {
   const dir = path.resolve(__dirname, '..', 'days', day);
-  const url = 'file://' + path.join(dir, 'poster.html');
+  // served over a local web server, not file://, so a poster can read its own images, video frames and 3D files into WebGL and canvas
+  const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.glb': 'model/gltf-binary', '.mp4': 'video/mp4', '.svg': 'image/svg+xml', '.css': 'text/css', '.bin': 'application/octet-stream' };
+  const server = require('http').createServer((req, res) => {
+    const f = path.join(dir, decodeURIComponent(req.url.split('?')[0]));
+    if (!f.startsWith(dir) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end(); }
+    res.writeHead(200, { 'Content-Type': TYPES[path.extname(f).toLowerCase()] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res);
+  });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  const url = `http://127.0.0.1:${server.address().port}/poster.html`;
   const b = await chromium.launch();
 
   const open = async scale => {
@@ -67,5 +75,5 @@ const W = 1240, H = 1754;
     fs.rmSync(mp4, { force: true });
     console.log('rendered day', day);
   }
-  await b.close();
+  await b.close(); server.close();
 })();
