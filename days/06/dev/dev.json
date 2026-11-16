@@ -1,0 +1,47 @@
+[
+  {
+    "img": "01-take-1.jpg",
+    "step": "Character, take 1",
+    "verdict": "cut",
+    "why": "Good render, not anime enough.",
+    "then": 1
+  },
+  {
+    "img": "02-take-2.jpg",
+    "step": "Character, take 2",
+    "verdict": "kept",
+    "why": "Bolder colour blocking. This is the one."
+  },
+  {
+    "img": "04-tripo.jpg",
+    "step": "Real 3D model, Tripo P2",
+    "verdict": "cut",
+    "why": "A proper textured model. Its file host is blocked here.",
+    "then": 4
+  },
+  {
+    "img": "05-magenta.jpg",
+    "step": "On flat magenta",
+    "verdict": "kept",
+    "why": "Nothing on the rider is magenta, so it keys clean."
+  },
+  {
+    "img": "06-turntable.jpg",
+    "step": "Kling turntable",
+    "verdict": "kept",
+    "why": "A full 360 that lands where it started."
+  },
+  {
+    "img": "07-first-composite.jpg",
+    "step": "First composite",
+    "verdict": "fixed",
+    "why": "The rider hid the middle of bruh.",
+    "then": 6
+  },
+  {
+    "img": "08-final.jpg",
+    "step": "Outline over the rider",
+    "verdict": "kept",
+    "why": "Now the whole word reads."
+  }
+]

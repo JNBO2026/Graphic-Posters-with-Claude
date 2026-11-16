@@ -22,7 +22,11 @@ module.exports = function socialData(day) {
 
   const d = new Date(meta.date + 'T12:00:00Z'), W = 2480;
   const crop = meta.social_crop || { x: .06, y: .05, w: .5 };
+  // the visual development log, when there is one: days/NN/dev/dev.json, each step an image, a verdict (kept, cut, fixed) and one line on why
+  const devFile = path.join(dir, 'dev', 'dev.json');
+  const dev = fs.existsSync(devFile) ? JSON.parse(fs.readFileSync(devFile, 'utf8')).map(d => ({ ...d, img: 'file://' + path.join(dir, 'dev', d.img) })) : [];
   return {
+    dev,
     day: meta.day, total: 30, title: meta.title, words: prompt.split(/\s+/).length, made, prompt,
     keywords: (meta.keywords || []).map(k => typeof k === 'string' ? k : k.text),
     process: (meta.process || '').replace(/\[\[([^\]]+)\]\]/g, '$1'), tools,

@@ -56,6 +56,36 @@
   .tl { display:inline-flex; align-items:center; gap:6px; font:500 14px/16px 'Instrument Sans'; padding:6px 10px 6px 8px; border-radius:999px; background:var(--raised); }
   .tl svg { width:16px; height:16px; flex:none; }
 
+  /* visual development: verdict stamps. Kept is ink, cut is struck through, fixed is outlined */
+  .vd { display:inline-flex; align-items:center; font:600 11px/12px 'Instrument Sans'; padding:4px 8px; border-radius:999px; white-space:nowrap; }
+  .vd.kept { background:var(--ink); color:var(--paper); }
+  .vd.cut { box-shadow:inset 0 0 0 1.5px var(--line2); color:var(--sec); text-decoration:line-through; }
+  .vd.fixed { box-shadow:inset 0 0 0 1.5px var(--ink); color:var(--ink); }
+  .ph { position:relative; background:var(--sunken); border-radius:6px; overflow:hidden; }
+  .ph img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+  .ph.cutimg img { filter:grayscale(1); opacity:.55; }
+  .ph .n { position:absolute; left:6px; top:6px; font:600 11px/12px 'Instrument Sans'; background:var(--paper); color:var(--ink); padding:3px 6px; border-radius:999px; font-variant-numeric:tabular-nums; }
+  .ph .vd { position:absolute; left:6px; bottom:6px; }
+  .ph .vd.cut { background:var(--paper); }
+  .ph .vd.fixed { background:var(--paper); }
+  /* option A: contact sheet */
+  .sheet { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; }
+  .sheet .ph { aspect-ratio:1; }
+  /* option B: before and after */
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:2px; flex:1; min-height:0; }
+  .pair .tile { padding:10px; display:flex; flex-direction:column; gap:8px; }
+  .pair .ph { flex:1; min-height:0; }
+  .pair .ph img { object-fit:contain; }
+  /* option C: the ledger */
+  .devrow { display:grid; grid-template-columns:44px 1fr auto; gap:10px; align-items:center; padding:6px 0; box-shadow:inset 0 -1px 0 var(--line); }
+  .devrow:last-child { box-shadow:none; }
+  .devs.tight .devrow { grid-template-columns:34px 1fr auto; gap:8px; padding:4px 0; } .devs.tight .devrow .ph { width:34px; height:34px; }
+  .devs.tight .devrow b { font-size:12px; line-height:14px; } .devs.tight .devrow span.w { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .devrow .ph { width:44px; height:44px; border-radius:4px; }
+  .devrow > div { min-width:0; } .devrow span.w { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .devrow b { display:block; font:600 13px/15px 'Instrument Sans'; }
+  .devrow span.w { display:block; font:400 12px/14px 'Instrument Sans'; color:var(--sec); margin-top:2px; }
+
   /* single (layout B): ledger and follow */
   .poster { flex:1; min-height:0; background:var(--sunken); display:flex; align-items:center; justify-content:center; padding:14px; }
   .poster img { max-width:100%; max-height:100%; display:block; box-shadow:0 6px 18px rgba(0,0,0,.24); }
@@ -77,7 +107,7 @@
 <script>
 (async () => {
   const Q = new URLSearchParams(location.search), D = window.DATA;
-  const fmt = Q.get('fmt') || 'ig-post', slide = Q.get('slide') || '1', N = 5;
+  const fmt = Q.get('fmt') || 'ig-post', slide = Q.get('slide') || '1', N = +(Q.get('of') || 5), PG = +(Q.get('pg') || 0), DOPT = Q.get('dev') || 'a';
   document.documentElement.dataset.theme = Q.get('theme') === 'dark' ? 'dark' : 'light';
   const pad = n => String(n).padStart(2, '0'), esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const svg = k => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${D.icons[k]}</svg>`;
@@ -98,18 +128,33 @@
     html = `<div class="tile stage" id="stage"><img id="pimg" src="${D.poster}" alt=""></div>`;
   } else if (slide === '2') {
     html = `<div class="tile pad"><span class="lab">The prompt</span><p class="h-s" style="margin-top:10px">${D.words} words in 60 seconds. ${D.keywords.length} did the work.</p></div>
-      <div class="tile pad grow"><span class="lab">What shaped the poster</span><div class="kws" style="margin-top:12px">${D.keywords.map(k => `<span class="kw">${esc(k)}</span>`).join('')}</div></div>` + foot(2);
+      <div class="tile pad grow"><span class="lab">What shaped the poster</span><div class="kws" style="margin-top:12px">${D.keywords.map(k => `<span class="kw">${esc(k)}</span>`).join('')}</div></div>` + foot(PG || 2);
   } else if (slide === '3') {
     html = `<div class="tile pad grow" style="display:flex;flex-direction:column;justify-content:space-between"><span class="lab">${day}</span><div><div class="big">${D.words}</div><p class="h-s" style="margin-top:8px">words, spoken in one minute.</p></div></div>
-      <div class="row" style="height:96px"><div class="tile stat"><span class="lab">Time</span><span class="v">60 s</span></div><div class="tile stat"><span class="lab">Edits after</span><span class="v">0</span></div><div class="tile stat"><span class="lab">Made with</span><span class="v mwv" style="font-size:16px;line-height:18px;text-wrap:balance">${esc(D.made)}</span></div></div>` + foot(3);
+      <div class="row" style="height:96px"><div class="tile stat"><span class="lab">Time</span><span class="v">60 s</span></div><div class="tile stat"><span class="lab">Edits after</span><span class="v">0</span></div><div class="tile stat"><span class="lab">Made with</span><span class="v mwv" style="font-size:16px;line-height:18px;text-wrap:balance">${esc(D.made)}</span></div></div>` + foot(PG || 3);
   } else if (slide === '4') {
     html = `<div class="tile pad grow" style="display:flex;flex-direction:column;gap:12px"><span class="lab">How it was made</span><p class="body" id="proc">${esc(D.process)}</p></div>
-      <div class="tile pad" style="padding-top:12px;padding-bottom:12px"><div class="kws">${D.tools.map(t => `<span class="tl">${t.svg}${esc(t.label)}</span>`).join('')}</div></div>` + foot(4);
+      <div class="tile pad" style="padding-top:12px;padding-bottom:12px"><div class="kws">${D.tools.map(t => `<span class="tl">${t.svg}${esc(t.label)}</span>`).join('')}</div></div>` + foot(PG || 4);
+  } else if (slide === 'dev') {
+    // the visual development: what was tried, what was cut, what was fixed
+    const dv = D.dev || [], cut = dv.filter(d => d.verdict === 'cut').length, fixed = dv.filter(d => d.verdict === 'fixed').length;
+    const stamp = d => `<span class="vd ${d.verdict}">${{ kept: 'Kept', cut: 'Cut', fixed: 'Fixed' }[d.verdict]}</span>`;
+    const ph = (d, i, st = true) => `<div class="ph ${d.verdict === 'cut' ? 'cutimg' : ''}"><img src="${d.img}" alt="">${i != null ? `<span class="n">${String(i + 1).padStart(2, '0')}</span>` : ''}${st ? stamp(d) : ''}</div>`;
+    const head = `<div class="tile pad"><span class="lab">The good, the bad and the ugly</span><p class="h-s" style="margin-top:10px">${dv.length} steps. ${cut} cut, ${fixed} fixed.</p></div>`;
+    if (DOPT === 'a') html = head + `<div class="tile pad grow"><div class="sheet" style="grid-template-columns:repeat(${dv.length > 6 ? 4 : 3}, 1fr)">${dv.slice(0, 12).map((d, i) => ph(d, i)).join('')}</div></div>` + foot(PG);
+    if (DOPT === 'c') html = `<div class="tile pad"><span class="lab">The good, the bad and the ugly</span><p class="h-s" style="margin-top:10px">${dv.length} steps. ${cut} cut, ${fixed} fixed.</p></div>
+      <div class="tile grow devs" style="padding:4px 14px">${dv.map((d, i) => `<div class="devrow">${ph(d, null, false)}<div><b>${String(i + 1).padStart(2, '0')}  ${esc(d.step)}</b><span class="w">${esc(d.why)}</span></div>${stamp(d)}</div>`).join('')}</div>` + foot(PG);
+    if (DOPT === 'b') { // one slide per turn in the story: something cut or fixed, then what replaced it
+      const pairs = dv.filter(d => d.then != null && dv[d.then]).map(d => [d, dv[d.then]]);
+      const pr = pairs[+(Q.get('pair') || 0)] || pairs[0];
+      html = `<div class="tile pad"><span class="lab">The good, the bad and the ugly · ${+(Q.get('pair') || 0) + 1} of ${pairs.length}</span><p class="h-s" style="margin-top:10px">${esc(pr[0].why)}</p></div>
+        <div class="pair"><div class="tile"><span class="lab">${esc(pr[0].step)}</span>${ph(pr[0], null)}</div><div class="tile"><span class="lab">${esc(pr[1].step)}</span>${ph(pr[1], null)}</div></div>` + foot(PG);
+    }
   } else if (slide === '5') {
     html = `<div class="tile pad grow" style="display:flex;flex-direction:column;justify-content:space-between"><span class="lab">${day} · ${D.words} words in 60 seconds</span>
         <div><p class="h-l">Follow for all 30.</p><p class="body" style="margin-top:12px">One prompt, 60 seconds, no edits. Every prompt is on the wall, free to copy. Link in bio.</p></div></div>
       <div class="row" style="height:104px"><div class="tile follow acid" style="flex:1">${lucide('follow')}<div><span class="lab">Follow</span><div class="h" style="margin-top:4px">@blameopal</div></div></div>
-        <div class="tile follow" style="flex:1">${lucide('save')}<div><span class="lab">Save it</span><div class="h" style="margin-top:4px">For the prompt</div></div></div></div>` + foot(5);
+        <div class="tile follow" style="flex:1">${lucide('save')}<div><span class="lab">Save it</span><div class="h" style="margin-top:4px">For the prompt</div></div></div></div>` + foot(PG || 5);
   }
   document.getElementById('out').innerHTML = `<div class="frame ${fmt}" data-frame data-format="${fmt}">${html}</div>`;
   await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
@@ -143,6 +188,9 @@
   // a long Made with steps down a size in its stat tile, then a second, so it never spills
   const mwv = document.querySelector('.mwv'); if (mwv) { const t = mwv.closest('.tile'), over = () => t.scrollHeight > t.clientHeight + 1;
     if (over()) Object.assign(mwv.style, { fontSize: '14px', lineHeight: '16px' }); if (over()) Object.assign(mwv.style, { fontSize: '12px', lineHeight: '14px' }); }
+  // the development ledger tightens when there are many steps, then trims with a count
+  const devs = document.querySelector('.devs'); if (devs) { const over = () => devs.scrollHeight > devs.clientHeight + 1; if (over()) devs.classList.add('tight');
+    let cut = 0; while (over() && devs.children.length > 3) { if (cut) devs.lastElementChild.remove(); devs.lastElementChild.remove(); cut++; devs.insertAdjacentHTML('beforeend', `<div class="devrow"><span></span><b style="color:var(--sec)">+${cut} more steps on the wall</b><span></span></div>`); } }
   // long write-ups step down to body small so they always fit
   const proc = document.getElementById('proc');
   if (proc && proc.parentElement.scrollHeight > proc.parentElement.clientHeight) proc.classList.add('sm');
