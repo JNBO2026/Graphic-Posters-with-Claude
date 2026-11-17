@@ -1,0 +1,10 @@
+{
+  "day": 7,
+  "date": "2026-11-17",
+  "started_at": "2026-11-17T08:43:29Z",
+  "title": "Culture.",
+  "note": "A petri dish half off the page, its colonies grown by simulation and seen from the air, with the data falling down the left like water.",
+  "process": "Code only, no generative model. [[Claude Code]] wrote a Gray-Scott reaction-diffusion simulation in [[Python]] with [[NumPy]] that grows seven colonies on the plate, each with its own feed and kill rate, so one grows a maze, another spots, another a honeycomb. A [[WebGL]] shader lights them like agar on a light box, breathes them in a wave out from where each was seeded and scatters single colonies on the bare agar between, and the waterfall is drawn on [[Canvas]] in [[Google Fonts]] Inter Tight and IBM Plex Mono, every line horizontal, stretching as it falls.",
+  "tools": ["Claude Code", "Python", "NumPy", "WebGL", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["biotech", "large petri dish", "halfway off the side of the page", "aerial composition", "bacteria", "horizontal", "waterfall on the left-hand side", "flow of data", "100% out of code", "motion"]
+}

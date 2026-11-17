@@ -1,0 +1,36 @@
+[
+  {
+    "img": "01-first-plate.jpg",
+    "step": "First culture, Gray-Scott",
+    "verdict": "cut",
+    "why": "One maze wall to wall. A texture, not a plate."
+  },
+  {
+    "img": "02-outlines.jpg",
+    "step": "Seven colonies, own territories",
+    "verdict": "fixed",
+    "why": "Colonies read as outlines and the words went grey."
+  },
+  {
+    "img": "03-bodies.jpg",
+    "step": "Colonies get a body",
+    "verdict": "fixed",
+    "why": "Alive now, but the bare agar had no sense of scale.",
+    "then": 3
+  },
+  {
+    "img": "04-single-colonies.jpg",
+    "step": "Single colonies scattered",
+    "verdict": "fixed",
+    "why": "Small domes make it read from the air. Neighbours still sliced each other.",
+    "then": 4,
+    "zoom": "04z-single-colonies.jpg"
+  },
+  {
+    "img": "05-final.jpg",
+    "step": "A strip of bare agar between",
+    "verdict": "kept",
+    "why": "Fields with roads between them. Clean edges.",
+    "zoom": "05z-final.jpg"
+  }
+]

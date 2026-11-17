@@ -551,5 +551,19 @@
     "covers": "WhatsApp",
     "source": "Simple Icons 13.21.0",
     "license": "CC0 1.0"
+  },
+  "python": {
+    "brand": "Python",
+    "kind": "code",
+    "covers": "Python scripts",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0"
+  },
+  "numpy": {
+    "brand": "NumPy",
+    "kind": "code",
+    "covers": "NumPy",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0"
   }
 }

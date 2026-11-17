@@ -1,0 +1,15 @@
+Seven species grew on this plate. None of them are real.
+
+Day 07 of 30. 130 words, spoken in a minute: a poster for biotech, a big petri dish half off the page, colonies that read like an aerial photo from far away, all the type horizontal and falling down the left like a waterfall of data. Built 100% in code. Moving.
+
+So no image model today. Claude Code wrote a reaction-diffusion simulation, the idea Alan Turing put forward in 1952 to explain spots and stripes in nature, and let seven colonies grow, each with its own feed and kill rate. One grows a maze, one grows spots, one a honeycomb. A shader lights the plate like agar on a light box and makes the colonies breathe outwards from where they were seeded.
+
+Honest bit: the first run filled the whole dish with one maze. Looked like wallpaper, not a plate. It had to give each colony its own patch of agar, with bare roads between them, before it read from the air.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+Would you have guessed this was code and not a model?
+
+we give a sh*t.
+
+#ClaudeCode #GenerativeDesign #CreativeCoding

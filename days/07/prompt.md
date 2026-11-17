@@ -1,0 +1,3 @@
+I want you to create me a poster that is going to be dedicated to biotech. My thinking is that there will be a large petri dish in the middle of the design and potentially this will be halfway off the side of the page. The details in this petri dish, when zoomed out, show quite a beautiful almost aerial composition but these must look like bacteria and different forms of substances that you would see in a petri dish.
+
+For the typography I want all of the typography to be horizontal, almost like a waterfall on the left-hand side, so that this is almost like a flow of data. Make sure that this is built 100% out of code and that it utilises motion in the delivery of this.
