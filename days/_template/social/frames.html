@@ -148,7 +148,8 @@
       const pairs = dv.filter(d => d.then != null && dv[d.then]).map(d => [d, dv[d.then]]);
       const pr = pairs[+(Q.get('pair') || 0)] || pairs[0];
       html = `<div class="tile pad"><span class="lab">The good, the bad and the ugly · ${+(Q.get('pair') || 0) + 1} of ${pairs.length}</span><p class="h-s" style="margin-top:10px">${esc(pr[0].why)}</p></div>
-        <div class="pair"><div class="tile"><span class="lab">${esc(pr[0].step)}</span>${ph({ ...pr[0], img: pr[0].zoom || pr[0].img }, null).replace('class="ph', pr[0].zoom ? 'class="ph zoom' : 'class="ph')}</div><div class="tile"><span class="lab">${esc(pr[1].step)}</span>${ph({ ...pr[1], img: pr[1].zoom || pr[1].img }, null).replace('class="ph', pr[1].zoom ? 'class="ph zoom' : 'class="ph')}</div></div>` + foot(PG);
+        <div class="pair">${pr.map(d => { const z = pr[0].zoom && pr[1].zoom; /* zoom only when both sides have one, so the two frames always compare like with like */
+          return `<div class="tile"><span class="lab">${esc(d.step)}</span>${ph({ ...d, img: z ? d.zoom : d.img }, null).replace('class="ph', z ? 'class="ph zoom' : 'class="ph')}</div>`; }).join('')}</div>` + foot(PG);
     }
   } else if (slide === '5') {
     html = `<div class="tile pad grow" style="display:flex;flex-direction:column;justify-content:space-between"><span class="lab">${day} · ${D.words} words in 60 seconds</span>
