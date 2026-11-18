@@ -1,0 +1,17 @@
+I told it not to use its first idea.
+
+Day 08 of 30. 151 words, spoken in a minute: a two column grid, two thirds of it an Italian landscape made of thick horizontal strokes, each one a gradient. Art Deco. A 200px margin. Clean Deco type at the bottom, but not the first typeface it thinks of. Photoreal, 100% code, with depth.
+
+So Claude Code ray marched a Tuscan valley. A white road winding up to a farmhouse, cypresses down both sides, ridges and a far mountain in the haze, a low sun throwing long shadows. Then it cut the whole thing into 15px strokes, each one the average colour of its row, thicker in the shadows, thinner in the light. A Deco sunburst is cut into the sky. One cypress carries on out over the frame, which is where the depth comes from.
+
+The type: Poiret One was the obvious Deco answer. Italiana was the second, too thin to hold a stroke. Limelight was the third, and it takes the same strokes on the same grid as the landscape.
+
+Honest bit: the first five renders were a flat brown plain. Noise doesn’t compose a landscape. It had to place every hill by hand.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+Do you trust your first idea, or your third?
+
+we give a sh*t.
+
+#ClaudeCode #ArtDeco #CreativeCoding

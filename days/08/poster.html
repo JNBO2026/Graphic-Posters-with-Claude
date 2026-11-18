@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. A Tuscan valley ray marched in a WebGL shader, then laid down as horizontal gradient strokes on one 15 px grid that runs on into the title. -->
+<meta charset="utf-8">
+<title>Day 08: Toscana.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Josefin+Sans:wght@400;600&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#EEE5D1; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<canvas id="fg"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 200, LOOP = 10, dpr = window.devicePixelRatio || 1, PW = Math.round(W * dpr), PH = Math.round(H * dpr);
+  // the grid: two columns inside a 200 px margin; the landscape is the top two thirds; one 15 px stroke pitch for everything
+  const X0 = M, X1 = W - M, P = 15, Y0 = M - 9 * P, PT = M, PB = M + 60 * P, NB = (PB - Y0) / P;
+  const TW = 420; // texels across the landscape, 2 px each
+  await Promise.all(['100px Limelight', '400 16px "Josefin Sans"', '600 16px "Josefin Sans"'].map(f => document.fonts.load(f)));
+
+  const cv = document.getElementById('gl'); cv.width = PW; cv.height = PH;
+  const gl = cv.getContext('webgl', { preserveDrawingBuffer: true, antialias: false });
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+  const prog = fs => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }')); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p); return p; };
+  const COMMON = `
+precision highp float;
+const float TAU = 6.2831853;
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }
+float fbm(vec2 p) { float s = 0., a = .5; for (int i = 0; i < 5; i++) { s += a * noise(p); p = p * 2.03 + 7.1; a *= .5; } return s; }`;
+
+  // ---------- Pass 1: the valley, photoreal, one row per stroke (each row is four rays averaged down the stroke's height) ----------
+  const scene = prog(COMMON + `
+uniform float t; uniform vec2 RES; uniform float Y0, P, X0, X1;
+uniform vec4 TREES[40];
+const vec3 SUN = vec3(0.310, 0.160, 0.937);
+// the land: soft rolling clay hills, a long ridge behind, the camera stands on a rise
+float g2(vec2 q, vec2 c, vec2 r) { vec2 d = (q - c) / r; return exp(-dot(d, d)); }
+float land(vec2 q) {
+  // composed by hand, front to back: the rise we stand on, a valley, the knoll with the farmhouse, two ridges, a mountain
+  float w = 10. * (fbm(q * .004 + vec2(3., 1.)) - .5) + 4. * (fbm(q * .02) - .5);
+  float h = w;
+  h += 12. * g2(q, vec2(-20., 0.), vec2(160., 140.));                                        // our rise
+  h -= 24. * exp(-pow((q.y - 330.) / 170., 2.));                                              // the first valley
+  h += 58. * g2(q, vec2(60., 640.), vec2(230., 170.)) + 20. * g2(q, vec2(-260., 560.), vec2(200., 160.));  // the knoll, and a softer one beside it
+  h -= 30. * exp(-pow((q.y - 980.) / 200., 2.));                                              // the misted valley
+  h += 125. * exp(-pow((q.y - 1400. - 160. * sin(q.x * .0021 + .5)) / 260., 2.)) * (.75 + .5 * fbm(q * .002));   // the first ridge
+  h += 290. * exp(-pow((q.y - 2500. - 260. * sin(q.x * .0013 + 2.)) / 420., 2.)) * (.7 + .6 * fbm(q * .0012 + 5.)); // the second
+  h += 1500. * smoothstep(5200., 10000., q.y) * exp(-pow((q.x - 1600.) / 4200., 2.));          // the mountain, Amiata-like
+  return h;
+}
+// the white road, winding up the knoll
+vec2 roadAt(float z) { return vec2(-20. + 60. * sin(z * .0075 + .6) + .1 * z, z); }
+float roadD(vec2 q) { float best = 1e9; for (int i = 0; i < 24; i++) { float z = 50. + float(i) * 24.; vec2 a = roadAt(z), b = roadAt(z + 22.); vec2 pa = q - a, ba = b - a; float hh = clamp(dot(pa, ba) / dot(ba, ba), 0., 1.); best = min(best, length(pa - ba * hh)); } return best; }
+vec4 treeAt(float id) { vec4 r = vec4(0.); for (int i = 0; i < 40; i++) if (float(i) == id) r = TREES[i]; return r; }
+float sway(vec4 tr) { return .25 * sin(TAU * (t + tr.w * 3.1)) * (tr.w > 30. ? 3. : 1.); }
+// cypresses: tall spindles, pointed at the top
+float trees(vec3 p, out float id) {
+  float d = 1e9; id = -1.;
+  for (int i = 0; i < 40; i++) {
+    vec4 tr = TREES[i]; if (tr.z <= 0.) continue;
+    float hgt = tr.z, rad = hgt * (tr.w > 30. ? .062 : .09), base = land(tr.xy);
+    vec3 q = p - vec3(tr.x, base + hgt * .5, tr.y);
+    float k = clamp((q.y / hgt) + .5, 0., 1.);
+    q.x -= sway(tr) * k * k;
+    float r = max(rad * pow(sin(3.1416 * clamp(k * 1.08 + .02, 0., 1.)), .65) * (1. - .3 * k) - .2, -.2);
+    float dd = max(length(q.xz) - r, abs(q.y) - hgt * .5) * .7;
+    if (dd < d) { d = dd; id = float(i); }
+  }
+  return d;
+}
+float house(vec3 p) {
+  vec3 c = vec3(60., land(vec2(60., 640.)) + 3., 640.), q = p - c;
+  float b = length(max(abs(q) - vec3(9., 4., 6.), 0.));
+  float roof = length(max(abs(q - vec3(0., 4.5, 0.)) - vec3(9.6, .8 - abs(q.z) * .12, 6.6), 0.));
+  float tower = length(max(abs(q - vec3(-6., 4., -2.)) - vec3(2.4, 7., 2.4), 0.));
+  return min(min(b, roof), tower);
+}
+vec3 sky(vec3 rd) {
+  float h = max(rd.y, 0.);
+  vec3 c = mix(vec3(1., .80, .55), vec3(.42, .58, .80), pow(h, .45));
+  float s = max(dot(rd, SUN), 0.);
+  c += vec3(1., .62, .30) * pow(s, 6.) * .55 + vec3(1., .85, .6) * pow(s, 60.) * .6 + vec3(1., .86, .62) * smoothstep(.9994, .9997, s) * 2.2;
+  // long cirrus, drifting
+  vec2 cp = vec2(rd.x / max(rd.y, .04), 1. / max(rd.y, .04)) * vec2(.35, .9) + vec2(cos(TAU * t), sin(TAU * t)) * .12;
+  float cl = smoothstep(.6, .9, fbm(cp + 2.)) * smoothstep(.02, .15, rd.y) * smoothstep(.6, .2, rd.y);
+  c = mix(c, mix(vec3(1., .78, .62), vec3(1., .93, .82), pow(s, 4.)), cl * .55);
+  return c;
+}
+float shadow(vec3 ro) { float r = 1., d = 2.; for (int i = 0; i < 40; i++) { vec3 p = ro + SUN * d; float id; float h = min(p.y - land(p.xz), trees(p, id)); r = min(r, 12. * h / d); d += clamp(h, 2., 60.); if (r < .01 || d > 1500.) break; } return clamp(r, 0., 1.); }
+vec4 render(vec3 ro, vec3 rd) {
+  float tt = 1.; float hit = 0., id = -1., what = 0.;
+  for (int i = 0; i < 320; i++) {
+    vec3 p = ro + rd * tt; float tid;
+    float dl = p.y - land(p.xz), dt = trees(p, tid), dh = house(p);
+    float d = min(dl * .55, min(dt, dh));
+    if (d < .002 * tt) { hit = 1.; what = dt < dl * .55 && dt < dh ? 1. : (dh < dl * .55 ? 2. : 0.); id = tid; break; }
+    tt += d; if (tt > 14000.) break;
+  }
+  vec3 col; float fg = 0.;
+  if (hit < .5) col = sky(rd);
+  else {
+    vec3 p = ro + rd * tt; vec3 n;
+    vec3 alb;
+    if (what < .5) {
+      float e = .6; n = normalize(vec3(land(p.xz - vec2(e, 0)) - land(p.xz + vec2(e, 0)), 2. * e, land(p.xz - vec2(0, e)) - land(p.xz + vec2(0, e))));
+      // fields: patches of ripe wheat, green, ploughed clay and stubble, each with its own rows
+      vec2 cell = floor(p.xz / vec2(140., 95.) + fbm(p.xz * .004) * 1.6);
+      float k = hash(cell);
+      vec3 f = k < .3 ? vec3(.84, .64, .28) : k < .5 ? vec3(.42, .54, .20) : k < .72 ? vec3(.60, .38, .22) : k < .88 ? vec3(.90, .74, .40) : vec3(.30, .44, .18);
+      float ang = hash(cell + 3.) * 3.14;
+      float rows = .5 + .5 * sin(dot(p.xz, vec2(cos(ang), sin(ang))) * 1.6);
+      alb = f * (.86 + .14 * rows) * (.72 + .5 * fbm(p.xz * .035)) * (.9 + .2 * fbm(p.xz * .3));
+      float rd2 = roadD(p.xz);
+      alb = mix(alb, vec3(.86, .80, .70), smoothstep(3.2, 2.2, rd2));
+    } else if (what < 1.5) {
+      vec4 tr = treeAt(id);
+      vec3 c = vec3(tr.x, land(tr.xy) + tr.z * .5, tr.y);
+      n = normalize(vec3(p.x - c.x, (p.y - c.y) * .08, p.z - c.z) + (vec3(noise(p.xy * 2.), noise(p.zy * 2.), noise(p.xz * 2.)) - .5) * .9);
+      alb = vec3(.10, .17, .08) * (.7 + .6 * noise(p.xy * 3. + p.z));
+      fg = tr.w > 30. ? 1. : 0.;
+    } else {
+      float e = .05; n = normalize(vec3(house(p + vec3(e, 0, 0)) - house(p - vec3(e, 0, 0)), house(p + vec3(0, e, 0)) - house(p - vec3(0, e, 0)), house(p + vec3(0, 0, e)) - house(p - vec3(0, 0, e))));
+      alb = n.y > .5 ? vec3(.62, .30, .20) : vec3(.86, .70, .50);
+    }
+    float sh = shadow(p + n * .5);
+    float dif = clamp(dot(n, SUN) + .25, 0., 1.) * sh;           // wrapped: grass and stubble catch a low sun
+    float amb = .5 + .5 * n.y;
+    float sheen = pow(clamp(dot(rd, SUN), 0., 1.), 6.) * sh * (what < .5 ? 1. : .3);  // looking into the light, the fields shine
+    col = alb * (vec3(1.55, 1.08, .70) * dif * 1.5 + vec3(.42, .50, .62) * amb * .55) + vec3(1., .72, .40) * sheen * .35 * alb.r;
+    // rim of light on the trees against the low sun
+    if (what > .5 && what < 1.5) col += vec3(1., .7, .35) * pow(clamp(1. - dot(n, -rd), 0., 1.), 3.) * .25 * clamp(dot(rd, SUN) + .3, 0., 1.);
+    // aerial perspective, and mist lying in the low ground
+    float fogAmt = 1. - exp(-tt * .00034);
+    float mist = smoothstep(-12., -40., p.y) * smoothstep(200., 600., tt) * (.6 + .4 * fbm(p.xz * .006 + vec2(cos(TAU * t), sin(TAU * t)) * .4));
+    // haze: warm toward the sun, a cooler lilac away from it, so each ridge reads as its own layer
+    vec3 fc = mix(mix(vec3(.66, .62, .70), vec3(1., .84, .62), pow(clamp(dot(rd, SUN), 0., 1.), 5.)), sky(normalize(vec3(rd.x, .03, rd.z))), .35);
+    col = mix(col, fc, clamp(fogAmt + mist * .55, 0., 1.));
+  }
+  return vec4(col, fg);
+}
+void main() {
+  vec2 fc = gl_FragCoord.xy; // x: texel across, y: stroke index (0 at the bottom of the texture)
+  float b = RES.y - fc.y;    // stroke index from the top
+  float x = X0 + fc.x / RES.x * (X1 - X0);
+  // the camera drifts sideways and back on a loop, so near and far slide past each other
+  vec3 ro = vec3(5.5 * sin(TAU * t), 0., -2. * cos(TAU * t)); ro.y = land(ro.xz) + 20.;
+  vec4 acc = vec4(0.);
+  for (int j = 0; j < 4; j++) {
+    float y = Y0 + (b - .5 + (float(j) + .5) / 4.) * P;
+    vec3 rd = normalize(vec3((x - 620.) / 980., -(y - 690.) / 980., 1.));
+    float pitch = -.075; rd = vec3(rd.x, rd.y * cos(pitch) + rd.z * sin(pitch), -rd.y * sin(pitch) + rd.z * cos(pitch));
+    acc += render(ro, rd);
+  }
+  acc /= 4.;
+  // filmic tone
+  vec3 c = acc.rgb; c = c / (1. + c * .35); c = pow(c, vec3(.95));
+  gl_FragColor = vec4(c, acc.a);
+}`);
+
+  // ---------- Pass 2: the strokes, at full size ----------
+  const strokes = prog(COMMON + `
+uniform sampler2D land; uniform sampler2D type; uniform float t, dpr, H, Y0, P, NB, X0, X1, PT, PB;
+uniform vec2 SUNP; uniform float RAW;
+void main() {
+  vec2 p = vec2(gl_FragCoord.x, H * dpr - gl_FragCoord.y) / dpr;
+  vec3 paper = vec3(.933, .898, .820) * (.97 + .05 * fbm(p * .9)) + (hash(p * dpr) - .5) * .03;
+  vec3 col = paper;
+  float band = floor((p.y - Y0) / P), f = (p.y - Y0) / P - band - .5;   // f: -.5 at a stroke's top, .5 at its bottom
+  float aa = .8 / dpr / P;
+  if (p.x >= X0 && p.x <= X1 && band >= 0. && band < NB) {
+    vec2 uv = vec2((p.x - X0) / (X1 - X0), 1. - (band + .5) / NB);
+    vec4 c = texture2D(land, uv);
+    float lum = dot(c.rgb, vec3(.3, .55, .15));
+    // thicker strokes in the dark, thinner in the light, the way an engraver cuts
+    float th = mix(.92, .62, smoothstep(.15, .95, lum));
+    // Deco sunburst: in the sky, the strokes thin in rays round the sun
+    vec2 sd = p - SUNP; float ang = atan(sd.y, sd.x);
+    // crisp wedges, a fan of them, turning one step a loop
+    float ray = step(.62, .5 + .5 * cos(ang * 16. + TAU * t * .5 * 2.)) * smoothstep(50., 120., length(sd)) * step(p.y, SUNP.y + 26.);
+    th *= 1. - .38 * ray * step(.45, lum);
+    float inPanel = step(PT, p.y) * step(p.y, PB);
+    // above the frame only the near cypresses carry on, out into the margin
+    th *= mix(smoothstep(.35, .65, c.a), 1., inPanel);
+    float m = smoothstep(th * .5 + aa, th * .5 - aa, abs(f)) * step(.04, th);
+    if (RAW > .5) m = 1.;
+    // each stroke is round: lighter along its top edge, darker underneath
+    vec3 sc = c.rgb * (1.06 - .22 * (f + .5) / max(th, .01));
+    col = mix(col, sc, m);
+  }
+  // the title: the same strokes, the same grid, filled with the sky's own gradient
+  float ty = texture2D(type, vec2(p.x / 1240., p.y / 1754.)).a;
+  if (ty > 0.) {
+    float m = smoothstep(.36 + aa, .36 - aa, abs(f));
+    vec3 g = mix(vec3(.80, .45, .22), vec3(.86, .66, .32), smoothstep(X0, X1, p.x + 120. * sin(TAU * t + p.y * .004)));
+    g *= 1.06 - .22 * (f + .5) / .72;
+    col = mix(col, g, m * ty);
+  }
+  gl_FragColor = vec4(col, 1.);
+}`);
+
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const bind = p => { gl.useProgram(p); const a = gl.getAttribLocation(p, 'p'); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0); };
+  const U = (p, n) => gl.getUniformLocation(p, n);
+
+  // the trees: two big ones close by on the left that break out of the frame, a line up the road, a group by the house
+  let s = 3; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const T = [[-9, 36, 46, 31], [-16, 47, 37, 33]];
+  const road = z => [-20 + 60 * Math.sin(z * .0075 + .6) + .1 * z, z];
+  for (let z = 120; z < 600; z += 34) { const [rx] = road(z); T.push([rx - 7, z, 12 + rnd() * 4, rnd() * 9]); T.push([rx + 7, z + 9, 12 + rnd() * 4, rnd() * 9]); }
+  T.push([82, 650, 15, 2], [88, 658, 13, 5], [36, 662, 16, 7], [-250, 560, 14, 1], [-242, 568, 12, 4], [230, 700, 13, 6]);
+  const trees = new Float32Array(160); T.slice(0, 40).forEach((tr, i) => trees.set(tr, i * 4));
+
+  const NBi = Math.round(NB);
+  const rt = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, rt);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, TW, NBi, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const fb = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fb); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rt, 0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+  // ---------- The type: Limelight for the title (set into the stroke grid), Josefin Sans for the rest ----------
+  const tc = document.createElement('canvas'); tc.width = W; tc.height = H; const tx = tc.getContext('2d');
+  const TITLE = 'TOSCANA', TT = PB + 3 * P, TB = TT + 14 * P;  // the title fills fourteen strokes of the grid
+  tx.font = '100px Limelight'; tx.letterSpacing = '6px';
+  const tm = tx.measureText(TITLE), tw = tm.actualBoundingBoxLeft + tm.actualBoundingBoxRight, thh = tm.actualBoundingBoxAscent;
+  tx.save(); tx.translate(X0, TT); tx.scale((X1 - X0) / tw, (TB - TT) / thh); tx.fillText(TITLE, tm.actualBoundingBoxLeft, thh); tx.restore();
+  const ttex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, ttex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tc);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  // the small type, in two columns under the title, on a canvas over the strokes
+  const fgc = document.getElementById('fg'); fgc.width = PW; fgc.height = PH; const x = fgc.getContext('2d'); x.scale(dpr, dpr);
+  const GOLD = '#9C7A3C', INK = '#3A2E22', COLW = (X1 - X0 - 40) / 2, C2 = X0 + COLW + 40;
+  // a gold double rule round the landscape, stepped at the corners
+  const frame = (o, w) => { const a = X0 - o, b = PT - o, c = X1 + o, d = PB + o, k = 14 + o;
+    x.beginPath(); x.moveTo(a + k, b); x.lineTo(c - k, b); x.lineTo(c - k, b + k * .0); x.lineTo(c, b + k); x.lineTo(c, d - k); x.lineTo(c - k, d); x.lineTo(a + k, d); x.lineTo(a, d - k); x.lineTo(a, b + k); x.closePath(); x.lineWidth = w; x.strokeStyle = GOLD; x.stroke(); };
+  const caps = (s, px, py, size, wgt, col, sp) => { x.font = `${wgt} ${size}px "Josefin Sans"`; x.letterSpacing = sp + 'px'; x.fillStyle = col; x.fillText(s, px, py); };
+  const px = new Uint8Array(TW * 4);
+  function drawType() {
+    x.clearRect(0, 0, W, H);
+    frame(14, 1); frame(20, .6);
+    // where the near cypresses cross the top of the frame, the frame goes behind them
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    for (const o of [14, 20]) { const band = Math.floor((PT - o - Y0) / P); gl.readPixels(0, NBi - 1 - band, TW, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      for (let i = 0; i < TW; i++) if (px[i * 4 + 3] > 60) x.clearRect(X0 + i * (X1 - X0) / TW - 2, PT - o - 2, (X1 - X0) / TW + 4, 4); }
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    const y1 = TB + 2 * P;
+    x.fillStyle = GOLD; x.fillRect(X0, y1, X1 - X0, 1); x.fillRect(X0, H - M, X1 - X0, 1);
+    caps('VAL D\u2019ORCIA', X0, y1 + 95, 40, 600, INK, 10);
+    caps('SIENA, ORE 18.40, LUCE D\u2019ORO', X0, y1 + 135, 14, 400, INK, 3.4);
+    caps('THIRTY POSTERS', C2, y1 + 85, 14, 600, INK, 3.4);
+    caps('08 / 30  \u00B7  43.07\u00B0 N  11.61\u00B0 E', C2, y1 + 110, 14, 400, INK, 3.4);
+    caps('CODE ONLY', C2, y1 + 135, 14, 400, GOLD, 3.4);
+  }
+
+  gl.useProgram(scene); gl.uniform2f(U(scene, 'RES'), TW, NBi); gl.uniform1f(U(scene, 'Y0'), Y0); gl.uniform1f(U(scene, 'P'), P);
+  gl.uniform1f(U(scene, 'X0'), X0); gl.uniform1f(U(scene, 'X1'), X1); gl.uniform4fv(U(scene, 'TREES'), trees);
+  gl.useProgram(strokes);
+  for (const [k, v] of Object.entries({ dpr, H, Y0, P, NB: NBi, X0, X1, PT, PB })) gl.uniform1f(U(strokes, k), v);
+  gl.uniform1f(U(strokes, 'RAW'), location.search.includes('raw') ? 1 : 0);
+  gl.uniform1i(U(strokes, 'land'), 0); gl.uniform1i(U(strokes, 'type'), 1);
+  gl.uniform2f(U(strokes, 'SUNP'), window.SUNX || 944, window.SUNY || 452);
+
+  const draw = async sec => {
+    const t = ((sec / LOOP) % 1 + 1) % 1;
+    bind(scene); gl.uniform1f(U(scene, 't'), t);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb); gl.viewport(0, 0, TW, NBi); gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, PW, PH);
+    bind(strokes); gl.uniform1f(U(strokes, 't'), t);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, rt); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, ttex);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    drawType();
+  };
+  await draw(0);
+  document.body.dataset.ready = '1';
+  return draw;
+})();
+window.__seek = async t => { const draw = await READY; await draw(t); };
+</script>
+</body>
+</html>
