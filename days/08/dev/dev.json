@@ -1,0 +1,9 @@
+[
+  { "img": "01-first-pass.jpg", "step": "First pass", "verdict": "cut", "why": "Flat and brown. The sun was out of shot." },
+  { "img": "02-sun-in-frame.jpg", "step": "Sun in frame, a cypress", "verdict": "fixed", "why": "The cypress was a blob, the land a plain." },
+  { "img": "03-cypress-road.jpg", "step": "A cypress road, long shadows", "verdict": "fixed", "why": "Reads as Tuscany, but it sat flat in the frame." },
+  { "img": "04-breaks-the-frame.jpg", "step": "Tree over the frame", "verdict": "fixed", "why": "Depth at last. The land was still a flat plain.", "then": 4 },
+  { "img": "05-hills-by-hand.jpg", "step": "Every hill placed by hand", "verdict": "fixed", "why": "Noise can't compose a view. Road, knoll, farmhouse, ridges.", "then": 5 },
+  { "img": "06-deco-fan.jpg", "step": "Deco fan in the sky", "verdict": "fixed", "why": "The fan missed the sun and ran into the hills." },
+  { "img": "07-final.jpg", "step": "Fan on the sun, slower drift", "verdict": "kept", "why": "Sunburst from the sun, cypress out over the frame." }
+]

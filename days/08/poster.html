@@ -22,7 +22,7 @@ const READY = (async () => {
   const W = 1240, H = 1754, M = 200, LOOP = 10, dpr = window.devicePixelRatio || 1, PW = Math.round(W * dpr), PH = Math.round(H * dpr);
   // the grid: two columns inside a 200 px margin; the landscape is the top two thirds; one 15 px stroke pitch for everything
   const X0 = M, X1 = W - M, P = 15, Y0 = M - 9 * P, PT = M, PB = M + 60 * P, NB = (PB - Y0) / P;
-  const TW = 420; // texels across the landscape, 2 px each
+  const TW = 320; // texels across the landscape, about 2.6 px each (the strokes blend them left to right)
   await Promise.all(['100px Limelight', '400 16px "Josefin Sans"', '600 16px "Josefin Sans"'].map(f => document.fonts.load(f)));
 
   const cv = document.getElementById('gl'); cv.width = PW; cv.height = PH;
@@ -61,13 +61,17 @@ float land(vec2 q) {
 vec2 roadAt(float z) { return vec2(-20. + 60. * sin(z * .0075 + .6) + .1 * z, z); }
 float roadD(vec2 q) { float best = 1e9; for (int i = 0; i < 24; i++) { float z = 50. + float(i) * 24.; vec2 a = roadAt(z), b = roadAt(z + 22.); vec2 pa = q - a, ba = b - a; float hh = clamp(dot(pa, ba) / dot(ba, ba), 0., 1.); best = min(best, length(pa - ba * hh)); } return best; }
 vec4 treeAt(float id) { vec4 r = vec4(0.); for (int i = 0; i < 40; i++) if (float(i) == id) r = TREES[i]; return r; }
+float gT = 0.; // how far along the ray we are, so a far tree's rough bound is never mistaken for a hit
 float sway(vec4 tr) { return .25 * sin(TAU * (t + tr.w * 3.1)) * (tr.w > 30. ? 3. : 1.); }
 // cypresses: tall spindles, pointed at the top
 float trees(vec3 p, out float id) {
   float d = 1e9; id = -1.;
   for (int i = 0; i < 40; i++) {
     vec4 tr = TREES[i]; if (tr.z <= 0.) continue;
-    float hgt = tr.z, rad = hgt * (tr.w > 30. ? .062 : .09), base = land(tr.xy);
+    float hgt = tr.z, rad = hgt * (tr.w > 30. ? .062 : .09);
+    float far = length(p.xz - tr.xy) - rad - 1.5;          // cheap bound first: only look up the ground under a tree when the ray is near it
+    if (far > 2. + .004 * gT) { if (far * .7 < d) { d = far * .7; id = float(i); } continue; }
+    float base = land(tr.xy);
     vec3 q = p - vec3(tr.x, base + hgt * .5, tr.y);
     float k = clamp((q.y / hgt) + .5, 0., 1.);
     q.x -= sway(tr) * k * k;
@@ -95,13 +99,13 @@ vec3 sky(vec3 rd) {
   c = mix(c, mix(vec3(1., .78, .62), vec3(1., .93, .82), pow(s, 4.)), cl * .55);
   return c;
 }
-float shadow(vec3 ro) { float r = 1., d = 2.; for (int i = 0; i < 40; i++) { vec3 p = ro + SUN * d; float id; float h = min(p.y - land(p.xz), trees(p, id)); r = min(r, 12. * h / d); d += clamp(h, 2., 60.); if (r < .01 || d > 1500.) break; } return clamp(r, 0., 1.); }
+float shadow(vec3 ro) { gT = 0.; float r = 1., d = 2.; for (int i = 0; i < 24; i++) { vec3 p = ro + SUN * d; float id; float h = min(p.y - land(p.xz), trees(p, id)); r = min(r, 12. * h / d); d += clamp(h, 3., 90.); if (r < .01 || d > 1500.) break; } return clamp(r, 0., 1.); }
 vec4 render(vec3 ro, vec3 rd) {
   float tt = 1.; float hit = 0., id = -1., what = 0.;
-  for (int i = 0; i < 320; i++) {
-    vec3 p = ro + rd * tt; float tid;
+  for (int i = 0; i < 200; i++) {
+    vec3 p = ro + rd * tt; float tid; gT = tt;
     float dl = p.y - land(p.xz), dt = trees(p, tid), dh = house(p);
-    float d = min(dl * .55, min(dt, dh));
+    float d = min(dl * .6, min(dt, dh));
     if (d < .002 * tt) { hit = 1.; what = dt < dl * .55 && dt < dh ? 1. : (dh < dl * .55 ? 2. : 0.); id = tid; break; }
     tt += d; if (tt > 14000.) break;
   }
@@ -152,15 +156,15 @@ void main() {
   float b = RES.y - fc.y;    // stroke index from the top
   float x = X0 + fc.x / RES.x * (X1 - X0);
   // the camera drifts sideways and back on a loop, so near and far slide past each other
-  vec3 ro = vec3(5.5 * sin(TAU * t), 0., -2. * cos(TAU * t)); ro.y = land(ro.xz) + 20.;
+  vec3 ro = vec3(3. * sin(TAU * t), 0., -1.5 * cos(TAU * t)); ro.y = land(ro.xz) + 20.;
   vec4 acc = vec4(0.);
-  for (int j = 0; j < 4; j++) {
-    float y = Y0 + (b - .5 + (float(j) + .5) / 4.) * P;
+  for (int j = 0; j < 2; j++) {
+    float y = Y0 + (b - .5 + (float(j) + .5) / 2.) * P;
     vec3 rd = normalize(vec3((x - 620.) / 980., -(y - 690.) / 980., 1.));
     float pitch = -.075; rd = vec3(rd.x, rd.y * cos(pitch) + rd.z * sin(pitch), -rd.y * sin(pitch) + rd.z * cos(pitch));
     acc += render(ro, rd);
   }
-  acc /= 4.;
+  acc /= 2.;
   // filmic tone
   vec3 c = acc.rgb; c = c / (1. + c * .35); c = pow(c, vec3(.95));
   gl_FragColor = vec4(c, acc.a);
@@ -213,7 +217,7 @@ void main() {
 
   // the trees: two big ones close by on the left that break out of the frame, a line up the road, a group by the house
   let s = 3; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
-  const T = [[-9, 36, 46, 31], [-16, 47, 37, 33]];
+  const T = [[-9, 36, 43, 31], [-16, 47, 35, 33]];
   const road = z => [-20 + 60 * Math.sin(z * .0075 + .6) + .1 * z, z];
   for (let z = 120; z < 600; z += 34) { const [rx] = road(z); T.push([rx - 7, z, 12 + rnd() * 4, rnd() * 9]); T.push([rx + 7, z + 9, 12 + rnd() * 4, rnd() * 9]); }
   T.push([82, 650, 15, 2], [88, 658, 13, 5], [36, 662, 16, 7], [-250, 560, 14, 1], [-242, 568, 12, 4], [230, 700, 13, 6]);
