@@ -1,0 +1,17 @@
+This is a cup of tea. Now zoom in.
+
+Day 09 of 30. 149 words, spoken in a minute: a collage with an optical illusion people can see as they scroll, about the feeling of travelling home from a holiday. Open-licence photos only. Review it as a designer, an artist, an illustrator, then a creative director.
+
+The idea it landed on: the first brew back. Small on your phone, or blurred by a scroll, it’s a glass of tea steaming on a saucer. Up close it’s 39 torn photos of a holiday. The tea is made of sunsets. The steam is clouds. The grey of the kitchen is sea, lakes and mountains.
+
+How: Claude Code tore every photo in code, picked and cropped each piece to match the same patch of the tea, then swapped in the tea photo’s low frequencies. Your eye reads detail close up and shape from a distance, so you get both.
+
+Honest bit: it couldn’t reach Wikimedia directly, so it found a public domain set on GitHub instead. First go, the cup was lost in a sea of white. Second go, lavender took over everything.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+What’s the first thing you do when you get home?
+
+we give a sh*t.
+
+#ClaudeCode #Collage #OpticalIllusion

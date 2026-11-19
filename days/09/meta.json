@@ -1,0 +1,10 @@
+{
+  "day": 9,
+  "date": "2026-11-19",
+  "started_at": "2026-11-19T07:13:13Z",
+  "title": "First brew back.",
+  "note": "A torn photo collage of a holiday that, small on a phone or blurred by a scroll, turns into the first cup of tea back home.",
+  "process": "Code only, no generative model. The photos are 39 CC0 and public domain pictures from Wikimedia Commons (via the card-photos collection on GitHub): sea, sunsets, clouds, lakes, mountains, sunflowers, lavender. [[Claude Code]] wrote a [[Python]] script with [[NumPy]] that tears them, picks and crops each piece to match the same patch of one photo, a glass of tea, then swaps in that photo's low frequencies, so up close you see the holiday and at a glance you see the brew. The type is [[Google Fonts]] Courier Prime.",
+  "tools": ["Claude Code", "Python", "NumPy", "Pillow", "Google Fonts", "Playwright"],
+  "keywords": ["ideate", "collage", "optical illusion", "as they scroll", "travelling back home from a holiday", "open-source images", "unique visual", "coherent", "graphic designer", "creative director"]
+}

@@ -1,0 +1,7 @@
+[
+  { "img": "01-cup-in-white.jpg", "step": "First collage", "verdict": "cut", "why": "The illusion worked, but the cup was lost in a white field.", "then": 2 },
+  { "img": "02-the-target.jpg", "step": "The hidden picture", "verdict": "kept", "why": "Cup set low, steam rising, the grey of a rainy afternoon." },
+  { "img": "03-slate-and-steam.jpg", "step": "Torn properly, steam in", "verdict": "fixed", "why": "Reads at a glance now. Lavender took over the grey.", "then": 3 },
+  { "img": "04-spread-the-sources.jpg", "step": "No photo allowed to dominate", "verdict": "fixed", "why": "Sea, lakes and mountains share the grey. Still too purple." },
+  { "img": "05-final.jpg", "step": "One lavender, not two", "verdict": "kept", "why": "Holiday up close, home at a glance." }
+]
