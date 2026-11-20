@@ -1,0 +1,6 @@
+[
+  { "img": "01-sorted.jpg", "step": "Sorted: one icon a row", "verdict": "kept", "why": "SORT across the middle, icons knocked out white inside it." },
+  { "img": "02-first-jumble.jpg", "step": "First jumble", "verdict": "fixed", "why": "The letters slid straight through each other.", "then": 2 },
+  { "img": "03-own-lanes.jpg", "step": "A lane for each letter", "verdict": "kept", "why": "They cross cleanly, no pile-up." },
+  { "img": "04-jumbled.jpg", "step": "Fully shuffled", "verdict": "kept", "why": "S R O T, every icon still on an intersection." }
+]

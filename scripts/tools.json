@@ -1,6 +1,7 @@
 {
   "_about": "Which logo from library/logos each name gets on the site. tools: the name as written before the colon in [[Tool: model]] or in meta.tools (case-insensitive). models: a word or phrase found in the model part (after the colon), matched as whole words, longest first; it wins over the tool's logo on the hover card. Value: a file name in library/logos without .svg, or null for a lettered badge. After editing, run: python3 -I scripts/make-tool-icons.py",
   "tools": {
+    "Lucide": "lucide",
     "Python": "python",
     "NumPy": "numpy",
     "Claude Code": "claudecode",

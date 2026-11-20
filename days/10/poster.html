@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. 56 technology icons from lucide-static (npm, ISC licence, icons/LICENSE) on a 16 px grid, one at every
+     intersection; SORT in Archivo Expanded Black. Rows and columns slide along the grid, the letters jumble, then it all sorts itself back. -->
+<meta charset="utf-8">
+<title>Day 10: SORT.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,900&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#EDECE8; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+<script src="icons/icons.js"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, LOOP = 10, dpr = window.devicePixelRatio || 1, PW = Math.round(W * dpr), PH = Math.round(H * dpr);
+  // the grid nobody sees: 16 px, 70 by 102 intersections, centred
+  const G = 16, NC = 70, NR = 102, X0 = (W - (NC - 1) * G) / 2, Y0 = (H - (NR - 1) * G) / 2, IS = 12;
+  const INK = '#0E0E0E', PAPER = '#EDECE8';
+  await Promise.all(['900 100px Archivo', '500 11px "IBM Plex Mono"'].map(f => document.fonts.load(f)));
+  let seed = 10; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
+
+  // ---------- the icons, rasterised once, in black and in white ----------
+  const names = Object.keys(window.ICONS);
+  const sprite = async (svg, col) => { const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.replace(/currentColor/g, col).replace('width="24"', `width="${IS * dpr}"`).replace('height="24"', `height="${IS * dpr}"`)); await img.decode(); return img; };
+  const black = await Promise.all(names.map(n => sprite(window.ICONS[n], INK)));
+  const white = await Promise.all(names.map(n => sprite(window.ICONS[n], PAPER)));
+
+  // sorted, every row is one icon, so the page reads as ordered bands
+  const iconAt = (c, r) => (r * 7) % names.length;
+
+  // ---------- the paper: grain, fibres and a little cloudiness, all grey ----------
+  const [pc, p] = mk(PW, PH);
+  p.fillStyle = PAPER; p.fillRect(0, 0, PW, PH);
+  const id = p.getImageData(0, 0, PW, PH), d = id.data;
+  const lo = new Float32Array(64 * 90).map(() => rnd());
+  const smooth = (x, y) => { const gx = x / PW * 63, gy = y / PH * 89, ix = Math.floor(gx), iy = Math.floor(gy), fx = gx - ix, fy = gy - iy, g = (a, b) => lo[Math.min(89, b) * 64 + Math.min(63, a)];
+    return (g(ix, iy) * (1 - fx) + g(ix + 1, iy) * fx) * (1 - fy) + (g(ix, iy + 1) * (1 - fx) + g(ix + 1, iy + 1) * fx) * fy; };
+  for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) {
+    const i = (y * PW + x) * 4, v = (rnd() - .5) * 16 + (smooth(x, y) - .5) * 10;
+    d[i] += v; d[i + 1] += v; d[i + 2] += v;
+  }
+  p.putImageData(id, 0, 0);
+  p.globalAlpha = .05; p.strokeStyle = '#000'; p.lineWidth = .6 * dpr;
+  for (let i = 0; i < 2600; i++) { const x = rnd() * PW, y = rnd() * PH, a = rnd() * Math.PI, l = (4 + rnd() * 18) * dpr;
+    p.beginPath(); p.moveTo(x, y); p.quadraticCurveTo(x + Math.cos(a) * l * .5 + (rnd() - .5) * 6, y + Math.sin(a) * l * .5 + (rnd() - .5) * 6, x + Math.cos(a) * l, y + Math.sin(a) * l); p.stroke(); }
+  p.globalAlpha = 1;
+  // the same grain again, for laying over the ink so the black isn't flat
+  const [gc, g] = mk(PW, PH); const gid = g.createImageData(PW, PH), gd = gid.data;
+  for (let i = 0; i < gd.length; i += 4) { const v = rnd(); gd[i] = gd[i + 1] = gd[i + 2] = 255; gd[i + 3] = v > .93 ? 60 + v * 60 : 0; }
+  g.putImageData(gid, 0, 0);
+
+  // ---------- the word: SORT, Archivo Expanded Black, its letters on the grid ----------
+  const WORD = 'SORT', JUMBLE = [3, 0, 2, 1];   // mid-loop the slots read T S R O
+  const [lc, l] = mk(PW, PH);
+  l.font = '900 100px Archivo'; l.fontStretch = 'expanded';
+  const ms = [...WORD].map(ch => l.measureText(ch));
+  const widths = ms.map(m => m.actualBoundingBoxLeft + m.actualBoundingBoxRight), asc = Math.max(...ms.map(m => m.actualBoundingBoxAscent));
+  const TRACK = .06, total = widths.reduce((a, b) => a + b, 0) + TRACK * 100 * (WORD.length - 1);
+  const S = (NC - 1) * G * .94 / total;                       // the word spans the grid, near enough
+  const capH = asc * S, baseRow = Math.round(((NR - 1) / 2) + (capH / G) / 2), baseY = Y0 + baseRow * G;
+  const snap = v => X0 + Math.round((v - X0) / G) * G;
+  let x = X0 + ((NC - 1) * G - total * S) / 2; const homeX = [];
+  WORD.split('').forEach((ch, i) => { homeX.push(snap(x)); x += (widths[i] + TRACK * 100) * S; });
+  // jumbled: the same letters packed left to right in a different order, and each lifted or dropped a few rows
+  const order = JUMBLE.map(i => i); const jumX = new Array(WORD.length); let jx = homeX[0];
+  order.forEach(i => { jumX[i] = snap(jx); jx += (widths[i] + TRACK * 100) * S; });
+  const jumDY = [-32, 16, -14, 34].map(r => r * G);   // far enough apart that no two letters cross on the same rows
+
+  // ---------- the shuffle: rows slide along the grid, then columns, then it all sorts back ----------
+  const rowShift = Array.from({ length: NR }, (_, r) => (r % 2 ? 1 : -1) * (3 + Math.floor(rnd() * 22)));
+  const colShift = Array.from({ length: NC }, (_, c) => (c % 2 ? 1 : -1) * (2 + Math.floor(rnd() * 30)));
+  const ease = t => t < 0 ? 0 : t > 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const seg = (t, a, b) => ease((t - a) / (b - a));
+  const mod = (a, n) => ((a % n) + n) % n;
+
+  const [ic, ix] = mk(PW, PH), [wc, wx] = mk(PW, PH), out = document.getElementById('c'); out.width = PW; out.height = PH; const o = out.getContext('2d');
+  function draw(sec) {
+    const t = ((sec % LOOP) + LOOP) % LOOP;
+    // icons: out along the rows (1.5 to 3), down the columns (3 to 4.5), hold, back up the columns (6 to 7.5), back along the rows (7.5 to 9)
+    const kx = seg(t, 1.5, 3) - seg(t, 7.5, 9), ky = seg(t, 3, 4.5) - seg(t, 6, 7.5);
+    ix.clearRect(0, 0, PW, PH); wx.clearRect(0, 0, PW, PH);
+    for (let r = 0; r < NR; r++) for (let c = 0; c < NC; c++) {
+      const sx = rowShift[r] * kx;                      // this icon, slid along its row
+      const cc = mod(c + sx, NC);                       // where it sits now (wrapping at the edges)
+      const sy = colShift[Math.round(cc) % NC] * ky;    // and then down whichever column it landed in
+      const rr = mod(r + sy, NR);
+      const px = (X0 + cc * G - IS / 2) * dpr, py = (Y0 + rr * G - IS / 2) * dpr;
+      const k = iconAt(c, r);
+      ix.drawImage(black[k], px, py); wx.drawImage(white[k], px, py);
+    }
+    // letters: lift or drop a few rows (1.5 to 3), slide into the jumble (3 to 4.5), hold, slide home (6 to 7.5), drop back (7.5 to 9)
+    const lv = seg(t, 1.5, 3) - seg(t, 7.5, 9), lh = seg(t, 3, 4.5) - seg(t, 6, 7.5);
+    l.setTransform(1, 0, 0, 1, 0, 0); l.clearRect(0, 0, PW, PH); l.fillStyle = INK; l.font = '900 100px Archivo'; l.fontStretch = 'expanded';
+    WORD.split('').forEach((ch, i) => {
+      const lx = homeX[i] + (jumX[i] - homeX[i]) * lh, ly = baseY + jumDY[i] * lv;
+      l.setTransform(S * dpr, 0, 0, S * dpr, lx * dpr, ly * dpr); l.fillText(ch, ms[i].actualBoundingBoxLeft, 0);
+    });
+    // compose: paper; black icons where there are no letters; the letters; the icons again in paper white inside them
+    o.globalCompositeOperation = 'source-over'; o.drawImage(pc, 0, 0);
+    ix.globalCompositeOperation = 'destination-out'; ix.drawImage(lc, 0, 0); ix.globalCompositeOperation = 'source-over';
+    o.drawImage(ic, 0, 0); o.drawImage(lc, 0, 0);
+    wx.globalCompositeOperation = 'destination-in'; wx.drawImage(lc, 0, 0); wx.globalCompositeOperation = 'source-over';
+    o.drawImage(wc, 0, 0);
+    // the paper's tooth shows through the ink
+    o.drawImage(gc, 0, 0);
+    // the margin: what this is, in small type
+    o.setTransform(dpr, 0, 0, dpr, 0, 0); o.font = '500 11px "IBM Plex Mono"'; o.fillStyle = INK; o.letterSpacing = '1.5px'; o.textBaseline = 'middle';
+    const my = Y0 / 2 - 2, by = H - Y0 / 2 + 2;
+    o.textAlign = 'left'; o.fillText('SORT()   THIRTY POSTERS 10 / 30', X0 - 6, my); o.fillText(`16 PX GRID   ${NC} × ${NR} = ${(NC * NR).toLocaleString('en-GB')} INTERSECTIONS`, X0 - 6, by);
+    o.textAlign = 'right'; o.fillText('SHUFFLE, THEN SORT', W - X0 + 6, my); o.fillText('56 ICONS: LUCIDE, ISC', W - X0 + 6, by);
+    o.setTransform(1, 0, 0, 1, 0, 0);
+  }
+  draw(0);
+  document.body.dataset.ready = '1';
+  return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>

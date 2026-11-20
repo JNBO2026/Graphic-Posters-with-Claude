@@ -125,6 +125,7 @@ Every logo the site can show for a tool or model. One mono SVG per brand, `fill=
 | <img src="webgl.svg" width="20" height="20" alt=""> | `webgl.svg` WebGL | WebGL, shaders | Simple Icons |
 | <img src="python.svg" width="20" height="20" alt=""> | `python.svg` Python | Python scripts | Simple Icons |
 | <img src="numpy.svg" width="20" height="20" alt=""> | `numpy.svg` NumPy | NumPy | Simple Icons |
+| <img src="lucide.svg" width="20" height="20" alt=""> | `lucide.svg` Lucide | Lucide icons | Simple Icons |
 | <img src="p5dotjs.svg" width="20" height="20" alt=""> | `p5dotjs.svg` p5.js | p5.js | Simple Icons |
 | <img src="ffmpeg.svg" width="20" height="20" alt=""> | `ffmpeg.svg` FFmpeg | FFmpeg | Simple Icons |
 | <img src="googlefonts.svg" width="20" height="20" alt=""> | `googlefonts.svg` Google Fonts | Google Fonts | Simple Icons |

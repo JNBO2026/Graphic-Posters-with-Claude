@@ -565,5 +565,12 @@
     "covers": "NumPy",
     "source": "Simple Icons 13.21.0",
     "license": "CC0"
+  },
+  "lucide": {
+    "brand": "Lucide",
+    "kind": "code",
+    "covers": "Lucide icons",
+    "source": "Simple Icons 13.21.0",
+    "license": "CC0"
   }
 }

@@ -1,0 +1,17 @@
+7,140 icons. Every one of them ends up back home.
+
+Day 10 of 30. 130 words, spoken in a minute: a 16px grid with a technology icon at every intersection, a heavy display word of five letters or fewer in the middle, everything shuffling along the grid and jumbling before it goes back into place. Black and white only, with a paper texture.
+
+The word it picked: SORT. Because that’s what the poster does. It starts sorted, one icon per row. Then the rows slide along the grid, then the columns, the letters lift into lanes and land as S R O T, and the whole lot sorts itself back. No two icons ever share an intersection, even mid shuffle.
+
+56 open-source Lucide icons, Archivo Expanded Black for the word, the icons knocked out white inside the letters, and a paper grain made in code that sits on top of the ink as well as under it.
+
+Honest bit: the first jumble had the letters sliding straight through each other. It had to give each one its own lane before they crossed.
+
+The prompt is on the wall, free to copy. Link in the comments.
+
+Grid people: 16px, 8px or no grid at all?
+
+we give a sh*t.
+
+#ClaudeCode #MotionDesign #GridSystems
