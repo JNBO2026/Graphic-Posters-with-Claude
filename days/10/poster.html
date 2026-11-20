@@ -30,7 +30,7 @@ const READY = (async () => {
 
   // ---------- the icons, rasterised once, in black and in white ----------
   const names = Object.keys(window.ICONS);
-  const sprite = async (svg, col) => { const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.replace(/currentColor/g, col).replace('width="24"', `width="${IS * dpr}"`).replace('height="24"', `height="${IS * dpr}"`)); await img.decode(); return img; };
+  const sprite = async (svg, col) => { const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.replace(/currentColor/g, col).replace('stroke-width="2"', 'stroke-width="2.4"').replace('width="24"', `width="${IS * dpr}"`).replace('height="24"', `height="${IS * dpr}"`)); await img.decode(); return img; };
   const black = await Promise.all(names.map(n => sprite(window.ICONS[n], INK)));
   const white = await Promise.all(names.map(n => sprite(window.ICONS[n], PAPER)));
 
@@ -112,11 +112,6 @@ const READY = (async () => {
     o.drawImage(wc, 0, 0);
     // the paper's tooth shows through the ink
     o.drawImage(gc, 0, 0);
-    // the margin: what this is, in small type
-    o.setTransform(dpr, 0, 0, dpr, 0, 0); o.font = '500 11px "IBM Plex Mono"'; o.fillStyle = INK; o.letterSpacing = '1.5px'; o.textBaseline = 'middle';
-    const my = Y0 / 2 - 2, by = H - Y0 / 2 + 2;
-    o.textAlign = 'left'; o.fillText('SORT()   THIRTY POSTERS 10 / 30', X0 - 6, my); o.fillText(`16 PX GRID   ${NC} × ${NR} = ${(NC * NR).toLocaleString('en-GB')} INTERSECTIONS`, X0 - 6, by);
-    o.textAlign = 'right'; o.fillText('SHUFFLE, THEN SORT', W - X0 + 6, my); o.fillText('56 ICONS: LUCIDE, ISC', W - X0 + 6, by);
     o.setTransform(1, 0, 0, 1, 0, 0);
   }
   draw(0);

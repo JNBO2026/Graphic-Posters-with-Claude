@@ -4,7 +4,25 @@
   "started_at": "2026-11-20T08:30:02Z",
   "title": "SORT.",
   "note": "7,140 technology icons on a 16 px grid and one heavy word, shuffled along the grid and sorted back into place, in black and white on paper.",
-  "process": "Code only, no generative model. [[Claude Code]] laid a 16 px grid, 70 by 102, and put one of 56 open-source [[Lucide]] technology icons at every intersection, a row of each so the page starts sorted, with SORT in [[Google Fonts]] Archivo Expanded Black across the middle and the icons knocked out white inside it. On [[Canvas]], rows then columns slide along the grid and wrap, the letters lift into their own rows and jumble, then everything sorts itself back, with a paper grain made in code laid under and over the ink.",
-  "tools": ["Claude Code", "Lucide", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["16-pixel grid", "every intersection", "icons", "technology", "heavy display headline font", "no more than 5 characters", "shuffle along this invisible grid", "jumble up the letters", "black-and-white", "paper texture"]
+  "process": "Code only, no generative model. [[Claude Code]] laid a 16 px grid, 70 by 102, and put one of 56 open-source [[Lucide]] technology icons at every intersection, a row of each so the page starts sorted, with SORT in [[Google Fonts]] Archivo Expanded Black across the middle and the icons knocked out white inside it. On [[Canvas]], rows then columns slide along the grid and wrap, the letters lift into their own rows and jumble, then everything sorts itself back, with a paper grain made in code laid under and over the ink, and every element was checked for how it reads at phone size.",
+  "tools": [
+    "Claude Code",
+    "Lucide",
+    "Canvas",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "16-pixel grid",
+    "every intersection",
+    "icons",
+    "technology",
+    "heavy display headline font",
+    "no more than 5 characters",
+    "shuffle along this invisible grid",
+    "jumble up the letters",
+    "black-and-white",
+    "paper texture"
+  ]
 }
