@@ -1,0 +1,1 @@
+Rhythm and optical vibration, the op art way. Black and white bands across the whole page, bent by waves so the paper seems to bulge and breathe. A word, HUM, that is never drawn: inside the letters the same bands turn on their side, so the type exists only as an edge your eye makes where the rhythm changes. Let the waves drift so it hums.

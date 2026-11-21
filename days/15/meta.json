@@ -1,0 +1,11 @@
+{
+  "day": 15,
+  "date": "2026-11-21",
+  "started_at": "2026-11-21T15:35:38Z",
+  "author": "claude",
+  "title": "Hum.",
+  "note": "Op art: black and white bands that buckle and breathe, and a word that exists only where their rhythm turns.",
+  "process": "Code only, no generative model. A [[WebGL]] shader written in [[Claude Code]] draws every band from one formula: across the page they wave and swell in weight, and inside HUM, set in [[Google Fonts]] Archivo Black and used only as a mask, the same bands turn upright and heavier. The word is never drawn, only the change in rhythm, and the waves drift on a ten second loop so the paper seems to hum.",
+  "tools": ["Claude Code", "WebGL", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["optical vibration", "op art", "bulge and breathe", "never drawn", "only as an edge your eye makes", "hums"]
+}

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. A WebGL shader draws every band. HUM is rendered once to a hidden canvas as a mask: inside it the bands
+     shift half a period, so the word exists only as the edge where the rhythm breaks. Type: Archivo Black, Google Fonts. -->
+<meta charset="utf-8">
+<title>Day 15: Vibration.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#F2F0EB; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1, PW = Math.round(W * dpr), PH = Math.round(H * dpr);
+  await document.fonts.load('100px "Archivo Black"');
+  // the word as a mask, filling the page inside the margin
+  const mc = document.createElement('canvas'); mc.width = W; mc.height = H; const m = mc.getContext('2d');
+  m.font = '100px "Archivo Black"'; const mt = m.measureText('HUM');
+  const tw = mt.actualBoundingBoxLeft + mt.actualBoundingBoxRight, th = mt.actualBoundingBoxAscent;
+  const sx = (W - 2 * M) / tw, sy = (H * .52) / th;
+  m.fillStyle = '#fff'; m.save(); m.translate(M, H * .24); m.scale(sx, sy); m.fillText('HUM', mt.actualBoundingBoxLeft, th); m.restore();
+  
+  const cv = document.getElementById('gl'); cv.width = PW; cv.height = PH;
+  const gl = cv.getContext('webgl', { preserveDrawingBuffer: true, antialias: false });
+  const sh = (t, src) => { const s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+  const pr = gl.createProgram();
+  gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
+  gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, `
+precision highp float;
+uniform sampler2D mask; uniform float t, dpr, H, M;
+const float TAU = 6.2831853, PERIOD = 26.;
+float band(float ph, float duty, float aa) {          // one stripe a period, duty of it ink, edges antialiased
+  float f = fract(ph);
+  return smoothstep(-aa, aa, f) * smoothstep(duty + aa, duty - aa, f) + smoothstep(1. - aa, 1. + aa, f);
+}
+void main() {
+  vec2 p = vec2(gl_FragCoord.x, H * dpr - gl_FragCoord.y) / dpr;
+  vec2 q = p / vec2(1240., 1754.);
+  float inside = smoothstep(.35, .65, texture2D(mask, q).r);
+  float aa = 1.2 / PERIOD / dpr;
+  // outside the word: horizontal bands on a long slow wave; their weight swells and thins across the page,
+  // which is what makes the flat paper seem to buckle
+  float bend = 22. * sin(p.x * .0058 + t * TAU) + 9. * sin(p.x * .017 + 1.3 - t * TAU * 2.);
+  float swell = .5 + .2 * sin(q.x * 7.3 + q.y * 2.1 - t * TAU) * sin(q.y * 4.4 + .6);
+  float out_ = band((p.y + bend) / PERIOD, swell, aa);
+  // inside the word: the same rhythm turned upright and heavier, so the word reads as darker, even very small
+  float bend2 = 14. * sin(p.y * .0071 - t * TAU);
+  float in_ = band((p.x + bend2) / PERIOD, .72, aa);
+  float ink = mix(out_, in_, inside);
+  float inm = step(M, p.x) * step(p.x, 1240. - M) * step(M, p.y) * step(p.y, 1754. - M);
+  vec3 col = mix(vec3(.949, .941, .922), vec3(.06), ink * inm);
+  gl_FragColor = vec4(col, 1.);
+}`));
+  gl.linkProgram(pr); gl.useProgram(pr);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const ap = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+  const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mc);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const U = n => gl.getUniformLocation(pr, n);
+  gl.uniform1f(U('dpr'), dpr); gl.uniform1f(U('H'), H); gl.uniform1f(U('M'), M); gl.viewport(0, 0, PW, PH);
+  const draw = sec => { gl.uniform1f(U('t'), ((sec % LOOP) + LOOP) % LOOP / LOOP); gl.drawArrays(gl.TRIANGLES, 0, 3); };
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>

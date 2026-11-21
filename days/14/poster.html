@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. path.json is made by line.py (Python, NumPy): a CC0 photo stippled with Lloyd's algorithm, then joined
+     into one travelling salesman tour. Drawn here on canvas as a single stroke; a red pen runs the length of it each loop. -->
+<meta charset="utf-8">
+<title>Day 14: One Line.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#F4F1EA; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, LOOP = 10, dpr = window.devicePixelRatio || 1;
+  await document.fonts.load('italic 100px "Instrument Serif"');
+  const { points: P } = await (await fetch('path.json')).json();
+  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
+  // cumulative length along the line, so the pen moves at an even speed
+  const L = [0]; for (let i = 1; i < P.length; i++) L.push(L[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
+  const total = L[L.length - 1];
+  const at = s => { let lo = 0, hi = L.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (L[m] < s) lo = m; else hi = m; } return lo; };
+  // the whole line once, smoothed through midpoints, on its own layer
+  const base = document.createElement('canvas'); base.width = W * dpr; base.height = H * dpr; const b = base.getContext('2d');
+  b.scale(dpr, dpr); b.fillStyle = '#F4F1EA'; b.fillRect(0, 0, W, H);
+  const path = (ctx, i0, i1) => { ctx.beginPath(); ctx.moveTo(P[i0][0], P[i0][1]);
+    for (let i = i0 + 1; i < i1; i++) { const mx = (P[i][0] + P[i + 1][0]) / 2, my = (P[i][1] + P[i + 1][1]) / 2; ctx.quadraticCurveTo(P[i][0], P[i][1], mx, my); }
+    ctx.lineTo(P[i1][0], P[i1][1]); };
+  // the stroke thickens in the shadows, like an engraver's line: runs of similar weight drawn as one path each
+  b.strokeStyle = '#161513'; b.lineJoin = b.lineCap = 'round';
+  const wOf = i => 1.3 + 3.4 * Math.pow(Math.max(0, (P[i][2] || 0) - .1) / .9, 1.4);
+  let s0 = 0;
+  for (let i = 1; i < P.length; i++) {
+    const w0 = Math.round(wOf(s0) * 2) / 2, wi = Math.round(wOf(i) * 2) / 2;
+    if (wi !== w0 || i === P.length - 1) { b.lineWidth = w0; path(b, s0, i); b.stroke(); s0 = i; }
+  }
+  const RED = '#E2321E', SEG = .045;
+  function draw(sec) {
+    const t = ((sec % LOOP) + LOOP) % LOOP / LOOP;
+    x.setTransform(1, 0, 0, 1, 0, 0); x.drawImage(base, 0, 0); x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // the pen: a red stretch of the line, travelling from the first point to the last once a loop
+    const s1 = t * total, s0 = Math.max(0, s1 - SEG * total), i0 = at(s0), i1 = Math.max(i0 + 2, at(s1));
+    x.strokeStyle = RED; x.lineWidth = 4.2; x.lineJoin = x.lineCap = 'round'; path(x, i0, Math.min(P.length - 1, i1)); x.stroke();
+    const h = P[Math.min(P.length - 1, i1)]; x.fillStyle = RED; x.beginPath(); x.arc(h[0], h[1], 11, 0, Math.PI * 2); x.fill();
+  }
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>
