@@ -1,0 +1,5 @@
+[
+  { "img": "01-in.jpg", "step": "IN, cut by the horizon", "verdict": "kept", "why": "Above the line the letters are paper, below they're ink." },
+  { "img": "02-melt.jpg", "step": "The melt", "verdict": "kept", "why": "Two distance fields blended: for a moment it's neither word." },
+  { "img": "03-out.jpg", "step": "OUT", "verdict": "kept", "why": "Same page, the space round the letters now the letters." }
+]

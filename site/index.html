@@ -404,7 +404,7 @@
         <button class="icon" id="v-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
       <h2 id="v-title"></h2>
       <p class="note" id="v-note"></p>
-      <div class="well" id="v-well"><span class="k">The prompt, inputted in 60 seconds</span><pre id="v-prompt"></pre><div class="kwx" id="v-kwx" hidden></div></div>
+      <div class="well" id="v-well"><span class="k" id="v-wk">The prompt, inputted in 60 seconds</span><pre id="v-prompt"></pre><div class="kwx" id="v-kwx" hidden></div></div>
       <div class="made" id="v-made-box"><span class="k">How it was made</span><p id="v-made"></p><div class="tools" id="v-tools"></div></div>
       <div class="made" id="v-skills-box" hidden><span class="k">Skills used</span><div class="tools" id="v-skills"></div></div>
       <div class="actions">
@@ -574,7 +574,7 @@
     if (HOVER === 'a') return `<span class="over o-a"><span class="card"><span class="meta">Day ${n}</span><b>${esc(p.title)}</b></span></span>`;
     if (HOVER === 'b') return `<span class="over o-b"><span class="meta">Day ${n} · ${words(p)} words in 60 seconds</span><q>${esc(snippet(p))}</q></span>`;
     if (HOVER === 'c') return `<span class="over o-c"><span class="card"><b>${esc(p.title)}</b>
-      <span class="lrow"><span>Prompt</span><span class="v">${words(p)} words</span></span>
+      <span class="lrow"><span>${p.author === 'claude' ? 'Brief' : 'Prompt'}</span><span class="v">${p.author === 'claude' ? 'by Claude' : words(p) + ' words'}</span></span>
       <span class="lrow"><span>Made with</span><span class="v mw">${esc(madeWith(p))}</span></span>
       <span class="lrow"><span>Tools</span><span class="v logos">${logosOf(p)}</span></span></span></span>`;
     return '';
@@ -703,7 +703,7 @@
   // ---------- About and the HUD ----------
   if (window.DEMO) { const d = document.createElement('div'); d.className = 'hud demo glass ring'; d.textContent = 'Preview with example data'; document.body.appendChild(d); }
   const ast = `<svg class="ast" viewBox="64 64 48 48" aria-hidden="true"><path fill="currentColor" d="M93.1626 112H82.821V100.486L74.6795 108.629L67.3703 101.319L75.5117 93.1758H64V82.8324H75.5117L67.3703 74.6813L74.6877 67.3709L82.8292 75.5138V64H93.1708V75.5138L101.312 67.3709L108.63 74.6813L100.488 82.8242H112V93.1676H100.488L108.63 101.31L101.312 108.621L93.1708 100.478V111.992L93.1626 112ZM84.848 109.972H91.1437V95.5989L101.304 105.761L105.762 101.302L95.6018 91.1401H109.973V84.8434H95.6018L105.762 74.6813L101.304 70.2225L91.1437 80.3846V66.0192H84.848V80.3929L74.6877 70.2308L70.2297 74.6896L80.3901 84.8517H66.0189V91.1483H80.3901L70.2297 101.31L74.6877 105.769L84.848 95.6071V109.981V109.972Z"/></svg>`;
-  const ABOUT = 'One poster a day for 30 days. Each one starts as a prompt inputted in 60 seconds, goes into Claude Code, and gets posted as is. No redos, no touch-ups. Every prompt is here to copy.';
+  const ABOUT = 'One poster a day for 30 days. Days 1 to 10 started as a prompt inputted in 60 seconds, went into Claude Code and were posted as is. From day 11 Claude set its own brief: a discovery exercise in how far design in code can go. Every prompt and brief is here to copy.';
   const socialPill = (slug, href, label) => href ? `<a class="pill" href="${esc(href)}" target="_blank" rel="noopener">${logo(slug)}${label}</a>` : '';
   const socials = [socialPill('instagram', S.instagram, 'Instagram'), socialPill('linkedin', S.linkedin, 'LinkedIn')].join('');
   $('about').innerHTML = `<div class="tile"><a class="lock" href="https://blameopal.studio"><img src="system/assets/brand/bo-mark.svg" alt="">blame opal</a>
@@ -834,7 +834,10 @@
     $('v-tools').innerHTML = extra.map(lozenge).join(''); $('v-tools').hidden = !extra.length;
     const sk = (p.skills || []).filter(x => x && x.url);
     $('v-skills').innerHTML = sk.map(skillLink).join(''); $('v-skills-box').hidden = !sk.length;
-    keywords(p); $('v-copy').textContent = 'Copy the prompt';
+    // days 11 to 30: the brief is Claude's own, never passed off as a 60 second prompt
+    const own = p.author === 'claude';
+    $('v-wk').textContent = own ? 'The brief, set by Claude itself. No prompt from James.' : 'The prompt, inputted in 60 seconds';
+    keywords(p); $('v-copy').textContent = own ? 'Copy the brief' : 'Copy the prompt';
     $('v-dl').href = p.video || p.image; $('v-dl').textContent = p.video ? 'Download video' : 'Download poster';
     $('v-dl2').hidden = !p.video; $('v-dl2').href = p.image; $('v-dl').classList.toggle('full', !p.video);
     const many = P.length > 1;

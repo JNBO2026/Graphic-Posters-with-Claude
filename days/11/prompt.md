@@ -1,0 +1,1 @@
+Figure and ground. Two words, IN and OUT, so big they are the page. Each turns into the other, not by a cut but by melting, letter shapes as distance fields blended in a shader. A horizon sweeps up and down the page and everything it crosses swaps black for white, so the letters keep becoming the space around them. Black and white only, nothing small.

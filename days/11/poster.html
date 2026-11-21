@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. IN and OUT set in Bricolage Grotesque, turned into signed distance fields in JavaScript (an exact
+     Euclidean distance transform), then blended and cut against a moving horizon in a WebGL shader. -->
+<meta charset="utf-8">
+<title>Day 11: In / Out.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@96,800&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#F3F1EC; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1, PW = Math.round(W * dpr), PH = Math.round(H * dpr);
+  await document.fonts.load('800 100px "Bricolage Grotesque"');
+  // ---------- the words as distance fields, at half size (the shader's filtering keeps the edge sharp) ----------
+  const SW = 620, SH = 877, R = 48; // field size, and the distance range it stores, in field pixels
+  function field(word) {
+    const c = document.createElement('canvas'); c.width = SW; c.height = SH; const x = c.getContext('2d');
+    x.font = '800 100px "Bricolage Grotesque"'; x.letterSpacing = '-4px';
+    const m = x.measureText(word), w = m.actualBoundingBoxLeft + m.actualBoundingBoxRight, h = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+    const bw = SW - 2 * M / 2, bh = SH - 2 * M / 2;            // the word fills the page to the margin
+    const sx = bw / w, sy = bh / h;
+    x.fillStyle = '#000'; x.save(); x.translate(M / 2, M / 2); x.scale(sx, sy); x.fillText(word, m.actualBoundingBoxLeft, m.actualBoundingBoxAscent); x.restore();
+    const d = x.getImageData(0, 0, SW, SH).data, inside = new Uint8Array(SW * SH);
+    for (let i = 0; i < SW * SH; i++) inside[i] = d[i * 4 + 3] > 127 ? 1 : 0;
+    const out = edt(inside, 0), inn = edt(inside, 1), px = new Uint8Array(SW * SH * 4);
+    for (let i = 0; i < SW * SH; i++) { const s = Math.sqrt(out[i]) - Math.sqrt(inn[i]); const v = Math.max(0, Math.min(255, Math.round(128 + s / R * 127)));
+      px[i * 4] = px[i * 4 + 1] = px[i * 4 + 2] = v; px[i * 4 + 3] = 255; }
+    return px;
+  }
+  // exact squared Euclidean distance transform (Felzenszwalb and Huttenlocher), to the nearest pixel that is `target`
+  function edt(mask, target) {
+    const INF = 1e20, f = new Float64Array(Math.max(SW, SH)), dd = new Float64Array(Math.max(SW, SH)), v = new Int32Array(Math.max(SW, SH)), z = new Float64Array(Math.max(SW, SH) + 1);
+    const g = new Float64Array(SW * SH);
+    for (let i = 0; i < SW * SH; i++) g[i] = mask[i] === target ? 0 : INF;
+    const pass = (n, get, set) => { for (let q = 0; q < n; q++) f[q] = get(q); let k = 0; v[0] = 0; z[0] = -INF; z[1] = INF;
+      for (let q = 1; q < n; q++) { let s; do { const r = v[k]; s = ((f[q] + q * q) - (f[r] + r * r)) / (2 * q - 2 * r); } while (s <= z[k] && --k >= 0); k++; v[k] = q; z[k] = s; z[k + 1] = INF; }
+      k = 0; for (let q = 0; q < n; q++) { while (z[k + 1] < q) k++; const r = v[k]; dd[q] = (q - r) * (q - r) + f[r]; } for (let q = 0; q < n; q++) set(q, dd[q]); };
+    for (let x = 0; x < SW; x++) pass(SH, y => g[y * SW + x], (y, val) => g[y * SW + x] = val);
+    for (let y = 0; y < SH; y++) pass(SW, x => g[y * SW + x], (x, val) => g[y * SW + x] = val);
+    return g;
+  }
+  const fIN = field('IN'), fOUT = field('OUT');
+
+  const cv = document.getElementById('gl'); cv.width = PW; cv.height = PH;
+  const gl = cv.getContext('webgl', { preserveDrawingBuffer: true, antialias: false });
+  const sh = (t, src) => { const s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+  const pr = gl.createProgram();
+  gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
+  gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, `
+precision highp float;
+uniform sampler2D A, B; uniform float k, hz, dpr, H, R, SCALE, wob, t;
+const float TAU = 6.2831853;
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+void main() {
+  vec2 p = vec2(gl_FragCoord.x, H * dpr - gl_FragCoord.y) / dpr;   // poster pixels, top left
+  vec2 uv = p / vec2(1240., 1754.);
+  // distance to each word, in poster pixels; blending the fields melts one word into the other
+  float da = (texture2D(A, uv).r - .5) * 2. * R * SCALE, db = (texture2D(B, uv).r - .5) * 2. * R * SCALE;
+  float d = mix(da, db, k);
+  // mid melt, the shapes swell a little so they bridge rather than vanish
+  d -= sin(k * 3.14159) * 22.;
+  float aa = .7 / dpr;
+  float figure = smoothstep(aa, -aa, d);
+  // the horizon: a slow wave, and everything below it is the other way round
+  float y = hz + sin(uv.x * 4.2 + t * TAU) * wob;
+  float below = smoothstep(y - aa, y + aa, p.y);
+  float ink = abs(figure - below);
+  vec3 paper = vec3(.953, .945, .925), black = vec3(.055);
+  vec3 col = mix(paper, black, ink);
+  col += (hash(p * dpr + t) - .5) * .02;
+  gl_FragColor = vec4(col, 1.);
+}`));
+  gl.linkProgram(pr); gl.useProgram(pr);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const ap = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+  const tex = (unit, px) => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, SW, SH, 0, gl.RGBA, gl.UNSIGNED_BYTE, px);
+    for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); };
+  tex(0, fIN); tex(1, fOUT);
+  const U = n => gl.getUniformLocation(pr, n);
+  gl.uniform1i(U('A'), 0); gl.uniform1i(U('B'), 1); gl.uniform1f(U('dpr'), dpr); gl.uniform1f(U('H'), H); gl.uniform1f(U('R'), R); gl.uniform1f(U('SCALE'), W / SW);
+  gl.viewport(0, 0, PW, PH);
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, seg = (t, a, b) => ease(Math.min(1, Math.max(0, (t - a) / (b - a))));
+  const draw = sec => {
+    const t = ((sec % LOOP) + LOOP) % LOOP;
+    // IN holds, melts into OUT (2 to 4.5), OUT holds, melts back (7 to 9.5)
+    const k = seg(t, 2, 4.5) - seg(t, 7, 9.5);
+    // the horizon rides up through the word and back down, once a loop
+    const hz = H * (.58 - .30 * Math.sin(t / LOOP * Math.PI * 2 + .35) * .0 - .28 * (seg(t, .5, 4) - seg(t, 5.5, 9.5)));
+    gl.uniform1f(U('k'), k); gl.uniform1f(U('hz'), hz); gl.uniform1f(U('wob'), 26); gl.uniform1f(U('t'), t / LOOP);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>
