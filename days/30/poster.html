@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- tiles/ holds the twenty-nine posters before this one (made by tiles.py from each day's thumbnail, ranked by tone in
+     tiles.json). On canvas they make a photomosaic of 30: each cell takes a poster whose tone matches the numeral or
+     the ground at that point. Waves run across the wall and each tile turns over, in 3D, to another poster of the
+     same tone. Numeral shape: Archivo Black, Google Fonts, used only as a mask. -->
+<meta charset="utf-8">
+<title>Day 30: Thirty.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#0E0D0C; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1;
+  await document.fonts.load('100px "Archivo Black"');
+  const T = await (await fetch('tiles.json')).json();
+  const imgs = {}; await Promise.all(T.map(o => new Promise(r => { const i = new Image(); i.onload = () => { imgs[o.day] = i; r(); }; i.src = `tiles/${String(o.day).padStart(2, '0')}.jpg`; })));
+  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
+  // the grid: 16 x 16 cells in the posters' own A proportion, margin to margin
+  const COLS = 16, GAP = 3, CW = (W - 2 * M - GAP * (COLS - 1)) / COLS, CH = CW * 1.4142, ROWS = Math.floor((H - 2 * M + GAP) / (CH + GAP));
+  const Y0 = (H - (ROWS * CH + (ROWS - 1) * GAP)) / 2;
+  // the numeral, as a mask the size of the grid
+  const mk = document.createElement('canvas'); mk.width = COLS; mk.height = ROWS; const m = mk.getContext('2d');
+  const big = document.createElement('canvas'); big.width = COLS * 20; big.height = ROWS * 20; const bg = big.getContext('2d');
+  bg.font = '100px "Archivo Black"'; const mt = bg.measureText('30'), s = (big.width * .96) / (mt.actualBoundingBoxLeft + mt.actualBoundingBoxRight), sy = (big.height * .74) / mt.actualBoundingBoxAscent;
+  bg.fillStyle = '#fff'; bg.save(); bg.translate(big.width * .02, big.height * .13); bg.scale(s, sy); bg.fillText('30', mt.actualBoundingBoxLeft, mt.actualBoundingBoxAscent); bg.restore();
+  m.drawImage(big, 0, 0, COLS, ROWS); const md = m.getImageData(0, 0, COLS, ROWS).data;
+  // tones: brightest posters for the numeral, darkest for the ground
+  const light = T.slice(-10).map(o => o.day), dark = T.slice(0, 14).map(o => o.day);
+  let sd = 30; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+  const cells = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    const v = md[(r * COLS + c) * 4] / 255, pool = v > .5 ? light : dark;
+    cells.push({ r, c, v, pool, a: pool[Math.floor(rnd() * pool.length)], b: pool[Math.floor(rnd() * pool.length)], d: rnd() });
+  }
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  function draw(sec) {
+    const t = ((sec % LOOP) + LOOP) % LOOP;
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = '#0E0D0C'; x.fillRect(0, 0, W, H);
+    for (const q of cells) {
+      // two waves a loop: a diagonal sweep out (1 to 4 s) and a radial sweep home (6 to 9 s); each tile turns once in each
+      const w1 = 1 + (q.c + q.r) / (COLS + ROWS) * 2.2 + q.d * .25, w2 = 6 + Math.hypot(q.c - COLS / 2, q.r - ROWS / 2) / Math.hypot(COLS / 2, ROWS / 2) * 2.2 + q.d * .25;
+      const f1 = ease(Math.min(1, Math.max(0, (t - w1) / .7))), f2 = ease(Math.min(1, Math.max(0, (t - w2) / .7)));
+      const turn = f1 - f2;                         // 0 shows a, 1 shows b
+      const ang = turn * Math.PI, show = Math.cos(ang) >= 0 ? q.a : q.b, sx = Math.abs(Math.cos(ang));
+      const px = M + q.c * (CW + GAP), py = Y0 + q.r * (CH + GAP);
+      x.save(); x.translate(px + CW / 2, py + CH / 2); x.scale(Math.max(.02, sx), 1);
+      x.drawImage(imgs[show], -CW / 2, -CH / 2, CW, CH);
+      // the ground sinks back so the numeral reads; turning tiles catch a little light
+      const dim = q.v > .5 ? 0 : .74;
+      x.fillStyle = `rgba(14,13,12,${dim + (1 - sx) * .25})`; x.fillRect(-CW / 2, -CH / 2, CW, CH);
+      x.restore();
+    }
+  }
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>
