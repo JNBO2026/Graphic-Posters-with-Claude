@@ -1,0 +1,1 @@
+Dynamic diagonals, the way the Constructivists did it. One red wedge cuts the page corner to corner, a single block of type rides it uphill, and everything else is set at the same angle or square to it. Photomontage from public domain photographs, cut hard and printed in one colour. A poster that looks like it is about to move, and then does.

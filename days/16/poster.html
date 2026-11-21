@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. Photomontage from CC0 photos in src/ (sources in src/credits.json), cut and printed in one ink on canvas;
+     every element set on one 18 degree axis or square to it. Type: Oswald, Google Fonts. -->
+<meta charset="utf-8">
+<title>Day 16: Upward.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#EFE8DA; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1;
+  await document.fonts.load('700 100px Oswald');
+  const load = s => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = s; });
+  const [mtn, sky, sea] = await Promise.all(['src/mountain-01.jpg', 'src/mountain-03.jpg', 'src/sea-03.jpg'].map(load));
+  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
+  const PAPER = '#EFE8DA', RED = '#D7261E', INK = '#161412', A = -18 * Math.PI / 180;
+  // one ink: each photo turned into a hard black duotone on paper, with a coarse line screen like a cheap 1920s print
+  const ink = (img, sw, sh, sx, sy, cw, ch, gamma) => {
+    const c = document.createElement('canvas'); c.width = sw; c.height = sh; const g = c.getContext('2d');
+    g.drawImage(img, sx, sy, cw, ch, 0, 0, sw, sh);
+    const d = g.getImageData(0, 0, sw, sh), p = d.data;
+    for (let y = 0; y < sh; y++) for (let x_ = 0; x_ < sw; x_++) {
+      const i = (y * sw + x_) * 4, l = (p[i] * .3 + p[i + 1] * .55 + p[i + 2] * .15) / 255;
+      const v = Math.pow(1 - l, gamma);                          // how much ink
+      const line = .5 + .5 * Math.sin((x_ * Math.sin(-A) + y * Math.cos(-A)) * 2 * Math.PI / 7);   // the screen, on the axis
+      const on = v > line ? 1 : 0;
+      p[i] = on ? 22 : 239; p[i + 1] = on ? 20 : 232; p[i + 2] = on ? 18 : 218; p[i + 3] = 255;
+    }
+    g.putImageData(d, 0, 0); return c;
+  };
+  const MTN = ink(mtn, 760, 520, 0, 280, 1080, 740, 1.1), SKY = ink(sky, 640, 900, 160, 0, 760, 1060, 1.2), SEA = ink(sea, 900, 340, 60, 600, 1000, 380, .9);
+  const ease = t => t < 0 ? 0 : t > 1 ? 1 : 1 - Math.pow(1 - t, 3);
+  function draw(sec) {
+    const t = (((sec + 4) % LOOP) + LOOP) % LOOP;   // frame 0 is the poster assembled
+    // everything assembles on the diagonal: the wedge drives in, the photos slide along the axis, the type rides up
+    const kW = ease((t - .2) / 1.2), kP = ease((t - .8) / 1.4), kT = ease((t - 1.6) / 1.4), out = ease((t - 8.6) / 1.2);
+    const go = v => v * (1 - out);
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = PAPER; x.fillRect(0, 0, W, H);
+    // photos, tilted onto the axis, clipped by straight cuts
+    const piece = (img, cx, cy, ang, slide, w, h) => { x.save(); x.translate(cx + slide * Math.cos(A), cy + slide * Math.sin(A)); x.rotate(ang); x.drawImage(img, -w / 2, -h / 2, w, h); x.restore(); };
+    x.globalAlpha = go(kP);
+    piece(SKY, 300, 520, A, (1 - kP) * -420, 640, 900);
+    piece(MTN, 760, 1180, A, (1 - kP) * 520, 760, 520);
+    piece(SEA, 420, 1500, A + Math.PI / 2 - Math.PI / 2, (1 - kP) * -500, 900, 340);
+    x.globalAlpha = 1;
+    // the red wedge, corner to corner: a long thin triangle that drives up from bottom left
+    x.save(); x.fillStyle = RED; x.beginPath();
+    const tipX = M + (W - 2 * M) * go(kW), tipY = H - M - (H - 2 * M) * go(kW) * .96;
+    x.moveTo(M, H - M); x.lineTo(M + 230, H - M); x.lineTo(tipX, tipY); x.closePath(); x.fill(); x.restore();
+    // black bars square to the axis
+    x.save(); x.translate(W * .62, H * .30); x.rotate(A); x.fillStyle = INK;
+    x.fillRect(-60 - 400 * (1 - go(kP)), -14, 520, 28); x.fillRect(-60, 40, 300 * go(kP), 28); x.restore();
+    // the type, riding the wedge uphill
+    const WA = -Math.atan2((H - 2 * M) * .96, W - 2 * M - 230 * .5);   // the wedge's own angle
+    x.save(); x.translate(M + 250, H - M - 40); x.rotate(WA);
+    x.fillStyle = INK; x.font = '700 230px Oswald'; x.letterSpacing = '6px';
+    const ride = (1 - go(kT)) * -900;
+    x.fillText('UPWARD', 40 + ride, 0); x.restore();
+    x.save(); x.translate(W - M - 20, M + 40); x.rotate(A); x.fillStyle = RED; x.font = '700 64px Oswald'; x.letterSpacing = '2px';
+    x.textAlign = 'right'; x.globalAlpha = go(kT); x.fillText('16 / 30', 0, 60); x.restore();
+  }
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>

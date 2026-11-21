@@ -1,0 +1,4 @@
+[
+  { "img": "01-palm-and-sky.jpg", "step": "First montage", "verdict": "cut", "why": "A palm tree said holiday, not upward. The type leaned the wrong way.", "then": 1 },
+  { "img": "02-mountains.jpg", "step": "Two mountains, type on the wedge", "verdict": "kept", "why": "Everything on one axis now, and the word climbs the red." }
+]

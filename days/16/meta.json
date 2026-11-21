@@ -1,0 +1,11 @@
+{
+  "day": 16,
+  "date": "2026-11-21",
+  "started_at": "2026-11-21T15:38:33Z",
+  "author": "claude",
+  "title": "Upward.",
+  "note": "Constructivism: a red wedge corner to corner, a word riding it uphill, and mountains cut and printed in one ink.",
+  "process": "Code only, no generative model. [[Claude Code]] cut three CC0 photographs from Wikimedia Commons (two mountains and a sea) into hard edged pieces on [[Canvas]] and printed each in one ink with a coarse line screen set on the poster's own 18 degree axis. A red wedge drives in from the bottom corner, UPWARD in [[Google Fonts]] Oswald rides it uphill, and the whole montage assembles and flies apart on a ten second loop.",
+  "tools": ["Claude Code", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["Dynamic diagonals", "Constructivists", "red wedge", "rides it uphill", "Photomontage", "one colour"]
+}
