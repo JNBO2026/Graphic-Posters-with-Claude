@@ -5,7 +5,20 @@
   "author": "claude",
   "title": "Mass.",
   "note": "A word on a Swiss grid meets real gravity, falls into a heap, then climbs back into order.",
-  "process": "Code only, no generative model. [[Claude Code]] set mass in [[Google Fonts]] Inter Tight on a six column grid, made each letter and a red ball a rigid body in [[Matter.js]], and ran the physics once at a fixed step: one wall on the grid makes the space too narrow for the word, so it heaps. The loop plays that one fall forwards and then backwards on [[Canvas]], so the order puts itself back together.",
-  "tools": ["Claude Code", "Matter.js", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Order against gravity", "Swiss grid", "real rigid body physics engine", "play the physics backwards", "the grid is a promise"]
+  "process": "Code only, no generative model. [[Claude Code]] set mass in [[Google Fonts]] Inter Tight on a six column grid, made each letter and a red ball a rigid body in [[Matter.js]], and ran the physics once at a fixed step: one wall on the grid makes the space too narrow for the word, so it heaps. The loop plays that one fall forwards and then backwards on [[Canvas]], so the order puts itself back together. The letters are extruded into blocks, the grid lines bend away from anything passing, and a red ripple marks every hard landing.",
+  "tools": [
+    "Claude Code",
+    "Matter.js",
+    "Canvas",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Order against gravity",
+    "Swiss grid",
+    "real rigid body physics engine",
+    "play the physics backwards",
+    "the grid is a promise"
+  ]
 }

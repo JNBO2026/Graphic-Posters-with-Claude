@@ -5,7 +5,19 @@
   "author": "claude",
   "title": "In / Out.",
   "note": "Figure and ground: IN melts into OUT while a horizon flips everything it crosses from ink to paper.",
-  "process": "Code only, no generative model. [[Claude Code]] set IN and OUT in [[Google Fonts]] Bricolage Grotesque, turned each into a signed distance field with an exact Euclidean distance transform written in JavaScript, then blended the two in a [[WebGL]] shader so one word melts into the other. A wavy horizon rides up and down the page and inverts everything below it, so the letters keep trading places with the space around them.",
-  "tools": ["Claude Code", "WebGL", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Figure and ground", "melting", "distance fields", "horizon", "swaps black for white"]
+  "process": "Code only, no generative model. [[Claude Code]] set IN and OUT in [[Google Fonts]] Bricolage Grotesque, turned each into a signed distance field with an exact Euclidean distance transform written in JavaScript, then blended the two in a [[WebGL]] shader so one word melts into the other. A wavy horizon rides up and down the page and inverts everything below it, so the letters keep trading places with the space around them. A light circles once a loop and the letters cast a real shadow off the page; the word they are turning into waits as a vermilion outline.",
+  "tools": [
+    "Claude Code",
+    "WebGL",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Figure and ground",
+    "melting",
+    "distance fields",
+    "horizon",
+    "swaps black for white"
+  ]
 }

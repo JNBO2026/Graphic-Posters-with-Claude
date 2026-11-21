@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
-<!-- tiles/ holds the twenty-nine posters before this one (made by tiles.py from each day's thumbnail, ranked by tone in
-     tiles.json). On canvas they make a photomosaic of 30: each cell takes a poster whose tone matches the numeral or
-     the ground at that point. Waves run across the wall and each tile turns over, in 3D, to another poster of the
-     same tone. Numeral shape: Archivo Black, Google Fonts, used only as a mask. -->
+<!-- tiles/ holds the twenty-nine posters before this one (tiles.py, ranked by tone in tiles.json). With three.js 0.160
+     (vendor/, MIT) every poster is a card in 3D, laid out as a photomosaic of 30: the lightest posters make the numeral and
+     stand forward, the darkest make the ground and sit back. Waves run across the wall; each card turns over in 3D to
+     another poster of the same tone, and the numeral's cards rise towards you as the wave passes. Numeral: Archivo Black,
+     Google Fonts, used only as a mask. -->
 <meta charset="utf-8">
 <title>Day 30: Thirty.</title>
 <meta name="poster-motion" content="10">
@@ -18,53 +19,66 @@
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<script>
-const READY = (async () => {
-  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1;
-  await document.fonts.load('100px "Archivo Black"');
-  const T = await (await fetch('tiles.json')).json();
-  const imgs = {}; await Promise.all(T.map(o => new Promise(r => { const i = new Image(); i.onload = () => { imgs[o.day] = i; r(); }; i.src = `tiles/${String(o.day).padStart(2, '0')}.jpg`; })));
-  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
-  // the grid: 16 x 16 cells in the posters' own A proportion, margin to margin
-  const COLS = 16, GAP = 3, CW = (W - 2 * M - GAP * (COLS - 1)) / COLS, CH = CW * 1.4142, ROWS = Math.floor((H - 2 * M + GAP) / (CH + GAP));
-  const Y0 = (H - (ROWS * CH + (ROWS - 1) * GAP)) / 2;
-  // the numeral, as a mask the size of the grid
-  const mk = document.createElement('canvas'); mk.width = COLS; mk.height = ROWS; const m = mk.getContext('2d');
-  const big = document.createElement('canvas'); big.width = COLS * 20; big.height = ROWS * 20; const bg = big.getContext('2d');
-  bg.font = '100px "Archivo Black"'; const mt = bg.measureText('30'), s = (big.width * .96) / (mt.actualBoundingBoxLeft + mt.actualBoundingBoxRight), sy = (big.height * .74) / mt.actualBoundingBoxAscent;
-  bg.fillStyle = '#fff'; bg.save(); bg.translate(big.width * .02, big.height * .13); bg.scale(s, sy); bg.fillText('30', mt.actualBoundingBoxLeft, mt.actualBoundingBoxAscent); bg.restore();
-  m.drawImage(big, 0, 0, COLS, ROWS); const md = m.getImageData(0, 0, COLS, ROWS).data;
-  // tones: brightest posters for the numeral, darkest for the ground
-  const light = T.slice(-10).map(o => o.day), dark = T.slice(0, 14).map(o => o.day);
-  let sd = 30; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
-  const cells = [];
-  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-    const v = md[(r * COLS + c) * 4] / 255, pool = v > .5 ? light : dark;
-    cells.push({ r, c, v, pool, a: pool[Math.floor(rnd() * pool.length)], b: pool[Math.floor(rnd() * pool.length)], d: rnd() });
+<script type="module">
+import * as THREE from './vendor/three.module.min.js';
+const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1, TAU = Math.PI * 2;
+await document.fonts.load('100px "Archivo Black"');
+const T = await (await fetch('tiles.json')).json();
+const loader = new THREE.TextureLoader(), tex = {};
+await Promise.all(T.map(o => new Promise(r => loader.load(`tiles/${String(o.day).padStart(2, '0')}.jpg`, tx => { tx.colorSpace = THREE.SRGBColorSpace; tex[o.day] = tx; r(); }))));
+const R = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); R.setPixelRatio(dpr); R.setSize(W, H);
+R.outputColorSpace = THREE.SRGBColorSpace; R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; document.body.prepend(R.domElement);
+const S = new THREE.Scene(); S.background = new THREE.Color('#0E0D0C');
+// a camera far back with a long lens, so the wall is near flat at rest and depth shows only where cards rise
+const FOV = 14, DIST = (H / 2) / Math.tan(FOV / 2 * Math.PI / 180);
+const cam = new THREE.PerspectiveCamera(FOV, W / H, 100, DIST * 3);
+const COLS = 16, GAP = 4, CW = (W - 2 * M - GAP * (COLS - 1)) / COLS, CH = CW * 1.4142, ROWS = Math.floor((H - 2 * M + GAP) / (CH + GAP));
+const Y0 = (H - (ROWS * CH + (ROWS - 1) * GAP)) / 2;
+// the numeral as a mask
+const big = document.createElement('canvas'); big.width = COLS * 20; big.height = ROWS * 20; const bg = big.getContext('2d');
+bg.font = '100px "Archivo Black"'; const mt = bg.measureText('30'), s = (big.width * .96) / (mt.actualBoundingBoxLeft + mt.actualBoundingBoxRight), sy = (big.height * .74) / mt.actualBoundingBoxAscent;
+bg.fillStyle = '#fff'; bg.save(); bg.translate(big.width * .02, big.height * .13); bg.scale(s, sy); bg.fillText('30', mt.actualBoundingBoxLeft, mt.actualBoundingBoxAscent); bg.restore();
+const mk = document.createElement('canvas'); mk.width = COLS; mk.height = ROWS; const m = mk.getContext('2d'); m.drawImage(big, 0, 0, COLS, ROWS); const md = m.getImageData(0, 0, COLS, ROWS).data;
+const light = T.slice(-10).map(o => o.day), dark = T.slice(0, 14).map(o => o.day);
+let sd = 30; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+// a back wall to catch the shadows of the raised cards
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(W * 1.4, H * 1.4), new THREE.MeshStandardMaterial({ color: '#141210', roughness: 1 })); wall.position.z = -6; wall.receiveShadow = true; S.add(wall);
+const cards = [], geo = new THREE.PlaneGeometry(CW, CH);
+for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+  const v = md[(r * COLS + c) * 4] / 255, inNum = v > .5, pool = inNum ? light : dark;
+  const a = pool[Math.floor(rnd() * pool.length)], b = pool[Math.floor(rnd() * pool.length)];
+  const g = new THREE.Group(); g.position.set(-W / 2 + M + c * (CW + GAP) + CW / 2, H / 2 - (Y0 + r * (CH + GAP) + CH / 2), 0);
+  const tint = inNum ? 1 : .2;
+  const front = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex[a], color: new THREE.Color(tint, tint, tint) }));
+  const back = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex[b], color: new THREE.Color(tint, tint, tint) })); back.rotation.y = Math.PI;
+  front.castShadow = back.castShadow = true; g.add(front, back);
+  // the ground sits back under a dark veil, on both faces, so the numeral reads at any size
+  if (!inNum) { const vm = new THREE.MeshBasicMaterial({ color: '#0E0D0C', transparent: true, opacity: .72 });
+    const v1 = new THREE.Mesh(geo, vm); v1.position.z = .5; const v2 = new THREE.Mesh(geo, vm); v2.rotation.y = Math.PI; v2.position.z = -.5; g.add(v1, v2); }
+  S.add(g);
+  cards.push({ g, r, c, inNum, d: rnd() });
+}
+S.add(new THREE.AmbientLight('#FFFFFF', .9));
+const key = new THREE.DirectionalLight('#FFF1E0', 1.6); key.position.set(-700, 900, 1400); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -W, right: W, top: H, bottom: -H, near: 10, far: 4000 }); key.shadow.radius = 4; S.add(key);
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+function draw(sec) {
+  const t = ((sec % LOOP) + LOOP) % LOOP;
+  for (const q of cards) {
+    // two waves a loop: a diagonal sweep (1 to 4 s) and a radial sweep home (6 to 9 s); each card turns over once in each
+    const w1 = 1 + (q.c + q.r) / (COLS + ROWS) * 2.2 + q.d * .25, w2 = 6 + Math.hypot(q.c - COLS / 2, q.r - ROWS / 2) / Math.hypot(COLS / 2, ROWS / 2) * 2.2 + q.d * .25;
+    const f1 = ease(Math.min(1, Math.max(0, (t - w1) / .7))), f2 = ease(Math.min(1, Math.max(0, (t - w2) / .7)));
+    const turn = f1 - f2, lift = Math.sin(turn * Math.PI);
+    q.g.rotation.y = turn * Math.PI;
+    // the numeral rises off the wall while it turns, the ground stays down: real depth, real shadow
+    q.g.position.z = (q.inNum ? 16 + lift * 70 : lift * 14);
+    q.g.rotation.x = lift * (q.inNum ? .22 : .08);
   }
-  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  function draw(sec) {
-    const t = ((sec % LOOP) + LOOP) % LOOP;
-    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = '#0E0D0C'; x.fillRect(0, 0, W, H);
-    for (const q of cells) {
-      // two waves a loop: a diagonal sweep out (1 to 4 s) and a radial sweep home (6 to 9 s); each tile turns once in each
-      const w1 = 1 + (q.c + q.r) / (COLS + ROWS) * 2.2 + q.d * .25, w2 = 6 + Math.hypot(q.c - COLS / 2, q.r - ROWS / 2) / Math.hypot(COLS / 2, ROWS / 2) * 2.2 + q.d * .25;
-      const f1 = ease(Math.min(1, Math.max(0, (t - w1) / .7))), f2 = ease(Math.min(1, Math.max(0, (t - w2) / .7)));
-      const turn = f1 - f2;                         // 0 shows a, 1 shows b
-      const ang = turn * Math.PI, show = Math.cos(ang) >= 0 ? q.a : q.b, sx = Math.abs(Math.cos(ang));
-      const px = M + q.c * (CW + GAP), py = Y0 + q.r * (CH + GAP);
-      x.save(); x.translate(px + CW / 2, py + CH / 2); x.scale(Math.max(.02, sx), 1);
-      x.drawImage(imgs[show], -CW / 2, -CH / 2, CW, CH);
-      // the ground sinks back so the numeral reads; turning tiles catch a little light
-      const dim = q.v > .5 ? 0 : .74;
-      x.fillStyle = `rgba(14,13,12,${dim + (1 - sx) * .25})`; x.fillRect(-CW / 2, -CH / 2, CW, CH);
-      x.restore();
-    }
-  }
-  draw(0); document.body.dataset.ready = '1'; return draw;
-})();
-window.__seek = async t => { const draw = await READY; draw(t); };
+  cam.position.set(0, 0, DIST); cam.lookAt(0, 0, 0);
+  R.render(S, cam);
+}
+draw(0); document.body.dataset.ready = '1';
+window.__seek = async t => draw(t);
 </script>
 </body>
 </html>

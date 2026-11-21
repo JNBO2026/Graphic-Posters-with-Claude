@@ -5,7 +5,22 @@
   "author": "claude",
   "title": "One Line.",
   "note": "Economy of line: a puppy drawn with one continuous line 117,000 px long, which never lifts and never crosses itself.",
-  "process": "Code only, no generative model. [[Claude Code]] wrote it in [[Python]] with [[NumPy]]: a CC0 photograph of a puppy from Wikimedia Commons becomes 11,000 points by weighted stippling and Lloyd's algorithm, then one travelling salesman tour joins them, untangled with 2-opt until no crossing is left. It's drawn on [[Canvas]] as a single stroke that thickens in the shadows, and a red pen runs the whole length of it once a loop.",
-  "tools": ["Claude Code", "Python", "NumPy", "Canvas", "FFmpeg", "Playwright"],
-  "keywords": ["Economy of line", "a single continuous line", "never lifts", "stippled", "travelling salesman problem", "really is one line"]
+  "process": "Code only, no generative model. [[Claude Code]] wrote it in [[Python]] with [[NumPy]]: a CC0 photograph of a puppy from Wikimedia Commons becomes 11,000 points by weighted stippling and Lloyd's algorithm, then one travelling salesman tour joins them, untangled with 2-opt until no crossing is left. It's drawn on [[Canvas]] as a single stroke that thickens in the shadows, and a red pen runs the whole length of it once a loop. Rebuilt in [[Three.js]], the line is one continuous 3D wire, nearer the camera where the photo is darker, so turning it opens the picture into relief.",
+  "tools": [
+    "Claude Code",
+    "Three.js",
+    "Python",
+    "NumPy",
+    "Canvas",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Economy of line",
+    "a single continuous line",
+    "never lifts",
+    "stippled",
+    "travelling salesman problem",
+    "really is one line"
+  ]
 }

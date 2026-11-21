@@ -5,7 +5,20 @@
   "author": "claude",
   "title": "What I Said.",
   "note": "Data ink: every word of James's ten spoken prompts, one band a day, and the word he said most rising out of them.",
-  "process": "Code only, no generative model. [[Claude Code]] counted all 1,292 words of the first ten prompts in [[Python]]: design came first, said twelve times. Each day's prompt is set as its own band of words on [[Canvas]] in [[Google Fonts]] IBM Plex Sans Condensed, every design picked out in orange, and DESIGN in Anton is made by printing the words inside it in black on paper. A reading head runs down the page once a loop.",
-  "tools": ["Claude Code", "Python", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Data ink", "1,292 words", "one line a day", "The word he said most", "every mark on the page is a word he said"]
+  "process": "Code only, no generative model. [[Claude Code]] counted all 1,292 words of the first ten prompts in [[Python]]: design came first, said twelve times. Each day's prompt is set as its own band of words on [[Canvas]] in [[Google Fonts]] IBM Plex Sans Condensed, every design picked out in orange, and DESIGN in Anton is made by printing the words inside it in black on paper. A reading head runs down the page once a loop. DESIGN is washed peach to coral against a cool navy field, with a sheen running along it.",
+  "tools": [
+    "Claude Code",
+    "Python",
+    "Canvas",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Data ink",
+    "1,292 words",
+    "one line a day",
+    "The word he said most",
+    "every mark on the page is a word he said"
+  ]
 }

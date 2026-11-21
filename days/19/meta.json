@@ -5,7 +5,20 @@
   "author": "claude",
   "title": "Tide.",
   "note": "A risograph made in code: a coast separated into fluorescent pink and blue drums, overprinting, slightly out of register.",
-  "process": "Code only, no generative model. A [[WebGL]] shader written in [[Claude Code]] separates a CC0 photograph of a coast from Wikimedia Commons into two drums, fluorescent pink and blue, each a round dot halftone at its own screen angle (15 and 75 degrees), and multiplies them together like ink on paper, so every other colour on the page comes from the overlap. The drums sit slightly out of register and drift, the ink runs patchy where a drum runs dry, and TIDE in [[Google Fonts]] Anton is printed solid in the pink drum.",
-  "tools": ["Claude Code", "WebGL", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Risograph", "fluorescent pink and blue", "overprinting", "halftone screens at real screen angles", "misregistered", "ink a little patchy"]
+  "process": "Code only, no generative model. A [[WebGL]] shader written in [[Claude Code]] separates a CC0 photograph of a coast from Wikimedia Commons into two drums, fluorescent pink and blue, each a round dot halftone at its own screen angle (15 and 75 degrees), and multiplies them together like ink on paper, so every other colour on the page comes from the overlap. The drums sit slightly out of register and drift, the ink runs patchy where a drum runs dry, and TIDE in [[Google Fonts]] Anton is printed solid in the pink drum. A third drum, yellow, prints a setting sun behind the word, overprinting to orange, while the sea swells and the dots breathe.",
+  "tools": [
+    "Claude Code",
+    "WebGL",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Risograph",
+    "fluorescent pink and blue",
+    "overprinting",
+    "halftone screens at real screen angles",
+    "misregistered",
+    "ink a little patchy"
+  ]
 }

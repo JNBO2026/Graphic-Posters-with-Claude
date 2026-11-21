@@ -5,7 +5,22 @@
   "author": "claude",
   "title": "Isotype.",
   "note": "Pictorial statistics after Neurath and Arntz: every attempt at a poster in this challenge, kept, fixed or cut, one figure each.",
-  "process": "Code only, no generative model. [[Claude Code]] counted every step in the challenge's own development logs with [[Python]]: 30 kept, 22 fixed, 20 cut. Each attempt is one figure drawn in [[SVG]] in the manner of Gerd Arntz, a person built from flat shapes, the cut ones struck through and the fixed ones banded, set out in rows in [[HTML]] and [[CSS]] under [[Google Fonts]] Archivo, and they arrive one at a time as a count does.",
-  "tools": ["Claude Code", "Python", "SVG", "HTML", "CSS", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Pictorial statistics", "Otto Neurath and Gerd Arntz", "always a row of the same little figure", "kept, cut or fixed", "one by one"]
+  "process": "Code only, no generative model. [[Claude Code]] counted every step in the challenge's own development logs with [[Python]]: 30 kept, 22 fixed, 20 cut. Each attempt is one figure drawn in [[SVG]] in the manner of Gerd Arntz, a person built from flat shapes, the cut ones struck through and the fixed ones banded, set out in rows in [[HTML]] and [[CSS]] under [[Google Fonts]] Archivo, and they arrive one at a time as a count does. Each figure walks into its row on swinging legs and the totals count up with them.",
+  "tools": [
+    "Claude Code",
+    "Python",
+    "SVG",
+    "HTML",
+    "CSS",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Pictorial statistics",
+    "Otto Neurath and Gerd Arntz",
+    "always a row of the same little figure",
+    "kept, cut or fixed",
+    "one by one"
+  ]
 }

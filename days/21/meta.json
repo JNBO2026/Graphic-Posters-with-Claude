@@ -5,7 +5,22 @@
   "author": "claude",
   "title": "Emergence.",
   "note": "Emergence: four creatures that live inside one rule, Lenia, drawn like an engraved plate from a natural history book.",
-  "process": "Code only, no generative model. [[Claude Code]] wrote Lenia, Bert Chan's continuous cellular automaton, in [[Python]] with [[NumPy]], every step a convolution done by FFT. It searched random soups for one creature that holds its shape and glides, then let four copies live together; two meet and break apart halfway through. On [[Canvas]] each frame becomes an engraved plate, ink in bands with a hairline at every contour, titled in [[Google Fonts]] Cormorant Garamond.",
-  "tools": ["Claude Code", "Python", "NumPy", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Emergence", "No drawing at all", "one rule", "continuous cellular automaton", "creatures", "engraved specimen plate"]
+  "process": "Code only, no generative model. [[Claude Code]] wrote Lenia, Bert Chan's continuous cellular automaton, in [[Python]] with [[NumPy]], every step a convolution done by FFT. It searched random soups for one creature that holds its shape and glides, then let four copies live together; two meet and break apart halfway through. On [[Canvas]] each frame becomes an engraved plate, ink in bands with a hairline at every contour, titled in [[Google Fonts]] Cormorant Garamond. Each contour band is hand tinted in watercolour, sage to madder, and lit from the field's own slope so the creatures stand in relief.",
+  "tools": [
+    "Claude Code",
+    "Python",
+    "NumPy",
+    "Canvas",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Emergence",
+    "No drawing at all",
+    "one rule",
+    "continuous cellular automaton",
+    "creatures",
+    "engraved specimen plate"
+  ]
 }

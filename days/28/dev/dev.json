@@ -1,5 +1,27 @@
 [
-  { "img": "01-the-chain.jpg", "step": "Eight rounds, nobody steering", "verdict": "kept", "why": "Each picture described in one sentence, the sentence drawn again. It drifted to a fairytale." },
-  { "img": "02-round-one.jpg", "step": "Round one", "verdict": "kept", "why": "A woman reading a letter at a kitchen table. That's all it was." },
-  { "img": "03-round-eight.jpg", "step": "Round eight", "verdict": "kept", "why": "A princess, a glowing cottage, roses and floating light. Nobody asked for any of it." }
+ {
+  "img": "01-the-chain.jpg",
+  "step": "Eight rounds, nobody steering",
+  "verdict": "kept",
+  "why": "Each picture described in one sentence, the sentence drawn again. It drifted to a fairytale."
+ },
+ {
+  "img": "02-round-one.jpg",
+  "step": "Round one",
+  "verdict": "kept",
+  "why": "A woman reading a letter at a kitchen table. That's all it was."
+ },
+ {
+  "img": "03-round-eight.jpg",
+  "step": "Round eight",
+  "verdict": "kept",
+  "why": "A princess, a glowing cottage, roses and floating light. Nobody asked for any of it.",
+  "then": 3
+ },
+ {
+  "img": "09-elevated.jpg",
+  "step": "Elevated: the drift, word by word",
+  "verdict": "kept",
+  "why": "Every word new since the round before is set in rose; the rounds fan out as a deck of cards."
+ }
 ]

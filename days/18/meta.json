@@ -5,7 +5,23 @@
   "author": "claude",
   "title": "Ma.",
   "note": "Negative space: one ensō, painted by a fluid simulation in a single breath, left open, with nearly all the page empty.",
-  "process": "Code only, no generative model. [[Claude Code]] wrote a stable fluids simulation in [[Python]] with [[NumPy]]: a brush goes once round an open circle, pushing water and laying ink that rides the flow and soaks into a paper fibre map, so it blooms where the brush is wet. On [[Canvas]] each frame is laid on washi as sumi ink, the flying white of a dry brush opens along the stroke, and the seal, 間 (ma, the space between), is set in [[Google Fonts]] Shippori Mincho B1.",
-  "tools": ["Claude Code", "Python", "NumPy", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Ma", "the space between things is a thing", "ensō", "fluid simulation", "The circle left open", "emptiness doing the work", "red seal"]
+  "process": "Code only, no generative model. [[Claude Code]] wrote a stable fluids simulation in [[Python]] with [[NumPy]]: a brush goes once round an open circle, pushing water and laying ink that rides the flow and soaks into a paper fibre map, so it blooms where the brush is wet. On [[Canvas]] each frame is laid on washi as sumi ink, the flying white of a dry brush opens along the stroke, and the seal, 間 (ma, the space between), is set in [[Google Fonts]] Shippori Mincho B1. A wet sheen follows the brush and dries behind it, and the seal is pressed only once the circle is finished.",
+  "tools": [
+    "Claude Code",
+    "Python",
+    "NumPy",
+    "Canvas",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Ma",
+    "the space between things is a thing",
+    "ensō",
+    "fluid simulation",
+    "The circle left open",
+    "emptiness doing the work",
+    "red seal"
+  ]
 }

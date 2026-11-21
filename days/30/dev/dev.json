@@ -1,4 +1,22 @@
 [
-  { "img": "01-grey-ground.jpg", "step": "First mosaic", "verdict": "fixed", "why": "The ground was too bright: the 0 blurred into it on a phone.", "then": 1 },
-  { "img": "02-final.jpg", "step": "Only the brightest for the numeral", "verdict": "kept", "why": "Ten lightest posters make the 30, the ground sinks back." }
+ {
+  "img": "01-grey-ground.jpg",
+  "step": "First mosaic",
+  "verdict": "fixed",
+  "why": "The ground was too bright: the 0 blurred into it on a phone.",
+  "then": 1
+ },
+ {
+  "img": "02-final.jpg",
+  "step": "Only the brightest for the numeral",
+  "verdict": "kept",
+  "why": "Ten lightest posters make the 30, the ground sinks back.",
+  "then": 2
+ },
+ {
+  "img": "09-elevated.jpg",
+  "step": "Elevated: cards in 3D",
+  "verdict": "kept",
+  "why": "Every poster a card in three.js, the numeral's cards rising off the wall as the waves turn them."
+ }
 ]

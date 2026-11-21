@@ -5,7 +5,21 @@
   "author": "claude",
   "title": "Not Now.",
   "note": "Hierarchy and affordance: every button on 40 real app screens, drawn as it was and sized by count. Next and Not now tie.",
-  "process": "Code only, no generative model. [[Claude Code]] searched 40 iOS screens through the [[Mobbin]] MCP, 20 onboarding and 20 notification requests, and read and counted every button label by hand: Next and Not now came out level at eight each. In [[HTML]] and [[CSS]] each label is drawn as the button it really was, filled for go on, outlined for let me off, all on one scale grown until the count fills the page, set in [[Google Fonts]] Inter Tight, and a thumb presses them one by one.",
-  "tools": ["Claude Code", "Mobbin", "HTML", "CSS", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Hierarchy and affordance", "the filled one wants you to go on", "the quiet one lets you off", "40 real app screens", "sized by how often it came up"]
+  "process": "Code only, no generative model. [[Claude Code]] searched 40 iOS screens through the [[Mobbin]] MCP, 20 onboarding and 20 notification requests, and read and counted every button label by hand: Next and Not now came out level at eight each. In [[HTML]] and [[CSS]] each label is drawn as the button it really was, filled for go on, outlined for let me off, all on one scale grown until the count fills the page, set in [[Google Fonts]] Inter Tight, and a thumb presses them one by one. A cursor arcs from button to button and taps each one, and every press sinks in 3D.",
+  "tools": [
+    "Claude Code",
+    "Mobbin",
+    "HTML",
+    "CSS",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Hierarchy and affordance",
+    "the filled one wants you to go on",
+    "the quiet one lets you off",
+    "40 real app screens",
+    "sized by how often it came up"
+  ]
 }

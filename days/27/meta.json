@@ -5,7 +5,20 @@
   "author": "claude",
   "title": "Here.",
   "note": "Anamorphosis: HERE painted across a room, the floor, a ball and boxes, which only reads as a word from one place.",
-  "process": "Code only, no generative model. [[Claude Code]] built a room in [[Three.js]] and painted it with a custom [[WebGL]] shader that works like a slide projector: every surface asks where it falls in one fixed eye's view and turns red if that point lies inside HERE, set in [[Google Fonts]] Archivo Black. The camera starts at that eye, where the pieces on the floor, the ball and the boxes join into one word, walks away so it breaks apart, and walks back until it snaps together.",
-  "tools": ["Claude Code", "Three.js", "WebGL", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Perspective and anamorphosis", "The Ambassadors", "A word painted across a room", "From exactly one place", "snaps together again"]
+  "process": "Code only, no generative model. [[Claude Code]] built a room in [[Three.js]] and painted it with a custom [[WebGL]] shader that works like a slide projector: every surface asks where it falls in one fixed eye's view and turns red if that point lies inside HERE, set in [[Google Fonts]] Archivo Black. The camera starts at that eye, where the pieces on the floor, the ball and the boxes join into one word, walks away so it breaks apart, and walks back until it snaps together. The plinth is an OBJ file written by hand and loaded with three.js's OBJLoader, in a room of sage and ochre.",
+  "tools": [
+    "Claude Code",
+    "Three.js",
+    "WebGL",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Perspective and anamorphosis",
+    "The Ambassadors",
+    "A word painted across a room",
+    "From exactly one place",
+    "snaps together again"
+  ]
 }

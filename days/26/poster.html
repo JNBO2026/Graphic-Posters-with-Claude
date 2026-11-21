@@ -14,7 +14,7 @@
 <style>
   html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#1A1A1C; }
   canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
-  .t { position:absolute; left:72px; right:72px; top:62px; font:700 150px/1 'Josefin Sans'; letter-spacing:.06em; color:#EFE9DD; display:flex; justify-content:space-between; }
+  .t { position:absolute; left:72px; right:72px; top:62px; font:700 150px/1 'Josefin Sans'; letter-spacing:.06em; color:#1A1A1C; display:flex; justify-content:space-between; }
   .s { position:absolute; left:72px; right:72px; bottom:66px; font:700 44px/1 'Josefin Sans'; letter-spacing:.14em; color:#1A1A1C; display:flex; justify-content:space-between; text-transform:uppercase; }
 </style>
 </head>
@@ -33,11 +33,15 @@ const S = new THREE.Scene(); S.background = new THREE.Color('#1A1A1C');
 const cam = new THREE.PerspectiveCamera(30, W / H, .1, 100); cam.position.set(0, 3.0, 19.5); cam.lookAt(0, 3.7, 0);
 // the stage: a pale floor and a back wall, both catching shadow
 const mat = (c, r = .85, m = 0) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: m });
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), mat('#8E877B', .95)); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; S.add(floor);
-const wall = new THREE.Mesh(new THREE.PlaneGeometry(60, 40), mat('#3B3834', .95)); wall.position.set(0, 20, -4.5); wall.receiveShadow = true; S.add(wall);
-S.add(new THREE.HemisphereLight('#F5EFE4', '#3A3530', .3));
-const key = new THREE.SpotLight('#FFF4E0', 1500, 70, .5, .3, 1.5); key.position.set(-14, 9, 6); key.target.position.set(0, 2.5, -1);
-key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -.0004; S.add(key, key.target);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), mat('#E8E4DC', .95)); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; S.add(floor);
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(60, 40), mat('#E2DDD3', .95)); wall.position.set(0, 20, -4.5); wall.receiveShadow = true; S.add(wall);
+S.add(new THREE.HemisphereLight('#F5EFE4', '#3A3530', .12));
+// three gels, red, green and blue, from three sides: together they make white light; where a figure blocks one,
+// its shadow takes the colour of the other two, so the shadows come out cyan, magenta and yellow
+const gels = ['#FF2A2A', '#26FF4A', '#2A5BFF'].map((c, i) => { const l = new THREE.SpotLight(c, 380, 70, .5, .4, 1.5);
+  l.castShadow = true; l.shadow.mapSize.set(1024, 1024); l.shadow.radius = 4; l.shadow.bias = -.0004; l.target.position.set(0, 2.5, -1); S.add(l, l.target); return l; });
+const key = gels[0];
+
 const RED = '#C8331F', YEL = '#E8B21C', BLU = '#1E46A8', BLK = '#161514', WHT = '#ECE6DA';
 const add = (g, m, p) => { const o = new THREE.Mesh(g, m); o.castShadow = o.receiveShadow = true; if (p) p.add(o); return o; };
 // figure one, after the Spiral costume: a cone skirt, a ringed spiral body, a sphere head, disc arms
@@ -75,6 +79,8 @@ function pose(sec) {
   // the disc dancer steps side to side and tips its arm like a balance
   B.position.x = 2.45 + .4 * Math.sin(ph); B.rotation.y = -.5 + .5 * Math.sin(ph);
   B.parts.arm.rotation.z = .5 * Math.sin(ph * 2 + .6); B.parts.upper.rotation.y = ph; B.parts.head.rotation.z = .12 * Math.sin(ph * 3);
+  // the gels orbit slowly round the stage, so the coloured shadows swing and cross
+  gels.forEach((l, i) => { const a = ph + i * TAU / 3 + .4; l.position.set(Math.cos(a) * 13, 9 + 2 * Math.sin(ph * 2 + i), 6 + Math.sin(a) * 5); });
   R.render(S, cam);
 }
 pose(0); document.body.dataset.ready = '1';

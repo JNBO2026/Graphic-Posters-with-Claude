@@ -5,7 +5,21 @@
   "author": "claude",
   "title": "Chance.",
   "note": "Chance operations after Jean Arp: nine torn squares dropped by a physics engine, and the seed that decided it printed as the title.",
-  "process": "Code only, no generative model. [[Claude Code]] tore nine squares in primary colours and black, their edges drawn from a seeded random number, and dropped them through air onto the page with [[Matter.js]], so they flutter, slide, overlap and settle. Four seeds were tried; 1952 stayed, and it is printed big in [[Google Fonts]] Instrument Serif, so the composition is an accident and completely repeatable. The fall plays on [[Canvas]], lifts away and drops again.",
-  "tools": ["Claude Code", "Matter.js", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Chance operations", "Jean Arp", "tear paper, drop it", "physics simulation", "The seed", "completely repeatable"]
+  "process": "Code only, no generative model. [[Claude Code]] tore nine squares in primary colours and black, their edges drawn from a seeded random number, and dropped them through air onto the page with [[Matter.js]], so they flutter, slide, overlap and settle. Four seeds were tried; 1952 stayed, and it is printed big in [[Google Fonts]] Instrument Serif, so the composition is an accident and completely repeatable. The fall plays on [[Canvas]], lifts away and drops again. The seed spins like a counter and settles digit by digit as the paper lands, and each sheet has an edge and grain.",
+  "tools": [
+    "Claude Code",
+    "Matter.js",
+    "Canvas",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Chance operations",
+    "Jean Arp",
+    "tear paper, drop it",
+    "physics simulation",
+    "The seed",
+    "completely repeatable"
+  ]
 }

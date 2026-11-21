@@ -5,7 +5,21 @@
   "author": "claude",
   "title": "Triadic.",
   "note": "After Schlemmer's Triadic Ballet: two dancers made only of cones, spheres, discs and a spiral, turning under one spotlight.",
-  "process": "Code only, no generative model. [[Claude Code]] built two figures in [[Three.js]] from primitives alone, after Oskar Schlemmer's Bauhaus costumes: one a spiral on a cone skirt with disc arms, one a stack of discs under a cone head. A single low spotlight with soft shadow maps throws them across a bare stage, every pose is a function of time so the dance loops exactly, and the title is [[Google Fonts]] Josefin Sans.",
-  "tools": ["Claude Code", "Three.js", "WebGL", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Geometry and the body", "Oskar Schlemmer's Triadic Ballet", "a cone, a sphere, a spiral, a disc", "built only from primitives", "long shadows", "Real 3D"]
+  "process": "Code only, no generative model. [[Claude Code]] built two figures in [[Three.js]] from primitives alone, after Oskar Schlemmer's Bauhaus costumes: one a spiral on a cone skirt with disc arms, one a stack of discs under a cone head. A single low spotlight with soft shadow maps throws them across a bare stage, every pose is a function of time so the dance loops exactly, and the title is [[Google Fonts]] Josefin Sans. Three gels, red, green and blue, light the stage from three sides and orbit it, so every shadow comes out cyan, magenta or yellow.",
+  "tools": [
+    "Claude Code",
+    "Three.js",
+    "WebGL",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Geometry and the body",
+    "Oskar Schlemmer's Triadic Ballet",
+    "a cone, a sphere, a spiral, a disc",
+    "built only from primitives",
+    "long shadows",
+    "Real 3D"
+  ]
 }

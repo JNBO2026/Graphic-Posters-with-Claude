@@ -5,8 +5,22 @@
   "author": "claude",
   "title": "Whispers.",
   "note": "Two machines play Chinese whispers for eight rounds, and a woman at a kitchen table drifts into a fairytale princess.",
-  "process": "[[Figma: Gemini 3.1 Flash Lite Image]] drew each of the eight pictures, through the [[Figma]] MCP. It started from one plain sentence, then each round [[Claude Code]] looked at the picture and described it in a single sentence that was drawn again, with nobody steering. The images are the 256 px previews Figma returns, shown at that resolution on purpose, and on [[Canvas]] each round scatters into the next tile by tile while the sentence that made it types itself in [[Google Fonts]] Newsreader.",
+  "process": "[[Figma: Gemini 3.1 Flash Lite Image]] drew each of the eight pictures, through the [[Figma]] MCP. It started from one plain sentence, then each round [[Claude Code]] looked at the picture and described it in a single sentence that was drawn again, with nobody steering. The images are the 256 px previews Figma returns, shown at that resolution on purpose, and on [[Canvas]] each round scatters into the next tile by tile while the sentence that made it types itself in [[Google Fonts]] Newsreader. Words that are new since the round before are set in rose, so the drift reads word by word, and the rounds fan out as a deck of cards.",
   "made": "Gemini via Figma",
-  "tools": ["Claude Code", "Figma: Gemini 3.1 Flash Lite Image", "Figma", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
-  "keywords": ["Authorship and iteration", "Chinese whispers", "Claude looks at the picture and describes it", "Eight rounds", "what the machines drift towards when nobody steers"]
+  "tools": [
+    "Claude Code",
+    "Figma: Gemini 3.1 Flash Lite Image",
+    "Figma",
+    "Canvas",
+    "Google Fonts",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Authorship and iteration",
+    "Chinese whispers",
+    "Claude looks at the picture and describes it",
+    "Eight rounds",
+    "what the machines drift towards when nobody steers"
+  ]
 }

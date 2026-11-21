@@ -55,12 +55,22 @@ const READY = (async () => {
     // the sentence that made this round, typed in as the picture lands
     const p = D.rounds[shown - 1].prompt;
     x.font = 'italic 400 46px Newsreader'; x.fillStyle = '#F1E8D8';
-    const lines = wrap('“' + p + '”', IW), since = shown === 1 ? 99 : t - ((shown - 1) * SLOT + SLOT * .45), typed = Math.max(0, Math.min(1, since / .7));
-    let left = Math.round(p.length * typed) + 1; const ly = IY + IW + 74;
-    lines.slice(0, 4).forEach((l, j) => { const s = l.slice(0, Math.max(0, left)); left -= l.length + 1; x.fillText(s, IX, ly + j * 56); });
-    // the eight rounds as a strip along the bottom, the current one lit
-    const SW = (IW - 7 * 12) / 8;
-    imgs.forEach((im, j) => { x.globalAlpha = j === shown - 1 ? 1 : .35; x.drawImage(im, IX + j * (SW + 12), H - M - SW, SW, SW); });
+    // the sentence as a diff: words that are new since the round before are set in rose, so the drift is legible
+    const prev = shown > 1 ? new Set(D.rounds[shown - 2].prompt.toLowerCase().replace(/[^a-z\s-]/g, '').split(/\s+/)) : null;
+    const words = ('\u201C' + p + '\u201D').split(' '), since = shown === 1 ? 99 : t - ((shown - 1) * SLOT + SLOT * .45), typed = Math.max(0, Math.min(1, since / .7));
+    let nshow = Math.round(words.length * typed), cx = IX, cy = IY + IW + 74;
+    words.forEach((w, i) => { if (i >= nshow) return; const wd = x.measureText(w + ' ').width; if (cx + wd > IX + IW) { cx = IX; cy += 56; }
+      const clean = w.toLowerCase().replace(/[^a-z-]/g, ''), fresh = prev && clean.length > 2 && !prev.has(clean);
+      x.fillStyle = fresh ? '#F07A8A' : '#F1E8D8'; x.fillText(w, cx, cy); cx += wd; });
+    // the eight rounds as a fanned deck along the bottom, in perspective; the current card lifts out of the fan
+    const CW2 = 104;
+    imgs.forEach((im, j) => { const cur = j === shown - 1, o = j - 3.5;
+      x.save(); x.translate(W / 2 + o * 118, H - M - CW2 / 2 - (cur ? 34 : 0) + Math.abs(o) * 5); x.rotate(o * .05);
+      x.transform(1, 0, cur ? 0 : -.08 * Math.sign(o), 1, 0, 0);
+      x.fillStyle = 'rgba(0,0,0,.4)'; x.fillRect(-CW2 / 2 + 6, -CW2 / 2 + 8, CW2, CW2);
+      x.globalAlpha = cur ? 1 : .55; x.drawImage(im, -CW2 / 2, -CW2 / 2, CW2, CW2);
+      if (cur) { x.strokeStyle = '#F07A8A'; x.lineWidth = 4; x.strokeRect(-CW2 / 2, -CW2 / 2, CW2, CW2); }
+      x.restore(); });
     x.globalAlpha = 1;
   }
   draw(0); document.body.dataset.ready = '1'; return draw;

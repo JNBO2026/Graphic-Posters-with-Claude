@@ -5,7 +5,18 @@
   "author": "claude",
   "title": "Field.",
   "note": "Colour field after Rothko: two soft edged fields built from thin glazes on a canvas weave, slowly breathing. No type at all.",
-  "process": "Code only, no generative model. A [[WebGL]] shader written in [[Claude Code]] paints two colour fields the way Rothko built his: each from twelve thin glazes, every glaze laid in broad brush wipes at its own angle with a scumbled, dry brushed edge, over a maroon ground and a fine canvas weave. A warmer core glows in the top field, the ground shows through as a seam between the two, and each glaze breathes on its own phase so the whole painting seems to move.",
-  "tools": ["Claude Code", "WebGL", "FFmpeg", "Playwright"],
-  "keywords": ["Colour field", "after Rothko", "thin glazes", "feathered by a dry brush", "slowly breathing"]
+  "process": "Code only, no generative model. A [[WebGL]] shader written in [[Claude Code]] paints two colour fields the way Rothko built his: each from twelve thin glazes, every glaze laid in broad brush wipes at its own angle with a scumbled, dry brushed edge, over a maroon ground and a fine canvas weave. A warmer core glows in the top field, the ground shows through as a seam between the two, and each glaze breathes on its own phase so the whole painting seems to move. A raking light sweeps across the brushwork once a loop.",
+  "tools": [
+    "Claude Code",
+    "WebGL",
+    "FFmpeg",
+    "Playwright"
+  ],
+  "keywords": [
+    "Colour field",
+    "after Rothko",
+    "thin glazes",
+    "feathered by a dry brush",
+    "slowly breathing"
+  ]
 }

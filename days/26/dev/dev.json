@@ -1,6 +1,34 @@
 [
-  { "img": "01-too-close.jpg", "step": "First lighting", "verdict": "cut", "why": "Pale room, title lost in it, both dancers cut off." },
-  { "img": "02-stage.jpg", "step": "A dark stage, one spotlight", "verdict": "fixed", "why": "A real stage now, but two small figures in a big room.", "then": 2 },
-  { "img": "03-stretched.jpg", "step": "Taller, by stretching", "verdict": "cut", "why": "They filled the page, but the spheres went to eggs." },
-  { "img": "04-final.jpg", "step": "Bigger, true to shape", "verdict": "kept", "why": "Scaled whole, low light, long shadows climbing the wall." }
+ {
+  "img": "01-too-close.jpg",
+  "step": "First lighting",
+  "verdict": "cut",
+  "why": "Pale room, title lost in it, both dancers cut off."
+ },
+ {
+  "img": "02-stage.jpg",
+  "step": "A dark stage, one spotlight",
+  "verdict": "fixed",
+  "why": "A real stage now, but two small figures in a big room.",
+  "then": 2
+ },
+ {
+  "img": "03-stretched.jpg",
+  "step": "Taller, by stretching",
+  "verdict": "cut",
+  "why": "They filled the page, but the spheres went to eggs."
+ },
+ {
+  "img": "04-final.jpg",
+  "step": "Bigger, true to shape",
+  "verdict": "kept",
+  "why": "Scaled whole, low light, long shadows climbing the wall.",
+  "then": 4
+ },
+ {
+  "img": "09-elevated.jpg",
+  "step": "Elevated: three coloured lights",
+  "verdict": "kept",
+  "why": "Red, green and blue gels from three sides: each shadow is the colour of the two lights it doesn't block."
+ }
 ]
