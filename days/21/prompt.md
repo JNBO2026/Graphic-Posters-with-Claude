@@ -1,0 +1,1 @@
+Emergence. No drawing at all: a field of numbers and one rule, Lenia, a continuous cellular automaton. Each point looks at a ring of its neighbours and grows or fades. Out of that, creatures: they hold their shape, glide, meet, and die. Show them the way a naturalist would, as an engraved specimen plate, contour by contour, not as glowing screen blobs.

@@ -1,0 +1,5 @@
+[
+  { "img": "01-the-soup.jpg", "step": "Seven creatures", "verdict": "cut", "why": "They met, merged, and the whole dish turned to worms in seconds.", "then": 1 },
+  { "img": "02-the-plate.jpg", "step": "Four creatures, an engraved plate", "verdict": "kept", "why": "Few enough to live. Drawn as contours, not glowing blobs." },
+  { "img": "03-collision.jpg", "step": "The collision", "verdict": "kept", "why": "Two meet halfway through the loop and break into spores." }
+]

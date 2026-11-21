@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. A WebGL shader weaves the cloth thread by thread on a five end satin: warp faced inside WARP (set in
+     Archivo Black, Google Fonts, used only as a mask), weft faced outside. Each thread is shaded as a twisted cylinder. -->
+<meta charset="utf-8">
+<title>Day 22: Warp.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#E9E4D8; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1, PW = Math.round(W * dpr), PH = Math.round(H * dpr);
+  await document.fonts.load('100px "Archivo Black"');
+  // the word, stacked two lines, as a mask filling the cloth
+  const mc = document.createElement('canvas'); mc.width = W; mc.height = H; const m = mc.getContext('2d'); m.fillStyle = '#fff'; m.font = '100px "Archivo Black"';
+  const CL = M + 20, CR = W - M - 20, CT = 250, CB = H - M - 20;    // the cloth: woven area
+  const line = (s, y0, y1) => { const mt = m.measureText(s), sx = (CR - CL - 60) / (mt.actualBoundingBoxLeft + mt.actualBoundingBoxRight), sy = (y1 - y0) / mt.actualBoundingBoxAscent;
+    m.save(); m.translate(CL + 30, y0); m.scale(sx, sy); m.fillText(s, mt.actualBoundingBoxLeft, mt.actualBoundingBoxAscent); m.restore(); };
+  line('WA', CT + 70, CT + 70 + (CB - CT - 200) / 2); line('RP', CT + 130 + (CB - CT - 200) / 2, CB - 70);
+  const cv = document.getElementById('gl'); cv.width = PW; cv.height = PH;
+  const gl = cv.getContext('webgl', { preserveDrawingBuffer: true, antialias: false });
+  const sh = (t, src) => { const s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+  const pr = gl.createProgram();
+  gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
+  gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, `
+precision highp float;
+uniform sampler2D mask; uniform float t, dpr, H, CL, CR, CT, CB;
+const float P = 13.;                         // thread pitch, px
+float hash(float n) { return fract(sin(n * 127.1) * 43758.5453); }
+float hash2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+void main() {
+  vec2 p = vec2(gl_FragCoord.x, H * dpr - gl_FragCoord.y) / dpr;
+  vec3 bg = vec3(.914, .894, .847);
+  float i = floor((p.x - CL) / P), j = floor((p.y - CT) / P);
+  vec2 f = vec2((p.x - CL) / P - i, (p.y - CT) / P - j);
+  // each thread a little different: width, colour, a slub now and then
+  float wv = .80 + .14 * hash(i * 1.7), wf = .80 + .14 * hash(j * 2.3 + 9.);
+  vec3 warpC = vec3(.12, .20, .44) * (.85 + .3 * hash(i + 3.));      // indigo
+  vec3 weftC = vec3(.93, .89, .80) * (.92 + .12 * hash(j + 7.));     // undyed
+  // satin: in every five, the warp is up only once (weft faced), or down only once (warp faced)
+  vec2 cc = vec2(CL + (i + .5) * P, CT + (j + .5) * P);   // the loom decides once per crossing, so the letters step thread by thread
+  float inside = texture2D(mask, cc / vec2(1240., 1754.)).r;
+  float face = step(.5, inside);
+  float k = mod(i * 2. + j, 5.);
+  float warpUp = face > .5 ? step(.5, k) : 1. - step(.5, k);
+  // light: raking from the left, a soft band of sheen sweeping across through the loop
+  float sweep = exp(-pow((p.x + p.y * .35 - (-400. + t * 2300.)) / 260., 2.));
+  vec3 col = bg;
+  bool cloth = p.x > CL && p.x < CR && p.y > CT && p.y < CB;
+  if (cloth) {
+    float inWarp = smoothstep(.5 * wv + .06, .5 * wv - .02, abs(f.x - .5));
+    float inWeft = smoothstep(.5 * wf + .06, .5 * wf - .02, abs(f.y - .5));
+    // a thread as a cylinder with a twist: shade across it, fine diagonal ply lines along it
+    float sx = sqrt(max(0., 1. - pow((f.x - .5) / (.5 * wv), 2.))), sy = sqrt(max(0., 1. - pow((f.y - .5) / (.5 * wf), 2.)));
+    float plyV = .9 + .1 * sin((f.y * 3. + f.x * 1.2) * 6.2831), plyH = .9 + .1 * sin((f.x * 3. + f.y * 1.2) * 6.2831);
+    vec3 warpS = warpC * (.35 + .75 * sx) * plyV + vec3(1.) * pow(sx, 12.) * (.10 + .35 * sweep);
+    vec3 weftS = weftC * (.42 + .62 * sy) * plyH + vec3(1.) * pow(sy, 14.) * (.06 + .22 * sweep);
+    // where a thread dives under its neighbour it darkens towards the crossing
+    float diveV = .75 + .25 * smoothstep(0., .35, min(f.y, 1. - f.y)), diveH = .75 + .25 * smoothstep(0., .35, min(f.x, 1. - f.x));
+    vec3 gap = vec3(.08, .08, .1);
+    if (warpUp > .5) col = mix(mix(gap, weftS * diveH, inWeft), warpS, inWarp);
+    else col = mix(mix(gap, warpS * diveV, inWarp), weftS, inWeft);
+  }
+  // the selvedge: a denser, darker edge thread each side
+  if (abs(p.x - CL) < 7. && p.y > CT && p.y < CB) col = vec3(.1, .13, .26) * (.6 + .4 * sin((p.y / 5.) * 3.14));
+  if (abs(p.x - CR) < 7. && p.y > CT && p.y < CB) col = vec3(.1, .13, .26) * (.6 + .4 * sin((p.y / 5.) * 3.14));
+  // loose warp above the fell: every thread hanging, swaying a little, fading into the tie at the top
+  if (p.y <= CT && p.y > 90. && p.x > CL && p.x < CR) {
+    float sway = sin(t * 6.2831 + i * .7) * (CT - p.y) * .006;
+    float fx = fract((p.x - CL) / P + sway) - .5;
+    float th = smoothstep(.17, .1, abs(fx));
+    float c = sqrt(max(0., 1. - pow(fx / .17, 2.)));
+    col = mix(bg, warpC * (.4 + .7 * c), th);
+  }
+  if (p.y > 84. && p.y < 98. && p.x > CL - 6. && p.x < CR + 6.) col = vec3(.36, .27, .18) * (.8 + .2 * sin(p.x * .2));   // the beam
+  col *= .97 + .05 * hash2(floor(p * dpr));
+  gl_FragColor = vec4(col, 1.);
+}`));
+  gl.linkProgram(pr); gl.useProgram(pr);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const ap = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+  const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mc);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const U = n => gl.getUniformLocation(pr, n);
+  for (const [k, v] of Object.entries({ dpr, H, CL, CR, CT, CB })) gl.uniform1f(U(k), v);
+  gl.viewport(0, 0, PW, PH);
+  const draw = sec => { gl.uniform1f(U('t'), ((sec % LOOP) + LOOP) % LOOP / LOOP); gl.drawArrays(gl.TRIANGLES, 0, 3); };
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>

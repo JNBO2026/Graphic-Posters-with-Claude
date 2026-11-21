@@ -1,0 +1,1 @@
+Pattern and textile, after Anni Albers. Weave a word: every thread drawn, warp and weft, crossing over and under on a real satin structure. Inside the letters the indigo warp floats on top, outside the cream weft does: a damask, a picture made only by turning one weave over. Loose warp hanging at the top, a selvedge at the sides, and light raking across so the satin shimmers.

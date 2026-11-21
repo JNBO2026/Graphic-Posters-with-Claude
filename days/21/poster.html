@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. frames/ (git-ignored) are made by lenia.py (NumPy, FFT convolution): python3 -I days/21/lenia.py
+     Each frame is a 78 x 110 field of values; here it is scaled up smoothly and drawn as an engraved plate on canvas:
+     ink in bands, a hairline at every contour. Type: Cormorant Garamond, Google Fonts. -->
+<meta charset="utf-8">
+<title>Day 21: Emergence.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#EFE9DC; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1, NF = 300, GW = 78, GH = 110;
+  await Promise.all(['600 100px "Cormorant Garamond"', 'italic 500 64px "Cormorant Garamond"'].map(f => document.fonts.load(f)));
+  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
+  const frames = [], get = async i => { if (!frames[i]) { const im = new Image(); im.src = `frames/f${String(i).padStart(4, '0')}.png`; await im.decode(); frames[i] = im; } return frames[i]; };
+  // the plate sits inside a ruled border, the field filling it; the work canvas is half the plate's size
+  const PX = M, PY = M + 150, PWd = W - 2 * M, PHt = H - 2 * M - 150 - 110, SW = PWd, SH = PHt;
+  const work = document.createElement('canvas'); work.width = SW; work.height = SH; const wk = work.getContext('2d'); wk.imageSmoothingQuality = 'high';
+  const out = wk.createImageData(SW, SH);
+  const BANDS = 7, INK = [24, 26, 32], PAPER = [239, 233, 220];
+  const read = async f => { wk.clearRect(0, 0, SW, SH); wk.drawImage(await get(f), 0, 0, SW, SH); return wk.getImageData(0, 0, SW, SH).data; };
+  async function draw(sec) {
+    const t = ((sec % LOOP) + LOOP) % LOOP;
+    // frames 1 to 300 over nine seconds, then the last second dissolves back to the first
+    const f = Math.min(NF, 1 + Math.floor(t / 9 * (NF - 1))), mixK = t > 9 ? (t - 9) : 0;
+    const a = await read(f), b = mixK ? await read(1) : null, o = out.data;
+    for (let i = 0; i < SW * SH; i++) {
+      let v = a[i * 4] / 255; if (b) v = v * (1 - mixK) + b[i * 4] / 255 * mixK;
+      const s = Math.pow(v, .8) * BANDS, band = Math.floor(s), fr = s - band;
+      // ink by band, like a mezzotint plate; a hairline at each contour
+      let k = band === 0 ? 0 : .34 + band / BANDS * .66;
+      if (v > .015 && (fr < .07 || fr > .975)) k = 1;
+      o[i * 4] = PAPER[0] + (INK[0] - PAPER[0]) * k; o[i * 4 + 1] = PAPER[1] + (INK[1] - PAPER[1]) * k; o[i * 4 + 2] = PAPER[2] + (INK[2] - PAPER[2]) * k; o[i * 4 + 3] = 255;
+    }
+    wk.putImageData(out, 0, 0);
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = '#EFE9DC'; x.fillRect(0, 0, W, H);
+    x.imageSmoothingQuality = 'high'; x.drawImage(work, PX, PY, PWd, PHt);
+    // a plate border, double ruled
+    x.strokeStyle = '#181A20'; x.lineWidth = 3; x.strokeRect(PX - 14, PY - 14, PWd + 28, PHt + 28); x.lineWidth = 1.2; x.strokeRect(PX - 22, PY - 22, PWd + 44, PHt + 44);
+    x.fillStyle = '#181A20'; x.textBaseline = 'alphabetic';
+    x.font = '600 132px "Cormorant Garamond"'; x.letterSpacing = '6px'; x.fillText('EMERGENCE', M - 6, M + 104);
+    x.font = 'italic 500 64px "Cormorant Garamond"'; x.letterSpacing = '0px';
+    x.fillText('Four creatures from one rule.', M, H - M - 10);
+    x.textAlign = 'right'; x.fillText('Pl. 21', W - M, H - M - 10); x.textAlign = 'left';
+  }
+  await draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; await draw(t); };
+</script>
+</body>
+</html>

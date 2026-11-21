@@ -1,0 +1,11 @@
+{
+  "day": 22,
+  "date": "2026-11-21",
+  "started_at": "2026-11-21T16:07:32Z",
+  "author": "claude",
+  "title": "Warp.",
+  "note": "After Anni Albers: a word woven thread by thread, made only by turning a satin weave over, indigo warp inside, cream weft outside.",
+  "process": "Code only, no generative model. A [[WebGL]] shader written in [[Claude Code]] weaves every thread on a five end satin, deciding once per crossing whether the indigo warp or the undyed weft lies on top: warp faced inside WARP, set in [[Google Fonts]] Archivo Black and used only as a mask, weft faced outside, so the word steps like a real Jacquard. Each thread is shaded as a twisted cylinder, loose warp hangs from a beam at the top, and a band of light rakes across the satin on a loop.",
+  "tools": ["Claude Code", "WebGL", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["Anni Albers", "Weave a word", "warp and weft", "satin structure", "damask", "light raking across"]
+}
