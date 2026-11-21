@@ -1,0 +1,427 @@
+{
+ "source": "Mobbin, 40 iOS screens: 20 onboarding, 20 notification requests, read 2026-11-21",
+ "screens": [
+  {
+   "app": "DoorDash",
+   "buttons": [
+    "Next"
+   ]
+  },
+  {
+   "app": "Headway",
+   "buttons": [
+    "Start learning"
+   ]
+  },
+  {
+   "app": "ClassPass",
+   "buttons": [
+    "Continue"
+   ]
+  },
+  {
+   "app": "How We Feel",
+   "buttons": [
+    "Get started"
+   ]
+  },
+  {
+   "app": "Brilliant",
+   "buttons": [
+    "Continue"
+   ]
+  },
+  {
+   "app": "WHOOP",
+   "buttons": [
+    "Get started"
+   ]
+  },
+  {
+   "app": "Phantom",
+   "buttons": [
+    "Next"
+   ]
+  },
+  {
+   "app": "Ahead",
+   "buttons": [
+    "Let's go"
+   ]
+  },
+  {
+   "app": "Nike Training Club",
+   "buttons": [
+    "Get started"
+   ]
+  },
+  {
+   "app": "LinkedIn",
+   "buttons": [
+    "Explore Premium features"
+   ]
+  },
+  {
+   "app": "Lifesum",
+   "buttons": [
+    "Next"
+   ]
+  },
+  {
+   "app": "Lloyds Mobile Banking",
+   "buttons": [
+    "Next"
+   ]
+  },
+  {
+   "app": "Cash App",
+   "buttons": [
+    "Next"
+   ]
+  },
+  {
+   "app": "MacroFactor",
+   "buttons": [
+    "Go to Basics"
+   ]
+  },
+  {
+   "app": "Noom",
+   "buttons": [
+    "Next"
+   ]
+  },
+  {
+   "app": "Oura",
+   "buttons": [
+    "Enable",
+    "No thanks"
+   ]
+  },
+  {
+   "app": "Monzo",
+   "buttons": [
+    "Continue",
+    "Set up later"
+   ]
+  },
+  {
+   "app": "PayPal",
+   "buttons": [
+    "I want all the benefits",
+    "Skip for now"
+   ]
+  },
+  {
+   "app": "Wispr Flow",
+   "buttons": [
+    "Next"
+   ]
+  },
+  {
+   "app": "Notion",
+   "buttons": [
+    "Get started"
+   ]
+  },
+  {
+   "app": "ChatGPT",
+   "buttons": [
+    "Allow",
+    "Don't allow"
+   ]
+  },
+  {
+   "app": "TikTok",
+   "buttons": [
+    "Allow",
+    "Don't allow"
+   ]
+  },
+  {
+   "app": "Bumble",
+   "buttons": [
+    "Allow notifications",
+    "Not now"
+   ]
+  },
+  {
+   "app": "Claude",
+   "buttons": [
+    "Turn on notifications",
+    "Not now"
+   ]
+  },
+  {
+   "app": "Chick-fil-A",
+   "buttons": [
+    "Allow",
+    "No, thanks"
+   ]
+  },
+  {
+   "app": "Grok Bot",
+   "buttons": [
+    "Enable notifications",
+    "Later"
+   ]
+  },
+  {
+   "app": "Fiverr",
+   "buttons": [
+    "Allow push notifications",
+    "Ask me later"
+   ]
+  },
+  {
+   "app": "Too Good To Go",
+   "buttons": [
+    "Yes",
+    "No"
+   ]
+  },
+  {
+   "app": "Linktree",
+   "buttons": [
+    "Get push notifications",
+    "Not now"
+   ]
+  },
+  {
+   "app": "Recime",
+   "buttons": [
+    "Continue",
+    "Allow",
+    "Don't allow"
+   ]
+  },
+  {
+   "app": "Shell",
+   "buttons": [
+    "Yes, please",
+    "No, thanks"
+   ]
+  },
+  {
+   "app": "Airwallex",
+   "buttons": [
+    "Allow notifications",
+    "Not now"
+   ]
+  },
+  {
+   "app": "Qantas Airways",
+   "buttons": [
+    "Allow notifications",
+    "Not now"
+   ]
+  },
+  {
+   "app": "Lovi",
+   "buttons": [
+    "Next",
+    "Not now"
+   ]
+  },
+  {
+   "app": "Jobber",
+   "buttons": [
+    "Enable notifications",
+    "Not right now"
+   ]
+  },
+  {
+   "app": "Beli",
+   "buttons": [
+    "Allow notifications",
+    "Not now"
+   ]
+  },
+  {
+   "app": "Apple Books",
+   "buttons": [
+    "Continue",
+    "Not now",
+    "Allow",
+    "Don't allow"
+   ]
+  },
+  {
+   "app": "Jira Cloud",
+   "buttons": [
+    "Turn on mention notifications",
+    "Turn on all notifications",
+    "Maybe later",
+    "Allow",
+    "Don't allow"
+   ]
+  },
+  {
+   "app": "The New Yorker",
+   "buttons": [
+    "Turn on notifications",
+    "Skip",
+    "Allow",
+    "Don't allow"
+   ]
+  },
+  {
+   "app": "Amazon Alexa",
+   "buttons": [
+    "Continue"
+   ]
+  }
+ ],
+ "labels": [
+  {
+   "label": "next",
+   "count": 8,
+   "kind": "accept"
+  },
+  {
+   "label": "not now",
+   "count": 8,
+   "kind": "decline"
+  },
+  {
+   "label": "allow",
+   "count": 7,
+   "kind": "accept"
+  },
+  {
+   "label": "continue",
+   "count": 6,
+   "kind": "accept"
+  },
+  {
+   "label": "don't allow",
+   "count": 6,
+   "kind": "decline"
+  },
+  {
+   "label": "get started",
+   "count": 4,
+   "kind": "accept"
+  },
+  {
+   "label": "allow notifications",
+   "count": 4,
+   "kind": "accept"
+  },
+  {
+   "label": "no thanks",
+   "count": 3,
+   "kind": "decline"
+  },
+  {
+   "label": "turn on notifications",
+   "count": 2,
+   "kind": "accept"
+  },
+  {
+   "label": "enable notifications",
+   "count": 2,
+   "kind": "accept"
+  },
+  {
+   "label": "start learning",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "let's go",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "explore premium features",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "go to basics",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "enable",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "set up later",
+   "count": 1,
+   "kind": "decline"
+  },
+  {
+   "label": "i want all the benefits",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "skip for now",
+   "count": 1,
+   "kind": "decline"
+  },
+  {
+   "label": "later",
+   "count": 1,
+   "kind": "decline"
+  },
+  {
+   "label": "allow push notifications",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "ask me later",
+   "count": 1,
+   "kind": "decline"
+  },
+  {
+   "label": "yes",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "no",
+   "count": 1,
+   "kind": "decline"
+  },
+  {
+   "label": "get push notifications",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "yes please",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "not right now",
+   "count": 1,
+   "kind": "decline"
+  },
+  {
+   "label": "turn on mention notifications",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "turn on all notifications",
+   "count": 1,
+   "kind": "accept"
+  },
+  {
+   "label": "maybe later",
+   "count": 1,
+   "kind": "decline"
+  },
+  {
+   "label": "skip",
+   "count": 1,
+   "kind": "decline"
+  }
+ ]
+}

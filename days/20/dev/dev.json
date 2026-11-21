@@ -1,0 +1,5 @@
+[
+  { "img": "01-overflowing.jpg", "step": "Every button, full size", "verdict": "cut", "why": "Ran into the caption, and the tie hid down two rows.", "then": 1 },
+  { "img": "02-the-tie.jpg", "step": "The tie side by side", "verdict": "fixed", "why": "Next and Not now on one row, but the page stopped halfway." },
+  { "img": "03-final.jpg", "step": "Sized to the page", "verdict": "kept", "why": "One scale for every button, grown until the count fills the page." }
+]

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. buttons.json: every button label on 40 real iOS screens found through the Mobbin MCP, read and counted by hand.
+     Each label is drawn as the kind of button it was: filled (go on) or outlined (let me off), sized by its count.
+     Type: Inter Tight, Google Fonts. HTML and CSS; a CSS animation presses the buttons. -->
+<meta charset="utf-8">
+<title>Day 20: Not Now.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#EDEBE6; font-family:'Inter Tight'; }
+  #wall { position:absolute; left:72px; right:72px; top:72px; bottom:300px; display:flex; flex-wrap:wrap; align-content:flex-start; gap:14px; }
+  .b { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; font-weight:600; letter-spacing:-.02em; white-space:nowrap; box-sizing:border-box;
+       animation:press 10s cubic-bezier(.2,.7,.2,1) infinite; }
+  .go { background:#121212; color:#F4F2EE; }
+  .no { background:transparent; color:#121212; box-shadow:inset 0 0 0 4px #121212; }
+  .n { font-weight:700; opacity:.45; margin-left:.4em; font-variant-numeric:tabular-nums; }
+  @keyframes press { 0%, 100% { transform:scale(1); } }
+  .k { position:absolute; left:72px; right:72px; bottom:72px; font:700 64px/1.02 'Inter Tight'; letter-spacing:-.02em; color:#121212; }
+  .k span { color:#7A766E; }
+</style>
+</head>
+<body>
+<div id="wall"></div>
+<div class="k">40 app screens. 45 times<br>they asked. <span>25 times you<br>could say not yet.</span></div>
+<script>
+(async () => {
+  const D = await (await fetch('buttons.json')).json(), wall = document.getElementById('wall');
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  // height and type by count: the tie at the top gets the most room
+  const make = K => { wall.innerHTML = ''; D.labels.forEach((l, i) => {
+    const h = Math.round((18 + l.count * 30) * K), fs = Math.round(h * .42);
+    const el = document.createElement('div'); el.className = 'b ' + (l.kind === 'decline' ? 'no' : 'go');
+    el.style.height = h + 'px'; el.style.fontSize = fs + 'px'; el.style.padding = `0 ${Math.round(h * .45)}px`;
+    if (l.kind === 'decline') el.style.boxShadow = `inset 0 0 0 ${Math.max(2, Math.round(h * .03))}px #121212`;
+    el.innerHTML = `${cap(l.label)}<span class="n">${l.count}</span>`;
+    // a thumb works down the list, pressing each one in turn; the two that tie are pressed last and longest
+    const at = Math.min(8.4, 1 + i * .22), name = 'p' + i;
+    const css = document.createElement('style');
+    css.textContent = `@keyframes ${name} { 0%, ${(at * 10).toFixed(1)}% { transform:scale(1); } ${(at * 10 + 1.2).toFixed(1)}% { transform:scale(.94); } ${(at * 10 + 4).toFixed(1)}%, 100% { transform:scale(1); } }`;
+    document.head.appendChild(css); el.style.animationName = name;
+    wall.appendChild(el);
+  });
+  // the tie: Next and Not now share the first row, each half the width
+  const [a, b] = wall.children; a.style.width = b.style.width = 'calc(50% - 7px)'; a.style.padding = b.style.padding = '0'; };
+  await document.fonts.ready;
+  // shrink everything together until the whole count fits the page
+  let K = 2.6; make(K); while (wall.scrollHeight > wall.clientHeight + 1 && K > .3) { K -= .02; make(K); }
+  document.body.dataset.ready = '1';
+})();
+</script>
+</body>
+</html>

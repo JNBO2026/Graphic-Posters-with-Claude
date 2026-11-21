@@ -1,0 +1,1 @@
+Hierarchy and affordance. Every app button is a little argument: the filled one wants you to go on, the quiet one lets you off. Read the buttons on 40 real app screens through Mobbin and count them. Draw every label as the button it really was, filled or quiet, sized by how often it came up. Then let the poster find out what people are being asked, and what they say.
