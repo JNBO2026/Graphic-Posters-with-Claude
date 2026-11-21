@@ -1,0 +1,46 @@
+{
+ "model": "Figma, gemini-3.1-flash-lite-image",
+ "rounds": [
+  {
+   "n": 1,
+   "prompt": "A woman reading a letter at a kitchen table by a window, morning light.",
+   "img": "whispers/01.jpg"
+  },
+  {
+   "n": 2,
+   "prompt": "A young woman in a cream jumper smiles over a handwritten note at a wooden table, pots of plants and hydrangeas at a bright cottage window.",
+   "img": "whispers/02.jpg"
+  },
+  {
+   "n": 3,
+   "prompt": "A laughing woman with wavy hair writes a letter at a farmhouse table, blue hydrangeas and potted herbs crowding a sunny windowsill.",
+   "img": "whispers/03.jpg"
+  },
+  {
+   "n": 4,
+   "prompt": "Joyful woman writing at a rustic kitchen table surrounded by flowers in full bloom, golden sunlight pouring through a cottage window.",
+   "img": "whispers/04.jpg"
+  },
+  {
+   "n": 5,
+   "prompt": "A dreamy young woman in a floral sundress journals at an old wooden table overflowing with roses, lavender and wildflowers, warm golden-hour cottage interior.",
+   "img": "whispers/05.jpg"
+  },
+  {
+   "n": 6,
+   "prompt": "Romantic golden-hour scene: a smiling woman in a sundress writes in a journal among baskets of roses and wildflowers, sunbeams through lace curtains.",
+   "img": "whispers/06.jpg"
+  },
+  {
+   "n": 7,
+   "prompt": "Fairytale cottage at sunset: a radiant woman in a floral dress writes in a book, buried in baskets of pink roses, a cup of tea, glowing lace curtains and hazy light.",
+   "img": "whispers/07.jpg"
+  },
+  {
+   "n": 8,
+   "prompt": "An enchanted storybook cottage glowing at sunset, a radiant smiling princess-like woman writing in a golden book, surrounded by cascades of pink roses and floating light.",
+   "img": "whispers/08.jpg"
+  }
+ ],
+ "note": "Round 1 is the start. Each later prompt is Claude's one-sentence description of the image before it. Images are the 256 px previews Figma returns inline; the full size host is not reachable from this session."
+}

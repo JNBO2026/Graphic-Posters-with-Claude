@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- whispers/ holds eight images from Figma's image model (gemini-3.1-flash-lite-image), chained with Claude:
+     each prompt after the first is Claude's one sentence description of the image before (whispers.json).
+     They are the 256 px previews; this poster shows them at that resolution on purpose, every pixel visible.
+     Canvas dissolves one round into the next through a pixel sort, the sentence that made each one types itself below. -->
+<meta charset="utf-8">
+<title>Day 28: Whispers.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,400&family=JetBrains+Mono:wght@700&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#16130F; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1;
+  await Promise.all(['italic 400 44px Newsreader', '700 40px "JetBrains Mono"'].map(f => document.fonts.load(f)));
+  const D = await (await fetch('whispers.json')).json(), N = D.rounds.length;
+  const imgs = await Promise.all(D.rounds.map(r => new Promise(res => { const i = new Image(); i.onload = () => res(i); i.src = r.img; })));
+  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
+  // each image as pixels, for the dissolve
+  const S = 128;   // 256 previews halved again: every pixel is a 8.5 px tile on the poster, the loss is the subject
+  const px = imgs.map(im => { const c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d'); g.drawImage(im, 0, 0, S, S); return g.getImageData(0, 0, S, S).data; });
+  // a fixed random order for the tiles, so the dissolve is a scatter, not a wipe
+  let sd = 28; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+  const order = new Float32Array(S * S).map(() => rnd());
+  const tile = document.createElement('canvas'); tile.width = tile.height = S; const tg = tile.getContext('2d'); const id = tg.createImageData(S, S);
+  const IX = M, IY = M + 96, IW = W - 2 * M;   // the picture: margin to margin, square
+  const wrap = (s, w) => { const out = []; let line = ''; for (const word of s.split(' ')) { const t = line ? line + ' ' + word : word; if (x.measureText(t).width > w && line) { out.push(line); line = word; } else line = t; } if (line) out.push(line); return out; };
+  function draw(sec) {
+    const t = (((sec + 9) % LOOP) + LOOP) % LOOP;   // frame 0 is round eight, where it ended up
+    // eight rounds in ten seconds, the last holds longest; each change is a scatter over a third of its slot
+    const SLOT = 1.1, r = Math.min(N - 1, Math.floor(t / SLOT)), into = (t - r * SLOT) / (SLOT * .45);
+    const a = px[r], b = px[Math.min(N - 1, r + 1)], d = id.data, k = r < N - 1 ? Math.max(0, Math.min(1, into - .9)) : 0;
+    const back = t > 9.4 ? (t - 9.4) / .6 : 0;     // the last second scatters back to round one, so the loop closes
+    for (let i = 0; i < S * S; i++) {
+      let src = order[i] < k ? b : a; if (back && order[i] < back) src = px[0];
+      d[i * 4] = src[i * 4]; d[i * 4 + 1] = src[i * 4 + 1]; d[i * 4 + 2] = src[i * 4 + 2]; d[i * 4 + 3] = 255;
+    }
+    tg.putImageData(id, 0, 0);
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = '#16130F'; x.fillRect(0, 0, W, H);
+    x.imageSmoothingEnabled = false; x.drawImage(tile, IX, IY, IW, IW);
+    // the round counter and the title, mono, on the frame's top edge
+    const shown = back > .5 ? 1 : (k > .5 ? r + 2 : r + 1);
+    x.fillStyle = '#F1E8D8'; x.font = '700 40px "JetBrains Mono"'; x.textBaseline = 'alphabetic';
+    x.fillText('WHISPERS', IX, M + 58); x.textAlign = 'right'; x.fillText(`ROUND ${shown} / ${N}`, W - M, M + 58); x.textAlign = 'left';
+    // the sentence that made this round, typed in as the picture lands
+    const p = D.rounds[shown - 1].prompt;
+    x.font = 'italic 400 46px Newsreader'; x.fillStyle = '#F1E8D8';
+    const lines = wrap('“' + p + '”', IW), since = shown === 1 ? 99 : t - ((shown - 1) * SLOT + SLOT * .45), typed = Math.max(0, Math.min(1, since / .7));
+    let left = Math.round(p.length * typed) + 1; const ly = IY + IW + 74;
+    lines.slice(0, 4).forEach((l, j) => { const s = l.slice(0, Math.max(0, left)); left -= l.length + 1; x.fillText(s, IX, ly + j * 56); });
+    // the eight rounds as a strip along the bottom, the current one lit
+    const SW = (IW - 7 * 12) / 8;
+    imgs.forEach((im, j) => { x.globalAlpha = j === shown - 1 ? 1 : .35; x.drawImage(im, IX + j * (SW + 12), H - M - SW, SW, SW); });
+    x.globalAlpha = 1;
+  }
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>
