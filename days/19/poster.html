@@ -41,6 +41,9 @@ float noise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f)
   return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }
 // the photo, cropped to fill the page, top part only above the word
 vec3 photoAt(vec2 p) {
+  // the sea moves: below the horizon, a slow swell displaces the picture, more towards the shore
+  float sea = smoothstep(900., 1400., p.y);
+  p += sea * vec2(sin(p.y * .018 + t * TAU) * 5., sin(p.x * .01 + p.y * .02 - t * TAU * 2.) * 9.);
   vec2 uv = vec2(.5 + (p.x - 620.) / 1240. * 1.05, clamp(.10 + (p.y - 640.) / 1754. * 1.25, .0, 1.));
   return texture2D(photo, uv).rgb;
 }
@@ -69,12 +72,19 @@ void main() {
   pink = mix(pink, 1., w);                      // the word: solid pink, the blue dots run straight through it
   // patchy ink: the drum runs thin in places
   float patchP = .82 + .18 * noise(p * .012 + 3.), patchB = .82 + .18 * noise(p * .011 + 9.);
-  float dP = screen(p + offP, .2618, 11., pink * patchP) * inside;   // 15 degrees
-  float dB = screen(p + offB, 1.309, 11., blue * patchB) * inside;   // 75 degrees
+  // the screen breathes: dots swell slightly as a wave of ink passes down the sheet
+  float swell = 1. + .12 * sin(p.y * .006 - t * TAU);
+  float dP = screen(p + offP, .2618, 11., pink * patchP * swell) * inside;   // 15 degrees
+  float dB = screen(p + offB, 1.309, 11., blue * patchB * swell) * inside;   // 75 degrees
   vec3 paper = vec3(.965, .949, .918);
   vec3 PINK = vec3(1., .28, .58), BLUE = vec3(0., .47, .75);
   // overprint: inks multiply where they meet, which is where every other colour on the page comes from
-  vec3 col = paper * mix(vec3(1.), PINK, dP * .92) * mix(vec3(1.), BLUE, dB * .9);
+  // a third drum, yellow, for one thing only: the sun, sinking behind the word and rising again through the loop
+  vec2 sc = vec2(820., 420. + 160. * (.5 - .5 * cos(t * TAU)));
+  float sun = smoothstep(232., 228., length(p + offP * .5 - sc)) * inside * step(p.y, 640.);
+  float dY = screen(p + vec2(1.5, 2.5), 0., 9., sun * .9);
+  vec3 YEL = vec3(1., .86, .12);
+  vec3 col = paper * mix(vec3(1.), YEL, dY * .95) * mix(vec3(1.), PINK, dP * .92) * mix(vec3(1.), BLUE, dB * .9);
   col *= .985 + .03 * hash(floor(p * dpr));
   gl_FragColor = vec4(col, 1.);
 }`));

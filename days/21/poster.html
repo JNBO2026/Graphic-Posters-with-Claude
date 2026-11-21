@@ -35,13 +35,19 @@ const READY = (async () => {
     // frames 1 to 300 over nine seconds, then the last second dissolves back to the first
     const f = Math.min(NF, 1 + Math.floor(t / 9 * (NF - 1))), mixK = t > 9 ? (t - 9) : 0;
     const a = await read(f), b = mixK ? await read(1) : null, o = out.data;
-    for (let i = 0; i < SW * SH; i++) {
-      let v = a[i * 4] / 255; if (b) v = v * (1 - mixK) + b[i * 4] / 255 * mixK;
+    // hand tinted, like an old natural history plate: a watercolour per band (sage at the edge, ochre, madder at the core),
+    // lit from the upper left by the slope of the field, so each creature sits up off the page in relief
+    const TINT = [[214, 222, 196], [196, 206, 168], [222, 196, 130], [214, 160, 104], [188, 110, 86], [150, 66, 70], [104, 40, 58], [70, 26, 46]];
+    const val = i => { let v = a[i * 4] / 255; if (b) v = v * (1 - mixK) + b[i * 4] / 255 * mixK; return v; };
+    for (let y = 0; y < SH; y++) for (let x0 = 0; x0 < SW; x0++) {
+      const i = y * SW + x0, v = val(i);
       const s = Math.pow(v, .8) * BANDS, band = Math.floor(s), fr = s - band;
-      // ink by band, like a mezzotint plate; a hairline at each contour
-      let k = band === 0 ? 0 : .34 + band / BANDS * .66;
-      if (v > .015 && (fr < .07 || fr > .975)) k = 1;
-      o[i * 4] = PAPER[0] + (INK[0] - PAPER[0]) * k; o[i * 4 + 1] = PAPER[1] + (INK[1] - PAPER[1]) * k; o[i * 4 + 2] = PAPER[2] + (INK[2] - PAPER[2]) * k; o[i * 4 + 3] = 255;
+      let c = PAPER;
+      if (band > 0) { c = TINT[Math.min(TINT.length - 1, band)];
+        const gx = val(Math.min(i + 1, SW * SH - 1)) - val(Math.max(i - 1, 0)), gy = val(Math.min(i + SW, SW * SH - 1)) - val(Math.max(i - SW, 0));
+        const light = 1 + (-gx - gy) * 9; c = c.map(q => Math.max(0, Math.min(255, q * light))); }
+      if (v > .015 && (fr < .07 || fr > .975)) c = INK;
+      o[i * 4] = c[0]; o[i * 4 + 1] = c[1]; o[i * 4 + 2] = c[2]; o[i * 4 + 3] = 255;
     }
     wk.putImageData(out, 0, 0);
     x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = '#EFE9DC'; x.fillRect(0, 0, W, H);
@@ -49,7 +55,8 @@ const READY = (async () => {
     // a plate border, double ruled
     x.strokeStyle = '#181A20'; x.lineWidth = 3; x.strokeRect(PX - 14, PY - 14, PWd + 28, PHt + 28); x.lineWidth = 1.2; x.strokeRect(PX - 22, PY - 22, PWd + 44, PHt + 44);
     x.fillStyle = '#181A20'; x.textBaseline = 'alphabetic';
-    x.font = '600 132px "Cormorant Garamond"'; x.letterSpacing = '6px'; x.fillText('EMERGENCE', M - 6, M + 104);
+    x.font = '600 132px "Cormorant Garamond"'; x.letterSpacing = '10px'; x.fillText('EMERGENCE', M - 6, M + 104);
+    x.fillStyle = '#8A3A3C'; x.font = 'italic 500 40px "Cormorant Garamond"'; x.letterSpacing = '0px'; x.textAlign = 'right'; x.fillText('Lenia, after one rule', W - M, H - M - 70); x.textAlign = 'left'; x.fillStyle = '#181A20';
     x.font = 'italic 500 64px "Cormorant Garamond"'; x.letterSpacing = '0px';
     x.fillText('Four creatures from one rule.', M, H - M - 10);
     x.textAlign = 'right'; x.fillText('Pl. 21', W - M, H - M - 10); x.textAlign = 'left';

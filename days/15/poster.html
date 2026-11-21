@@ -54,9 +54,16 @@ void main() {
   // inside the word: the same rhythm turned upright and heavier, so the word reads as darker, even very small
   float bend2 = 14. * sin(p.y * .0071 - t * TAU);
   float in_ = band((p.x + bend2) / PERIOD, .72, aa);
-  float ink = mix(out_, in_, inside);
   float inm = step(M, p.x) * step(p.x, 1240. - M) * step(M, p.y) * step(p.y, 1754. - M);
-  vec3 col = mix(vec3(.949, .941, .922), vec3(.06), ink * inm);
+  // outside: red and teal of equal lightness, so the edges between them shimmer; inside the word: navy and cream, full contrast
+  vec3 red = vec3(.89, .29, .24), teal = vec3(.12, .58, .56), navy = vec3(.07, .08, .2), cream = vec3(.96, .93, .86);
+  vec3 field = mix(teal, red, out_), word = mix(cream, navy, in_);
+  vec3 col = mix(field, word, inside);
+  // the bulge: a swell of light that drifts across the paper, as if the surface were breathing
+  vec2 bc = vec2(620. + 260. * sin(t * TAU), 900. + 340. * cos(t * TAU)); vec2 bd = (p - bc) / 520.;
+  float h = exp(-dot(bd, bd)); vec3 nrm = normalize(vec3(-bd * h * 1.6, 1.));
+  col *= .84 + .34 * max(dot(nrm, normalize(vec3(-.5, -.6, .7))), 0.);
+  col = mix(vec3(.949, .941, .922), col, inm);
   gl_FragColor = vec4(col, 1.);
 }`));
   gl.linkProgram(pr); gl.useProgram(pr);

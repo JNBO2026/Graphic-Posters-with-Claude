@@ -92,12 +92,24 @@ const READY = (async () => {
     bx.clearRect(0, 0, LW, LH); bx.filter = 'blur(14px)'; bx.drawImage(lc, 0, 0); bx.filter = 'none';
     x.globalAlpha = .55; x.drawImage(blur, 0, 0, W, H); x.globalAlpha = 1;            // glow, like dust in a dark room
     x.imageSmoothingQuality = 'high'; x.drawImage(lc, 0, 0, W, H);
+    // dust in the dark room: motes drift slowly and only show where they pass through light, coloured by it
+    for (let i = 0; i < 700; i++) { const sx = (Math.sin(i * 12.9898) * 43758.5453 % 1 + 1) % 1, sy = (Math.sin(i * 78.233) * 12345.678 % 1 + 1) % 1;
+      const mx = (sx * W + Math.sin(t * 6.283 + i) * 18 + t * 40) % W, my = (sy * H + t * 60 + Math.cos(t * 6.283 * 2 + i) * 10) % H;
+      const k = (Math.floor(my * S) * LW + Math.floor(mx * S)) * 4, lr = d[k] / 255, lg = d[k + 1] / 255, lb = d[k + 2] / 255, L = (lr + lg + lb) / 3;
+      if (L < .08) continue; const sz = 1.2 + (i % 5) * .5;
+      x.fillStyle = `rgba(${Math.min(255, lr * 300)},${Math.min(255, lg * 300)},${Math.min(255, lb * 300)},${Math.min(1, L * 1.4)})`;
+      x.beginPath(); x.arc(mx, my, sz, 0, Math.PI * 2); x.fill(); }
     x.globalCompositeOperation = 'source-over';
     // the glass: a pale edge and a faint fill
     x.beginPath(); x.moveTo(...P[0]); x.lineTo(...P[1]); x.lineTo(...P[2]); x.closePath();
     x.fillStyle = 'rgba(200,215,235,.07)'; x.fill(); x.strokeStyle = 'rgba(220,232,250,.55)'; x.lineWidth = 2; x.stroke();
     x.fillStyle = '#ECEBE6'; x.font = '700 150px "Space Grotesk"'; x.letterSpacing = '-4px'; x.textBaseline = 'alphabetic';
     x.fillText('Spectrum', M, H - M - 70);
+    // a ruler of wavelengths up the right edge, ticked every 50 nm, the colour of each mark its own wavelength
+    x.save(); x.font = '500 30px "Space Grotesk"'; x.textAlign = 'right';
+    for (let l = 400; l <= 700; l += 50) { const yy = M + 120 + (l - 400) / 300 * (H * .5); const c = rgb(xyz(l)).map(v => Math.max(0, Math.min(1, v * 1.6)));
+      x.fillStyle = `rgb(${c.map(v => Math.round(Math.pow(v, 1 / 2.2) * 255)).join(',')})`; x.fillRect(W - M - 40, yy - 2, 40, 4); x.fillText(l + ' nm', W - M - 54, yy + 10); }
+    x.restore();
     x.font = '500 40px "Space Grotesk"'; x.letterSpacing = '0px'; x.fillStyle = '#8E8C86';
     x.fillText('400 to 700 nanometres, one beam.', M + 4, H - M);
   }

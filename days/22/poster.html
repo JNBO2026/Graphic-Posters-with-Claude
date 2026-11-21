@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=block" rel="stylesheet">
 <style>
-  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#E9E4D8; }
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#EDE6D6; }
   canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
 </style>
 </head>
@@ -46,7 +46,9 @@ void main() {
   // each thread a little different: width, colour, a slub now and then
   float wv = .80 + .14 * hash(i * 1.7), wf = .80 + .14 * hash(j * 2.3 + 9.);
   vec3 warpC = vec3(.12, .20, .44) * (.85 + .3 * hash(i + 3.));      // indigo
-  vec3 weftC = vec3(.93, .89, .80) * (.92 + .12 * hash(j + 7.));     // undyed
+  // the weft is dyed in long warm bands, saffron to rust to madder and back, so the cloth carries a slow stripe
+  float bandT = .5 + .5 * sin(j * .045);
+  vec3 weftC = mix(vec3(.95, .90, .80), mix(vec3(.96, .78, .44), vec3(.90, .56, .40), bandT), .55) * (.92 + .12 * hash(j + 7.));
   // satin: in every five, the warp is up only once (weft faced), or down only once (warp faced)
   vec2 cc = vec2(CL + (i + .5) * P, CT + (j + .5) * P);   // the loom decides once per crossing, so the letters step thread by thread
   float inside = texture2D(mask, cc / vec2(1240., 1754.)).r;
@@ -56,7 +58,12 @@ void main() {
   // light: raking from the left, a soft band of sheen sweeping across through the loop
   float sweep = exp(-pow((p.x + p.y * .35 - (-400. + t * 2300.)) / 260., 2.));
   vec3 col = bg;
-  bool cloth = p.x > CL && p.x < CR && p.y > CT && p.y < CB;
+  // the fell: the cloth is being woven from the bottom up; it rises over eight seconds, holds, then the loop starts with it finished
+  float fell = mix(CB, CT, clamp(t < .82 ? t / .82 : 1., 0., 1.));
+  if (t < .02) fell = CT;
+  // drape: the woven cloth sags slightly between beam and fell, shading like a soft surface in 3D
+  float drape = sin((p.x - CL) / (CR - CL) * 3.1416) * .06;
+  bool cloth = p.x > CL && p.x < CR && p.y > max(CT, fell) && p.y < CB;
   if (cloth) {
     float inWarp = smoothstep(.5 * wv + .06, .5 * wv - .02, abs(f.x - .5));
     float inWeft = smoothstep(.5 * wf + .06, .5 * wf - .02, abs(f.y - .5));
@@ -71,6 +78,14 @@ void main() {
     if (warpUp > .5) col = mix(mix(gap, weftS * diveH, inWeft), warpS, inWarp);
     else col = mix(mix(gap, warpS * diveV, inWarp), weftS, inWeft);
   }
+  // above the fell, the warp waits loose; the shuttle runs along the fell carrying the weft
+  if (p.y <= fell && p.y > CT && p.x > CL && p.x < CR) {
+    float fx = fract((p.x - CL) / P) - .5; float th = smoothstep(.17, .1, abs(fx)), c = sqrt(max(0., 1. - pow(fx / .17, 2.)));
+    col = mix(bg, warpC * (.4 + .7 * c), th);
+  }
+  float sx = CL + (CR - CL) * (.5 + .5 * sin(t * 6.2831 * 9.));
+  if (t < .82 && abs(p.y - fell) < 16. && abs(p.x - sx) < 70.) { vec2 q = vec2((p.x - sx) / 70., (p.y - fell) / 16.); if (length(q * vec2(1., 1.6)) < 1.) col = mix(vec3(.42, .27, .14), vec3(.75, .55, .3), .5 + .5 * q.y); }
+  if (cloth) col *= 1. - drape * (1. - abs(.5 - (p.y - CT) / (CB - CT)) * 2.);
   // the selvedge: a denser, darker edge thread each side
   if (abs(p.x - CL) < 7. && p.y > CT && p.y < CB) col = vec3(.1, .13, .26) * (.6 + .4 * sin((p.y / 5.) * 3.14));
   if (abs(p.x - CR) < 7. && p.y > CT && p.y < CB) col = vec3(.1, .13, .26) * (.6 + .4 * sin((p.y / 5.) * 3.14));

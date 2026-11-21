@@ -1,6 +1,35 @@
 [
-  { "img": "01-neutral-grey.jpg", "step": "A neutral grey", "verdict": "cut", "why": "The two squares barely looked different. No pull, no poster.", "then": 1 },
-  { "img": "02-olive-grey.jpg", "step": "A greyed olive", "verdict": "fixed", "why": "A grey with a little hue bends further. Squares still too big.", "then": 2 },
-  { "img": "03-room-to-pull.jpg", "step": "More field round each", "verdict": "kept", "why": "The more surround, the harder it pulls. Light up top, dull below." },
-  { "img": "04-the-bridge.jpg", "step": "The bridge", "verdict": "kept", "why": "Joined up, they're obviously one colour. Then it goes." }
+ {
+  "img": "01-neutral-grey.jpg",
+  "step": "A neutral grey",
+  "verdict": "cut",
+  "why": "The two squares barely looked different. No pull, no poster.",
+  "then": 1
+ },
+ {
+  "img": "02-olive-grey.jpg",
+  "step": "A greyed olive",
+  "verdict": "fixed",
+  "why": "A grey with a little hue bends further. Squares still too big.",
+  "then": 2
+ },
+ {
+  "img": "03-room-to-pull.jpg",
+  "step": "More field round each",
+  "verdict": "kept",
+  "why": "The more surround, the harder it pulls. Light up top, dull below."
+ },
+ {
+  "img": "04-the-bridge.jpg",
+  "step": "The bridge",
+  "verdict": "kept",
+  "why": "Joined up, they're obviously one colour. Then it goes.",
+  "then": 4
+ },
+ {
+  "img": "09-elevated.jpg",
+  "step": "Elevated: the squares swap",
+  "verdict": "kept",
+  "why": "They lift and pass each other in 3D, and each changes colour as it crosses the seam."
+ }
 ]

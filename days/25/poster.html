@@ -18,7 +18,8 @@
   .lab { font:800 46px/1 Archivo; letter-spacing:-.01em; display:flex; justify-content:space-between; align-items:baseline; border-top:5px solid #151413; padding-top:16px; }
   .lab span { font-weight:500; }
   .figs { display:flex; flex-wrap:wrap; gap:6px 4px; margin-top:20px; }
-  .figs svg { width:68px; height:96px; display:block; opacity:0; transform:translateY(-8px); animation:in 10s cubic-bezier(.2,.7,.2,1) infinite; }
+  .figs svg { width:68px; height:96px; display:block; overflow:visible; }
+  .lab b { font:800 96px/.8 Archivo; letter-spacing:-.04em; font-variant-numeric:tabular-nums; margin-right:20px; }
   @keyframes in { 0% { opacity:1; transform:none; } 100% { opacity:1; transform:none; } }
   .key { position:absolute; left:72px; right:72px; bottom:66px; font:500 40px/1.2 Archivo; display:flex; align-items:center; gap:18px; }
   .key svg { width:40px; height:56px; }
@@ -30,7 +31,7 @@
 <div class="key"><svg viewBox="0 0 34 48"><use href="#fig" fill="#151413"/></svg> = one attempt at a poster, from the development logs</div>
 <svg width="0" height="0" style="position:absolute">
   <!-- one figure, Arntz style: a person built from a few flat shapes, no outline, no face -->
-  <defs><g id="fig"><circle cx="17" cy="6.5" r="6.5"/><path d="M6 15.5 Q6 14 7.5 14 H26.5 Q28 14 28 15.5 V30 H23.5 V47 H18.6 V33 H15.4 V47 H10.5 V30 H6 Z"/></g>
+  <defs><g id="fig"><circle cx="17" cy="6.5" r="6.5"/><path d="M6 15.5 Q6 14 7.5 14 H26.5 Q28 14 28 15.5 V30 H6 Z"/></g>
   <!-- the cut figure: the same person with a bar through them, the fixed figure: the same person with a bandage -->
   </defs>
 </svg>
@@ -42,24 +43,33 @@
     { key: 'fixed', label: 'Fixed', note: 'once seen', col: '#1E5BB8', n: D.fixed },
     { key: 'cut', label: 'Cut', note: 'started again', col: '#D23A23', n: D.cut },
   ];
-  const host = document.getElementById('rows'); let top = 360, k = 0;
+  const host = document.getElementById('rows'); let top = 360, k = 0; const people = [];
   const total = rows.reduce((s, r) => s + r.n, 0);
   rows.forEach(r => {
     const el = document.createElement('div'); el.className = 'row'; el.style.top = top + 'px';
     el.innerHTML = `<div class="lab">${r.label} <span>${r.n}, ${r.note}</span></div><div class="figs"></div>`;
     const figs = el.querySelector('.figs');
     for (let i = 0; i < r.n; i++, k++) {
-      const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 34 48');
-      s.innerHTML = `<use href="#fig" fill="${r.col}"/>` + (r.key === 'cut' ? `<path d="M1 44 L33 4" stroke="#F0EBDF" stroke-width="3.5"/>` : r.key === 'fixed' ? `<rect x="5" y="22" width="24" height="4" fill="#F0EBDF"/>` : '');
-      // the count: figures arrive one at a time across the first seven seconds, hold, then clear and count again
-      const at = .4 + k / total * 6.6, name = 'f' + k, p = at * 10;
-      const st = document.createElement('style');
-      st.textContent = `@keyframes ${name} { 0% { opacity:${k < 0 ? 1 : 1}; transform:none; } ${(p - .01).toFixed(2)}% { opacity:0; transform:translateY(-8px); } ${p.toFixed(2)}% { opacity:0; transform:translateY(-8px); } ${(p + 2.5).toFixed(2)}% { opacity:1; transform:none; } 94% { opacity:1; transform:none; } 99.9% { opacity:1; } 100% { opacity:1; transform:none; } }`;
-      document.head.appendChild(st); s.style.animationName = name; figs.appendChild(s);
+      const sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sv.setAttribute('viewBox', '0 0 34 48');
+      sv.innerHTML = `<g class="who"><use href="#fig" fill="${r.col}"/><rect class="l1" x="10.5" y="29" width="5" height="18" fill="${r.col}"/><rect class="l2" x="18.5" y="29" width="5" height="18" fill="${r.col}"/>` +
+        (r.key === 'cut' ? `<path d="M1 44 L33 4" stroke="#F0EBDF" stroke-width="3.5"/>` : r.key === 'fixed' ? `<rect x="5" y="22" width="24" height="4" fill="#F0EBDF"/>` : '') + '</g>';
+      figs.appendChild(sv); people.push({ sv, k, i, row: r.key });
     }
-    host.appendChild(el); top += 136 + Math.ceil(r.n / 15) * 102 + 40;
+    el.querySelector('.lab').innerHTML = `<span><b class="num" data-n="${r.n}">${r.n}</b>${r.label}</span> <span>${r.note}</span>`;
+    host.appendChild(el); top += 170 + Math.ceil(r.n / 15) * 102 + 30;
   });
-  await document.fonts.ready; document.body.dataset.ready = '1';
+  // the count: each figure walks in from off the left edge to its place, legs swinging, one after another; the totals count up
+  const nums = [...document.querySelectorAll('.num')];
+  window.__seek = t => {
+    t = (((t + 8) % 10) + 10) % 10;   // frame 0 is the full count
+    people.forEach(p => { const start = .3 + p.k / total * 6.2, u = Math.min(1, Math.max(0, (t - start) / .9)), out = t > 9.4 ? (t - 9.4) / .6 : 0;
+      const walk = (1 - u) * -(300 + p.i * 40), step = u < 1 ? Math.sin(u * Math.PI * 6) : 0;
+      p.sv.style.transform = `translateX(${walk - out * 60}px)`; p.sv.style.opacity = u > 0 ? 1 - out : 0;
+      p.sv.querySelector('.l1').setAttribute('transform', `rotate(${step * 18} 13 29)`); p.sv.querySelector('.l2').setAttribute('transform', `rotate(${-step * 18} 21 29)`);
+      p.sv.querySelector('.who').setAttribute('transform', `translate(0 ${-Math.abs(step) * 1.5})`); });
+    let acc = 0; nums.forEach(nm => { const n = +nm.dataset.n, have = people.filter(p => p.k >= acc && p.k < acc + n && t > .3 + p.k / total * 6.2 + .9).length; nm.textContent = t > 9.4 ? n : have; acc += n; });
+  };
+  await document.fonts.ready; window.__seek(9); document.body.dataset.ready = '1';
 })();
 </script>
 </body>

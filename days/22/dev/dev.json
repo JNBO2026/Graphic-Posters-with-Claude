@@ -1,4 +1,24 @@
 [
-  { "img": "01-smooth-letters.jpg", "step": "First weave", "verdict": "fixed", "why": "The letter edges cut through the middle of threads. No loom can do that.", "then": 1, "zoom": "01-smooth-lettersz.jpg" },
-  { "img": "02-stepped.jpg", "step": "One decision per crossing", "verdict": "kept", "why": "Each crossing is up or down, so the letters step thread by thread.", "zoom": "02-steppedz.jpg" }
+ {
+  "img": "01-smooth-letters.jpg",
+  "step": "First weave",
+  "verdict": "fixed",
+  "why": "The letter edges cut through the middle of threads. No loom can do that.",
+  "then": 1,
+  "zoom": "01-smooth-lettersz.jpg"
+ },
+ {
+  "img": "02-stepped.jpg",
+  "step": "One decision per crossing",
+  "verdict": "kept",
+  "why": "Each crossing is up or down, so the letters step thread by thread.",
+  "zoom": "02-steppedz.jpg",
+  "then": 2
+ },
+ {
+  "img": "09-elevated.jpg",
+  "step": "Elevated: woven while you watch",
+  "verdict": "kept",
+  "why": "A shuttle carries the weft up the loom; the word appears row by row in warm dyed yarn."
+ }
 ]

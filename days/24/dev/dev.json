@@ -1,7 +1,40 @@
 [
-  { "img": "01-mid-air.jpg", "step": "First drop", "verdict": "cut", "why": "Too much air: the loop ended before the paper landed.", "then": 1 },
-  { "img": "02-seed-4817.jpg", "step": "Seed 4817", "verdict": "cut", "why": "Two tidy columns. Chance looked arranged." },
-  { "img": "03-seed-211.jpg", "step": "Seed 211", "verdict": "cut", "why": "Better, but heavy in the middle." },
-  { "img": "04-seed-9090.jpg", "step": "Seed 9090", "verdict": "cut", "why": "A wall of colour with no air." },
-  { "img": "05-seed-1952.jpg", "step": "Seed 1952", "verdict": "kept", "why": "Air above, one square still tumbling. Choosing the seed was the only choice." }
+ {
+  "img": "01-mid-air.jpg",
+  "step": "First drop",
+  "verdict": "cut",
+  "why": "Too much air: the loop ended before the paper landed.",
+  "then": 1
+ },
+ {
+  "img": "02-seed-4817.jpg",
+  "step": "Seed 4817",
+  "verdict": "cut",
+  "why": "Two tidy columns. Chance looked arranged."
+ },
+ {
+  "img": "03-seed-211.jpg",
+  "step": "Seed 211",
+  "verdict": "cut",
+  "why": "Better, but heavy in the middle."
+ },
+ {
+  "img": "04-seed-9090.jpg",
+  "step": "Seed 9090",
+  "verdict": "cut",
+  "why": "A wall of colour with no air."
+ },
+ {
+  "img": "05-seed-1952.jpg",
+  "step": "Seed 1952",
+  "verdict": "kept",
+  "why": "Air above, one square still tumbling. Choosing the seed was the only choice.",
+  "then": 5
+ },
+ {
+  "img": "09-elevated.jpg",
+  "step": "Elevated: the seed rolls in",
+  "verdict": "kept",
+  "why": "The number spins like a counter and settles digit by digit as the paper lands; each sheet has an edge and grain."
+ }
 ]

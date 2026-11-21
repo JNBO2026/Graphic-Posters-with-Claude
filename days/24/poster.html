@@ -64,7 +64,16 @@ const READY = (async () => {
     // the title: the seed, printed big; the composition is entirely this number
     x.fillStyle = '#151413'; x.font = '700 40px "Space Mono"'; x.textBaseline = 'alphabetic';
     x.fillText('SEED', M, H - M - 214);
-    x.font = '238px "Instrument Serif"'; x.letterSpacing = '-4px'; x.fillText(String(SEED), M - 8, H - M - 10); x.letterSpacing = '0px';
+    // the seed rolls like a counter while the paper falls, each digit settling in turn as the pieces land
+    x.font = '238px "Instrument Serif"'; x.letterSpacing = '-4px';
+    const digits = String(SEED).split(''), settle = f / N, roll = t >= 2.6 && t < 9.8;
+    let dx = M - 8; digits.forEach((ch, i) => { const fixAt = .35 + i * .17, spin = roll && settle < fixAt;
+      const shown = spin ? String(Math.floor((t * 23 + i * 7) % 10)) : ch, w = x.measureText(ch).width;
+      x.save(); x.beginPath(); x.rect(dx - 4, H - M - 178, w + 6, 182); x.clip();
+      const off = spin ? ((t * 23 + i * 7) % 1) * 200 : 0;
+      x.fillText(shown, dx, H - M - 10 + off); if (spin) x.fillText(String((+shown + 9) % 10), dx, H - M - 10 + off - 200);
+      x.restore(); dx += w - 4; });
+    x.letterSpacing = '0px';
     x.font = '700 40px "Space Mono"'; x.textAlign = 'right'; x.fillText('ACCORDING TO', W - M, H - M - 214); x.fillText('THE LAWS OF', W - M, H - M - 162); x.fillText('CHANCE', W - M, H - M - 110); x.textAlign = 'left';
     pieces.forEach((b, i) => {
       const p = rec[f][i];
@@ -72,7 +81,13 @@ const READY = (async () => {
       x.save(); x.translate(p[0] + 7, py + 11); x.rotate(p[2]); x.fillStyle = 'rgba(30,20,10,.16)'; x.filter = 'blur(6px)'; tornPath(b); x.fill(); x.filter = 'none'; x.restore();
       x.save(); x.translate(p[0], py); x.rotate(p[2]);
       x.fillStyle = '#F7F3EA'; x.save(); x.scale(1.012, 1.012); tornPath(b); x.fill(); x.restore();
+      // paper has thickness: a darker edge just below and right of each piece
+      x.save(); x.translate(2.5, 3.5); x.fillStyle = 'rgba(40,30,20,.35)'; tornPath(b); x.fill(); x.restore();
       x.fillStyle = b.col; tornPath(b); x.fill();
+      // and grain: a few long fibres in the colour, slightly lighter
+      x.save(); tornPath(b); x.clip(); x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1;
+      for (let g = 0; g < 26; g++) { const gy = -b.hgt / 2 + (g / 26) * b.hgt + b.tear[0][g % 26] * 2; x.beginPath(); x.moveTo(-b.wid / 2, gy); x.lineTo(b.wid / 2, gy + b.tear[1][g % 26] * 3); x.stroke(); }
+      x.restore();
       x.restore();
     });
   }

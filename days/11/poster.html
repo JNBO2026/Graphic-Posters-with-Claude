@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@96,800&display=block" rel="stylesheet">
 <style>
-  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#F3F1EC; }
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#F2EADB; }
   canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
 </style>
 </head>
@@ -61,22 +61,36 @@ precision highp float;
 uniform sampler2D A, B; uniform float k, hz, dpr, H, R, SCALE, wob, t;
 const float TAU = 6.2831853;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float dist(sampler2D T, vec2 p) { return -(texture2D(T, p / vec2(1240., 1754.)).r - .5) * 2. * R * SCALE; }   // negative inside a letter
+float shape(vec2 p) { float d = mix(dist(A, p), dist(B, p), k) - sin(k * 3.14159) * 22.; return d; }
 void main() {
   vec2 p = vec2(gl_FragCoord.x, H * dpr - gl_FragCoord.y) / dpr;   // poster pixels, top left
   vec2 uv = p / vec2(1240., 1754.);
-  // distance to each word, in poster pixels; blending the fields melts one word into the other
-  float da = (texture2D(A, uv).r - .5) * 2. * R * SCALE, db = (texture2D(B, uv).r - .5) * 2. * R * SCALE;
-  float d = mix(da, db, k);
-  // mid melt, the shapes swell a little so they bridge rather than vanish
-  d -= sin(k * 3.14159) * 22.;
+  float da = dist(A, p), db = dist(B, p);
+  float d = mix(da, db, k) - sin(k * 3.14159) * 22.;
   float aa = .7 / dpr;
   float figure = smoothstep(aa, -aa, d);
+  // depth: a long cast shadow, as if the letters stood off the page, from a light that circles once a loop
+  vec2 L = vec2(cos(t * TAU + .6), sin(t * TAU + .6)) * 2.6;
+  float sh = 0.;
+  for (int i = 1; i <= 26; i++) { float dd = shape(p - L * float(i)); sh = max(sh, smoothstep(.8, -.8, dd) * (1. - float(i) / 30.)); }
+  sh *= 1. - figure;
   // the horizon: a slow wave, and everything below it is the other way round
   float y = hz + sin(uv.x * 4.2 + t * TAU) * wob;
   float below = smoothstep(y - aa, y + aa, p.y);
   float ink = abs(figure - below);
-  vec3 paper = vec3(.953, .945, .925), black = vec3(.055);
-  vec3 col = mix(paper, black, ink);
+  vec3 paper = vec3(.949, .918, .859), navy = vec3(.078, .094, .227), verm = vec3(.91, .26, .18);
+  vec3 col = mix(paper, navy, ink);
+  // the shadow: navy over paper above the line, paper over navy below
+  vec3 shc = mix(mix(paper, navy, .22), mix(navy, paper, .16), below);
+  col = mix(col, shc, sh * .9 * (1. - abs(figure - below) * 0.) * (1. - figure));
+  // where IN and OUT overlap, a third shape: neither word, both words
+  float both = smoothstep(aa, -aa, da) * smoothstep(aa, -aa, db);
+  // the word it is about to become, as a vermilion hairline
+  float other = k < .5 ? db : da;
+  col = mix(col, verm, smoothstep(2.6, 1., abs(other)) * .95);
+  // the horizon itself, a vermilion rule
+  col = mix(col, verm, smoothstep(2.2, .6, abs(p.y - y)) * .95);
   col += (hash(p * dpr + t) - .5) * .02;
   gl_FragColor = vec4(col, 1.);
 }`));

@@ -48,14 +48,22 @@ const READY = (async () => {
     const go = v => v * (1 - out);
     x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = PAPER; x.fillRect(0, 0, W, H);
     // photos, tilted onto the axis, clipped by straight cuts
-    const piece = (img, cx, cy, ang, slide, w, h) => { x.save(); x.translate(cx + slide * Math.cos(A), cy + slide * Math.sin(A)); x.rotate(ang); x.drawImage(img, -w / 2, -h / 2, w, h); x.restore(); };
+    // depth: every piece sits at its own height above the paper; it casts that much shadow and drifts that much in parallax
+    const sway = Math.sin(t / LOOP * Math.PI * 2), par = e => [sway * e * .9, Math.cos(t / LOOP * Math.PI * 2) * e * .5];
+    const shadow = (e, fn) => { x.save(); x.translate(e * .55, e * .9); x.filter = `blur(${4 + e * .12}px)`; x.globalAlpha *= .28; fn(true); x.restore(); };
+    const piece = (img, cx, cy, ang, slide, w, h, e) => { const [px, py] = par(e); const draw1 = sh => { x.save(); x.translate(cx + px + slide * Math.cos(A), cy + py + slide * Math.sin(A)); x.rotate(ang);
+      if (sh) { x.fillStyle = '#1a1410'; x.fillRect(-w / 2, -h / 2, w, h); } else x.drawImage(img, -w / 2, -h / 2, w, h); x.restore(); }; shadow(e, draw1); draw1(false); };
+    // a black disc behind it all, its rings turning: the counterweight to the diagonal
+    { const [px, py] = par(6); x.save(); x.translate(W * .74 + px, H * .43 + py); x.globalAlpha = go(kP); x.fillStyle = INK; x.beginPath(); x.arc(0, 0, 250, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = PAPER; x.lineWidth = 6; for (let r = 60; r < 250; r += 46) { x.beginPath(); x.arc(0, 0, r, t * .4 + r, t * .4 + r + Math.PI * 1.2); x.stroke(); } x.restore(); }
     x.globalAlpha = go(kP);
-    piece(SKY, 300, 520, A, (1 - kP) * -420, 640, 900);
-    piece(MTN, 760, 1180, A, (1 - kP) * 520, 760, 520);
-    piece(SEA, 420, 1500, A + Math.PI / 2 - Math.PI / 2, (1 - kP) * -500, 900, 340);
+    piece(SKY, 300, 520, A, (1 - kP) * -420, 640, 900, 14);
+    piece(MTN, 760, 1180, A, (1 - kP) * 520, 760, 520, 26);
+    piece(SEA, 420, 1500, A, (1 - kP) * -500, 900, 340, 20);
     x.globalAlpha = 1;
     // the red wedge, corner to corner: a long thin triangle that drives up from bottom left
-    x.save(); x.fillStyle = RED; x.beginPath();
+    { const e = 40, [px, py] = par(e); x.save(); x.translate(px, py); x.fillStyle = 'rgba(40,8,4,.32)'; x.filter = 'blur(10px)'; x.beginPath(); const tx = M + (W - 2 * M) * go(kW), ty = H - M - (H - 2 * M) * go(kW) * .96; x.moveTo(M + 20, H - M + 30); x.lineTo(M + 250, H - M + 30); x.lineTo(tx + 20, ty + 30); x.closePath(); x.fill(); x.restore(); }
+    const [wpx, wpy] = par(40); x.save(); x.translate(wpx, wpy); x.fillStyle = RED; x.beginPath();
     const tipX = M + (W - 2 * M) * go(kW), tipY = H - M - (H - 2 * M) * go(kW) * .96;
     x.moveTo(M, H - M); x.lineTo(M + 230, H - M); x.lineTo(tipX, tipY); x.closePath(); x.fill(); x.restore();
     // black bars square to the axis
@@ -63,8 +71,8 @@ const READY = (async () => {
     x.fillRect(-60 - 400 * (1 - go(kP)), -14, 520, 28); x.fillRect(-60, 40, 300 * go(kP), 28); x.restore();
     // the type, riding the wedge uphill
     const WA = -Math.atan2((H - 2 * M) * .96, W - 2 * M - 230 * .5);   // the wedge's own angle
-    x.save(); x.translate(M + 250, H - M - 40); x.rotate(WA);
-    x.fillStyle = INK; x.font = '700 230px Oswald'; x.letterSpacing = '6px';
+    x.save(); x.translate(M + 250 + wpx * 1.3, H - M - 40 + wpy * 1.3); x.rotate(WA);
+    x.fillStyle = INK; x.font = '700 236px Oswald'; x.letterSpacing = '-2px';
     const ride = (1 - go(kT)) * -900;
     x.fillText('UPWARD', 40 + ride, 0); x.restore();
     x.save(); x.translate(W - M - 20, M + 40); x.rotate(A); x.fillStyle = RED; x.font = '700 64px Oswald'; x.letterSpacing = '2px';

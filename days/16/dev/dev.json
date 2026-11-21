@@ -1,4 +1,22 @@
 [
-  { "img": "01-palm-and-sky.jpg", "step": "First montage", "verdict": "cut", "why": "A palm tree said holiday, not upward. The type leaned the wrong way.", "then": 1 },
-  { "img": "02-mountains.jpg", "step": "Two mountains, type on the wedge", "verdict": "kept", "why": "Everything on one axis now, and the word climbs the red." }
+ {
+  "img": "01-palm-and-sky.jpg",
+  "step": "First montage",
+  "verdict": "cut",
+  "why": "A palm tree said holiday, not upward. The type leaned the wrong way.",
+  "then": 1
+ },
+ {
+  "img": "02-mountains.jpg",
+  "step": "Two mountains, type on the wedge",
+  "verdict": "kept",
+  "why": "Everything on one axis now, and the word climbs the red.",
+  "then": 2
+ },
+ {
+  "img": "09-elevated.jpg",
+  "step": "Elevated: layers and parallax",
+  "verdict": "kept",
+  "why": "Every piece at its own height, casting its own shadow; a turning disc to balance the wedge."
+ }
 ]

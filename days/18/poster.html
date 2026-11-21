@@ -27,7 +27,7 @@ const READY = (async () => {
   // washi: warm paper, long pale fibres, a little cloud
   const paper = document.createElement('canvas'); paper.width = W * dpr; paper.height = H * dpr; const p = paper.getContext('2d');
   p.scale(dpr, dpr); p.fillStyle = '#F1ECE0'; p.fillRect(0, 0, W, H);
-  for (let i = 0; i < 260; i++) { p.fillStyle = `rgba(150,130,100,${.006 + rnd() * .01})`; p.beginPath(); p.arc(rnd() * W, rnd() * H, 30 + rnd() * 160, 0, Math.PI * 2); p.fill(); }
+  for (let i = 0; i < 120; i++) { p.fillStyle = `rgba(150,130,100,${.003 + rnd() * .005})`; p.beginPath(); p.arc(rnd() * W, rnd() * H, 30 + rnd() * 160, 0, Math.PI * 2); p.fill(); }
   p.lineCap = 'round';
   for (let i = 0; i < 1100; i++) { const x0 = rnd() * W, y0 = rnd() * H, a = rnd() * Math.PI, l = 8 + rnd() * 40;
     p.strokeStyle = rnd() < .5 ? `rgba(255,253,248,${.25 + rnd() * .3})` : `rgba(150,130,100,${.03 + rnd() * .05})`; p.lineWidth = .5 + rnd() * .8;
@@ -76,7 +76,19 @@ const READY = (async () => {
     x.setTransform(1, 0, 0, 1, 0, 0); x.drawImage(paper, 0, 0);
     x.setTransform(dpr, 0, 0, dpr, 0, 0); x.imageSmoothingQuality = 'high';
     x.globalCompositeOperation = 'multiply'; x.drawImage(ink, CX - RAD / 2, CY - RAD / 2, RAD, RAD); x.globalCompositeOperation = 'source-over';
-    x.drawImage(seal, W - 72 - 150, H - 72 - 150 - 40, 150, 150);
+    // wet ink catches the light: a soft sheen just behind the brush, drying as it goes
+    if (t >= 2.4) { const k = (t - 2.4) / 7.6, ang = A0 + SWEEP * (.5 - .5 * Math.cos(Math.PI * Math.min(1, k / .73)));
+      const R2 = RAD * .34, hx = CX + R2 * Math.cos(ang), hy = CY + R2 * Math.sin(ang);
+      x.save(); x.globalCompositeOperation = 'screen'; x.globalAlpha = .35 * (1 - Math.max(0, k - .73) / .27);
+      const g = x.createRadialGradient(hx - 8, hy - 10, 0, hx, hy, 90); g.addColorStop(0, 'rgba(210,220,255,.9)'); g.addColorStop(1, 'rgba(210,220,255,0)');
+      x.fillStyle = g; x.beginPath(); x.arc(hx, hy, 90, 0, Math.PI * 2); x.fill(); x.restore(); }
+    // the seal comes down once the stroke is finished: a quick press, the red spreading slightly as it lands
+    const stamp = t < 1.4 ? 1 : t < 2.4 ? 1 - (t - 1.4) : Math.max(0, Math.min(1, (t - 9.3) / .35));
+    if (stamp > 0) { const sz = 150 * (1 + (1 - stamp) * .25); x.save(); x.globalAlpha = stamp; x.globalCompositeOperation = 'multiply';
+      x.translate(W - 72 - 75, H - 72 - 75 - 40); x.rotate(-.03); x.drawImage(seal, -sz / 2, -sz / 2, sz, sz); x.restore(); }
+    // the title, in the margin's quiet: one word, as the seal's echo, set vertically in the way of a hanging scroll
+    x.save(); x.fillStyle = 'rgba(40,36,34,.82)'; x.font = '800 92px "Shippori Mincho B1"'; x.textAlign = 'center';
+    x.fillText('間', 72 + 50, 72 + 96); x.restore();
   }
   await draw(0); document.body.dataset.ready = '1'; return draw;
 })();

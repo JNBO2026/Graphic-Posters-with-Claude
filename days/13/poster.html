@@ -61,6 +61,9 @@ const READY = (async () => {
   Matter.Body.setVelocity(ball, { x: -15, y: -6 });
   // each letter leaves the grid its own way: a push and a spin
   [[3, -9, .05], [-2, -12, -.06], [4, -7, .07], [-5, -10, -.05]].forEach(([vx, vy, w], i) => { Matter.Body.setVelocity(bodies[i], { x: vx, y: vy }); Matter.Body.setAngularVelocity(bodies[i], w); });
+  const hits = [];   // every hard landing: where and when, for a ripple
+  Matter.Events.on(E, 'collisionStart', ev => ev.pairs.forEach(pr => { const v = Math.hypot(pr.bodyA.velocity.x - pr.bodyB.velocity.x, pr.bodyA.velocity.y - pr.bodyB.velocity.y);
+    if (v > 4 && pr.collision.supports[0]) hits.push({ x: pr.collision.supports[0].x, y: pr.collision.supports[0].y, f: rec.length, v }); }));
   for (let i = 1; i <= STEPS; i++) { Matter.Engine.update(E, 1000 / 60); if (i % 2 === 0) snap(); }
   const N = rec.length - 1;                            // 120 recorded frames of falling
 
@@ -75,22 +78,35 @@ const READY = (async () => {
   function draw(sec) {
     const t = ((sec % LOOP) + LOOP) % LOOP, f = frameAt(t), i0 = Math.floor(f), i1 = Math.min(N, i0 + 1), k = f - i0;
     x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = PAPER; x.fillRect(0, 0, W, H);
-    // the grid, faint: a promise more than a picture
-    x.strokeStyle = 'rgba(17,17,17,.16)'; x.lineWidth = 1.2;
-    for (let c = 0; c < COLS; c++) { x.strokeRect(colX(c) + .5, M + .5, CW, H - 2 * M); }
-    for (let r = 1; r < ROWS; r++) { x.beginPath(); x.moveTo(M, rowY(r) - GUT / 2); x.lineTo(W - M, rowY(r) - GUT / 2); x.stroke(); }
+    const all = [...bodies, ball], pos = all.map((b, j) => { const a = rec[i0][j], c = rec[i1][j]; return [a[0] + (c[0] - a[0]) * k, a[1] + (c[1] - a[1]) * k, a[2] + (c[2] - a[2]) * k]; });
+    // the grid, faint, and springy: its lines lean away from anything passing close
+    const bend = (gx, gy) => { let dx = 0, dy = 0; pos.forEach(([px, py], j) => { const ex = gx - px, ey = gy - py, r2 = ex * ex + ey * ey, R = j === 4 ? 200 : 300, f = Math.exp(-r2 / (R * R)) * 26;
+      const l = Math.sqrt(r2) + 1; dx += ex / l * f; dy += ey / l * f; }); return [gx + dx, gy + dy]; };
+    x.strokeStyle = 'rgba(17,17,17,.2)'; x.lineWidth = 1.3;
+    const line = (x0, y0, x1, y1) => { x.beginPath(); for (let u = 0; u <= 60; u++) { const [qx, qy] = bend(x0 + (x1 - x0) * u / 60, y0 + (y1 - y0) * u / 60); u ? x.lineTo(qx, qy) : x.moveTo(qx, qy); } x.stroke(); };
+    for (let c = 0; c < COLS; c++) { line(colX(c), M, colX(c), H - M); line(colX(c) + CW, M, colX(c) + CW, H - M); }
+    for (let r = 1; r < ROWS; r++) line(M, rowY(r) - GUT / 2, W - M, rowY(r) - GUT / 2);
+    // a ripple where something landed hard, in red, spreading and fading
+    hits.forEach(h => { const age = (f - h.f) / 9; if (age < 0 || age > 1) return; x.strokeStyle = `rgba(227,36,27,${(1 - age) * .9})`; x.lineWidth = 4 * (1 - age) + 1;
+      x.beginPath(); x.ellipse(h.x, h.y, 30 + age * 220, (30 + age * 220) * .3, 0, 0, Math.PI * 2); x.stroke(); });
     x.fillStyle = INK; x.fillRect(BX - BW / 2, BT, BW, H - M - BT); x.fillRect(M, H - M - 2, W - 2 * M, 14);
     // the words that stay put, on the grid, top left
     x.fillStyle = INK; x.font = '500 54px "Inter Tight"'; x.letterSpacing = '-1px'; x.textBaseline = 'alphabetic';
     ['The grid is a promise.', 'Gravity is a fact.'].forEach((s, j) => x.fillText(s, colX(0), rowY(0) + 54 + j * 64));
     x.fillText('13 / 30', colX(4), rowY(0) + 54);
-    const all = [...bodies, ball];
+    // the letters as blocks: a stack of slices behind each one, cut at the same angle, so they have depth
+    const DEP = 30, DX = 1.1, DY = .9;
     all.forEach((b, j) => {
-      const a = rec[i0][j], c = rec[i1][j], px = a[0] + (c[0] - a[0]) * k, py = a[1] + (c[1] - a[1]) * k, an = a[2] + (c[2] - a[2]) * k;
-      x.save(); x.translate(px, py); x.rotate(an);
-      if (b === ball) { x.fillStyle = RED; x.beginPath(); x.arc(0, 0, 118, 0, Math.PI * 2); x.fill(); }
-      else { const g = b.g; x.fillStyle = INK; x.font = `800 ${SIZE}px "Inter Tight"`; x.letterSpacing = '0px'; x.fillText(g.ch, -b.w / 2 + g.l, -b.h / 2 + g.a); }
-      x.restore();
+      const [px, py, an] = pos[j];
+      for (let z = DEP; z >= 0; z -= 1.5) {
+        x.save(); x.translate(px + z * DX, py + z * DY); x.rotate(an);
+        const shade = z === 0 ? null : (b === ball ? `rgb(${150 - z * 2},${20},${16})` : `rgb(${70 + z * 1.6},${68 + z * 1.6},${64 + z * 1.5})`);
+        x.fillStyle = shade || (b === ball ? RED : INK);
+        if (b === ball) { x.beginPath(); x.arc(0, 0, 118, 0, Math.PI * 2); x.fill(); }
+        else { const g = b.g; x.font = `800 ${SIZE}px "Inter Tight"`; x.letterSpacing = '0px'; x.fillText(g.ch, -b.w / 2 + g.l, -b.h / 2 + g.a); }
+        x.restore();
+      }
+      if (b === ball) { x.save(); x.translate(px - 34, py - 38); x.fillStyle = 'rgba(255,230,220,.35)'; x.beginPath(); x.ellipse(0, 0, 34, 22, -.6, 0, Math.PI * 2); x.fill(); x.restore(); }
     });
   }
   draw(0); document.body.dataset.ready = '1'; return draw;

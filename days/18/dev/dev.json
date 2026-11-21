@@ -1,5 +1,30 @@
 [
-  { "img": "01-muddy-paper.jpg", "step": "First pass", "verdict": "cut", "why": "The ink was right, the paper looked dirty. Washi is quiet." },
-  { "img": "02-ruled-streaks.jpg", "step": "Dry brush, first go", "verdict": "fixed", "why": "The dry streaks came out like ruled lines, then jagged when scaled.", "then": 2, "zoom": "02-ruled-streaksz.jpg" },
-  { "img": "03-flying-white.jpg", "step": "Flying white", "verdict": "kept", "why": "Uneven bristles that skip where the paper catches them.", "zoom": "03-flying-whitez.jpg" }
+ {
+  "img": "01-muddy-paper.jpg",
+  "step": "First pass",
+  "verdict": "cut",
+  "why": "The ink was right, the paper looked dirty. Washi is quiet."
+ },
+ {
+  "img": "02-ruled-streaks.jpg",
+  "step": "Dry brush, first go",
+  "verdict": "fixed",
+  "why": "The dry streaks came out like ruled lines, then jagged when scaled.",
+  "then": 2,
+  "zoom": "02-ruled-streaksz.jpg"
+ },
+ {
+  "img": "03-flying-white.jpg",
+  "step": "Flying white",
+  "verdict": "kept",
+  "why": "Uneven bristles that skip where the paper catches them.",
+  "zoom": "03-flying-whitez.jpg",
+  "then": 3
+ },
+ {
+  "img": "09-elevated.jpg",
+  "step": "Elevated: wet ink, the seal pressed",
+  "verdict": "kept",
+  "why": "The brush leaves a wet sheen that dries behind it; the seal comes down only when the circle is done."
+ }
 ]

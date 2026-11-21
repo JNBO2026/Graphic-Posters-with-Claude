@@ -1,5 +1,28 @@
 [
-  { "img": "01-hidden-edge.jpg", "step": "The word as a phase shift", "verdict": "cut", "why": "Clever close up, but at phone size the word vanished into a whirlpool.", "then": 1 },
-  { "img": "02-two-rhythms.jpg", "step": "Two rhythms", "verdict": "fixed", "why": "Bands across outside, upright inside. Still never drawn, now it reads." },
-  { "img": "03-final.jpg", "step": "Heavier inside", "verdict": "kept", "why": "A touch more ink in the letters so HUM holds in a grid tile." }
+ {
+  "img": "01-hidden-edge.jpg",
+  "step": "The word as a phase shift",
+  "verdict": "cut",
+  "why": "Clever close up, but at phone size the word vanished into a whirlpool.",
+  "then": 1
+ },
+ {
+  "img": "02-two-rhythms.jpg",
+  "step": "Two rhythms",
+  "verdict": "fixed",
+  "why": "Bands across outside, upright inside. Still never drawn, now it reads."
+ },
+ {
+  "img": "03-final.jpg",
+  "step": "Heavier inside",
+  "verdict": "kept",
+  "why": "A touch more ink in the letters so HUM holds in a grid tile.",
+  "then": 3
+ },
+ {
+  "img": "09-elevated.jpg",
+  "step": "Elevated: colour vibration",
+  "verdict": "kept",
+  "why": "Red and teal of equal lightness shimmer; the word in navy and cream; a swell of light drifts across."
+ }
 ]

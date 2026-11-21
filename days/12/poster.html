@@ -16,18 +16,22 @@
     --cool: oklch(33% .17 296);     /* a violet that pushes it light and warm */
     --warm: oklch(86% .16 96);      /* a yellow that pushes it dark and cool */
   }
-  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:var(--cool); }
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:var(--cool); perspective:1800px; }
   .f { position:absolute; left:0; width:1240px; height:877px; }
   .top { top:0; background:var(--cool); } .bot { top:877px; background:var(--warm); }
-  .sq { position:absolute; left:400px; width:440px; height:440px; background:var(--grey); }
+  .sq { position:absolute; left:400px; width:440px; height:440px; background:var(--grey); transform-style:preserve-3d; backface-visibility:visible; }
+  .s1 { animation:swapA 10s cubic-bezier(.65,0,.35,1) infinite; } .s2 { animation:swapB 10s cubic-bezier(.65,0,.35,1) infinite; }
+  /* after the bridge has gone, the two squares lift and pass each other, turning over as they cross the seam */
+  @keyframes swapA { 0%, 56% { transform:none; } 70% { transform:translate3d(-190px, 367px, 160px) rotateX(-90deg); } 84%, 100% { transform:translate3d(0, 734px, 0) rotateX(-180deg); } }
+  @keyframes swapB { 0%, 56% { transform:none; } 70% { transform:translate3d(190px, -367px, 160px) rotateX(90deg); } 84%, 100% { transform:translate3d(0, -734px, 0) rotateX(180deg); } }
   .s1 { top:290px; } .s2 { top:1024px; }
   /* the bridge: same grey, grows from both squares to meet at the seam, holds, then withdraws */
   .br { position:absolute; left:560px; width:120px; background:var(--grey); transform-origin:50% 0; }
   .b1 { top:728px; height:150px; transform-origin:50% 0; animation:down 10s cubic-bezier(.2,.7,.2,1) infinite; }
   .b2 { top:876px; height:150px; transform-origin:50% 100%; animation:down 10s cubic-bezier(.2,.7,.2,1) infinite; }
-  @keyframes down { 0%, 18% { transform:scaleY(0); } 38%, 62% { transform:scaleY(1); } 82%, 100% { transform:scaleY(0); } }
-  .w { position:absolute; left:400px; width:440px; font:700 76px/1 'Inter Tight'; letter-spacing:-.025em; color:var(--grey); }
-  .w1 { top:76px; } .w2 { top:1612px; text-align:right; }
+  @keyframes down { 0%, 12% { transform:scaleY(0); } 26%, 40% { transform:scaleY(1); } 52%, 100% { transform:scaleY(0); } }
+  .w { position:absolute; left:72px; right:72px; font:700 150px/.86 'Inter Tight'; letter-spacing:-.035em; word-spacing:.06em; color:var(--grey); }
+  .w1 { top:64px; } .w2 { bottom:64px; text-align:right; }
   /* silkscreen: flat ink, a little tooth */
   .grain { position:absolute; inset:0; opacity:.16; mix-blend-mode:multiply; pointer-events:none; }
 </style>
