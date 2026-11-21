@@ -1,0 +1,5 @@
+[
+  { "img": "01-flat.jpg", "step": "First glazes", "verdict": "cut", "why": "Flat colour, edges like a blur filter. Screen, not paint.", "then": 1 },
+  { "img": "02-brushed.jpg", "step": "Wipes and scumbled edges", "verdict": "fixed", "why": "The orange came alive. The violet was still dead flat." },
+  { "img": "03-final.jpg", "step": "The violet opened up", "verdict": "kept", "why": "Thin and thick passages in both fields, a warm seam between." }
+]

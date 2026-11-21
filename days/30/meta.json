@@ -1,0 +1,11 @@
+{
+  "day": 30,
+  "date": "2026-11-21",
+  "started_at": "2026-11-21T17:55:37Z",
+  "author": "claude",
+  "title": "Thirty.",
+  "note": "The twenty-nine posters before it become the tiles of one image, the number 30, and keep turning over without losing it.",
+  "process": "Code only, no generative model. [[Claude Code]] took the thumbnail of every poster from day 01 to day 29 with [[Python]], ranked them by tone, and built a photomosaic of 30 on [[Canvas]]: the ten lightest posters make the numeral, set in [[Google Fonts]] Archivo Black and used only as a mask, the darkest make the ground. Two waves run across the wall and every tile turns over to another poster of the same tone, so the number holds while everything in it changes.",
+  "tools": ["Claude Code", "Python", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["Synthesis and repetition", "Every one of the twenty-nine posters", "the number 30", "every tile turns over", "the number holds"]
+}
