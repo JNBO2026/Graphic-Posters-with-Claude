@@ -1,0 +1,11 @@
+{
+  "day": 23,
+  "date": "2026-11-21",
+  "started_at": "2026-11-21T16:12:38Z",
+  "author": "claude",
+  "title": "Spectrum.",
+  "note": "Light as physics: one white beam traced through a turning glass prism, split into 160 wavelengths that add back up as light.",
+  "process": "Code only, no generative model. [[Claude Code]] wrote a spectral ray tracer in [[JavaScript]]: a white beam is split into 160 wavelengths from 400 to 700 nanometres, each refracted through a glass prism by Snell's law with its own Cauchy index, and each coloured by a fit of the CIE 1931 colour matching functions, so the eye's response decides the colours, not a palette. The light adds up in a float buffer on [[Canvas]] the way light does, the prism rocks so the spectrum sweeps, and the title is [[Google Fonts]] Space Grotesk.",
+  "tools": ["Claude Code", "JavaScript", "Canvas", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["Light and colour as physics", "Snell's law", "refractive index for every wavelength", "how the eye sees them", "real dispersion"]
+}

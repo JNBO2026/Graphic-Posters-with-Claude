@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. Matter.js 0.20 (vendor/, MIT): nine torn paper squares, their edges made in code, dropped from above with
+     only a seeded random number deciding how. No gravity sideways, air drag high, so they float and slide like paper.
+     The fall is simulated once; the loop plays it. Type: Instrument Serif and Space Mono, Google Fonts. -->
+<meta charset="utf-8">
+<title>Day 24: Chance.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Space+Mono:wght@400;700&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#EEE9DE; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+<script src="vendor/matter.min.js"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1;
+  const SEED = +(new URLSearchParams(location.search).get('seed') || 1952);
+  await Promise.all(['100px "Instrument Serif"', '700 40px "Space Mono"'].map(f => document.fonts.load(f)));
+  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
+  let s = SEED; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const COLS = ['#D6311E', '#1D3FA8', '#F1B71C', '#151413', '#D6311E', '#151413', '#1D3FA8', '#F1B71C', '#E9E2D2'];
+  const E = Matter.Engine.create({ gravity: { x: 0, y: .9 } }), B = Matter.Bodies, C = Matter.Composite;
+  // the table: the page inside its margin, a floor at the bottom; the squares are only allowed to land inside it
+  const floor = B.rectangle(W / 2, H - M - 300 + 200, W * 2, 400, { isStatic: true, friction: .9 });
+  const wl = B.rectangle(M - 200, H / 2, 400, H * 3, { isStatic: true }), wr = B.rectangle(W - M + 200, H / 2, 400, H * 3, { isStatic: true });
+  const pieces = COLS.map((col, i) => {
+    const size = 230 + rnd() * 230;
+    const b = B.rectangle(M + 150 + rnd() * (W - 2 * M - 300), -150 - i * 150 - rnd() * 80, size, size * (.85 + rnd() * .3), { frictionAir: .02 + rnd() * .015, friction: .5, restitution: .05, density: .0006, angle: (rnd() - .5) * 1.2 });
+    // each square torn on its own edges: a ragged outline, fixed by the seed
+    const w = b.bounds.max.x - b.bounds.min.x, h = b.bounds.max.y - b.bounds.min.y;
+    const torn = []; const tw = size, th = size * (b.vertices[2].y - b.vertices[1].y) / size || size;
+    b.col = col; b.size = size; b.hgt = Math.hypot(b.vertices[2].x - b.vertices[1].x, b.vertices[2].y - b.vertices[1].y); b.wid = Math.hypot(b.vertices[1].x - b.vertices[0].x, b.vertices[1].y - b.vertices[0].y);
+    b.tear = Array.from({ length: 4 }, () => Array.from({ length: 26 }, () => (rnd() - .5) * 9));
+    b.whiteEdge = Array.from({ length: 4 }, () => rnd() < .6);
+    Matter.Body.setAngularVelocity(b, (rnd() - .5) * .05);
+    return b;
+  });
+  C.add(E.world, [floor, wl, wr, ...pieces]);
+  const rec = [], STEPS = 900; const snap = () => rec.push(pieces.map(b => [b.position.x, b.position.y, b.angle]));
+  for (let i = 0; i <= STEPS; i++) { if (i % 3 === 0) snap(); Matter.Engine.update(E, 1000 / 60);
+    // air: paper flutters, a little sideways push that changes as it falls
+    pieces.forEach((b, k) => { if (b.velocity.y > .5) Matter.Body.applyForce(b, b.position, { x: Math.sin(i * .05 + k) * .00012 * b.mass * 60, y: 0 }); }); }
+  const N = rec.length - 1;
+  // shadows and the white core of a torn edge, as paper has
+  const tornPath = (b) => { const hw = b.wid / 2, hh = b.hgt / 2, corners = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]];
+    x.beginPath(); for (let e = 0; e < 4; e++) { const a = corners[e], c = corners[(e + 1) % 4];
+      for (let k = 0; k < 26; k++) { const u = k / 26, px = a[0] + (c[0] - a[0]) * u, py = a[1] + (c[1] - a[1]) * u, nx = -(c[1] - a[1]), ny = c[0] - a[0], L = Math.hypot(nx, ny), d = b.tear[e][k];
+        if (e === 0 && k === 0) x.moveTo(px + nx / L * d, py + ny / L * d); else x.lineTo(px + nx / L * d, py + ny / L * d); } }
+    x.closePath(); };
+  function draw(sec) {
+    const t = ((sec % LOOP) + LOOP) % LOOP;
+    // hold the landed collage, lift it all away, drop it again
+    let f; if (t < 2) f = N; else if (t < 2.6) f = N; else f = Math.min(N, Math.round((t - 2.6) / 7.2 * N));
+    const lift = t >= 2 && t < 2.6 ? (t - 2) / .6 : 0;
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = '#EEE9DE'; x.fillRect(0, 0, W, H);
+    // the title: the seed, printed big; the composition is entirely this number
+    x.fillStyle = '#151413'; x.font = '700 40px "Space Mono"'; x.textBaseline = 'alphabetic';
+    x.fillText('SEED', M, H - M - 214);
+    x.font = '238px "Instrument Serif"'; x.letterSpacing = '-4px'; x.fillText(String(SEED), M - 8, H - M - 10); x.letterSpacing = '0px';
+    x.font = '700 40px "Space Mono"'; x.textAlign = 'right'; x.fillText('ACCORDING TO', W - M, H - M - 214); x.fillText('THE LAWS OF', W - M, H - M - 162); x.fillText('CHANCE', W - M, H - M - 110); x.textAlign = 'left';
+    pieces.forEach((b, i) => {
+      const p = rec[f][i];
+      const py = p[1] - lift * lift * 1600;
+      x.save(); x.translate(p[0] + 7, py + 11); x.rotate(p[2]); x.fillStyle = 'rgba(30,20,10,.16)'; x.filter = 'blur(6px)'; tornPath(b); x.fill(); x.filter = 'none'; x.restore();
+      x.save(); x.translate(p[0], py); x.rotate(p[2]);
+      x.fillStyle = '#F7F3EA'; x.save(); x.scale(1.012, 1.012); tornPath(b); x.fill(); x.restore();
+      x.fillStyle = b.col; tornPath(b); x.fill();
+      x.restore();
+    });
+  }
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+[
+  { "img": "01-total-internal-reflection.jpg", "step": "First trace", "verdict": "cut", "why": "Real physics, wrong angle: most of the light bounced back out of the glass.", "then": 1 },
+  { "img": "02-minimum-deviation.jpg", "step": "Aimed at minimum deviation", "verdict": "fixed", "why": "All the light through now, but the fan was too narrow to carry the page." },
+  { "img": "03-wider.jpg", "step": "More dispersive glass", "verdict": "kept", "why": "A wider fan, corner to corner, violet bending furthest as it should." }
+]
