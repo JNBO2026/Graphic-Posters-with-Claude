@@ -1,0 +1,4 @@
+[
+  { "img": "01-word-in-the-photo.jpg", "step": "Word over the photo", "verdict": "cut", "why": "A real riso up close, but TIDE read as IDE: the rocks ate the T.", "then": 1 },
+  { "img": "02-word-over-sky.jpg", "step": "Word over the sky", "verdict": "kept", "why": "Pink word, the blue screen running through it, the sea below." }
+]

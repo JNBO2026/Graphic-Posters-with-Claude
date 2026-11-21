@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. A WebGL shader separates a CC0 photo (src/sea-04.jpg, src/credit.json) into two risograph drums,
+     fluorescent pink and blue, each an amplitude modulated halftone at its own screen angle, then overprints them
+     multiplicatively with misregistration and patchy ink. Type: Anton, Google Fonts, printed in the pink drum. -->
+<meta charset="utf-8">
+<title>Day 19: Overprint.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#F6F2EA; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1, PW = Math.round(W * dpr), PH = Math.round(H * dpr);
+  await document.fonts.load('100px Anton');
+  const img = new Image(); img.src = 'src/sea-04.jpg'; await img.decode();
+  // the word, as its own plate
+  const tc = document.createElement('canvas'); tc.width = W; tc.height = H; const t = tc.getContext('2d');
+  t.font = '100px Anton'; const m = t.measureText('TIDE'), sx = (W - 2 * M) / (m.actualBoundingBoxLeft + m.actualBoundingBoxRight), sy = sx * 1.35;
+  const sy2 = sx * 1.05; t.fillStyle = '#fff'; t.save(); t.translate(M, M); t.scale(sx, sy2); t.fillText('TIDE', m.actualBoundingBoxLeft, m.actualBoundingBoxAscent); t.restore();
+  const cv = document.getElementById('gl'); cv.width = PW; cv.height = PH;
+  const gl = cv.getContext('webgl', { preserveDrawingBuffer: true, antialias: false });
+  const sh = (ty, src) => { const s = gl.createShader(ty); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+  const pr = gl.createProgram();
+  gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
+  gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, `
+precision highp float;
+uniform sampler2D photo, word; uniform float t, dpr, H;
+const float TAU = 6.2831853;
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }
+// the photo, cropped to fill the page, top part only above the word
+vec3 photoAt(vec2 p) {
+  vec2 uv = vec2(.5 + (p.x - 620.) / 1240. * 1.05, clamp(.10 + (p.y - 640.) / 1754. * 1.25, .0, 1.));
+  return texture2D(photo, uv).rgb;
+}
+// one drum: amplitude modulated dots, a round dot screen at an angle, as big as the ink demands
+float screen(vec2 p, float ang, float cell, float amount) {
+  float c = cos(ang), s = sin(ang); vec2 q = mat2(c, -s, s, c) * p / cell;
+  vec2 f = fract(q) - .5; float r = length(f);
+  float rad = sqrt(clamp(amount, 0., 1.)) * .62;
+  float aa = .9 / (cell * dpr) ;
+  return smoothstep(rad + aa, rad - aa, r);
+}
+void main() {
+  vec2 p = vec2(gl_FragCoord.x, H * dpr - gl_FragCoord.y) / dpr;
+  // misregistration: each drum lands slightly off, and drifts a little through the loop
+  vec2 offP = vec2(2.5, -1.5) + vec2(cos(t * TAU), sin(t * TAU)) * 1.2;
+  vec2 offB = vec2(-2., 2.) + vec2(sin(t * TAU), cos(t * TAU)) * 1.2;
+  vec3 cP = photoAt(p + offP), cB = photoAt(p + offB);
+  float lumP = dot(cP, vec3(.3, .55, .15)), lumB = dot(cB, vec3(.3, .55, .15));
+  // separation: warmth and shadow go to pink, cool and shadow to blue
+  float pink = clamp(1.15 - lumP * 1.1 + (cP.r - cP.b) * .9, 0., 1.);
+  float blue = clamp(1.05 - lumB * 1.05 + (cB.b - cB.r) * 1.1, 0., 1.);
+  float inside = step(72., p.x) * step(p.x, 1168.) * step(72., p.y) * step(p.y, 1682.);
+  float w = texture2D(word, (p + offP) / vec2(1240., 1754.)).r;
+  float top = smoothstep(660., 600., p.y);                 // above the photo: only the word and a pale blue sky
+  pink = mix(pink, 0., top); blue = mix(blue, .18 + .12 * (1. - p.y / 640.), top);
+  pink = mix(pink, 1., w);                      // the word: solid pink, the blue dots run straight through it
+  // patchy ink: the drum runs thin in places
+  float patchP = .82 + .18 * noise(p * .012 + 3.), patchB = .82 + .18 * noise(p * .011 + 9.);
+  float dP = screen(p + offP, .2618, 11., pink * patchP) * inside;   // 15 degrees
+  float dB = screen(p + offB, 1.309, 11., blue * patchB) * inside;   // 75 degrees
+  vec3 paper = vec3(.965, .949, .918);
+  vec3 PINK = vec3(1., .28, .58), BLUE = vec3(0., .47, .75);
+  // overprint: inks multiply where they meet, which is where every other colour on the page comes from
+  vec3 col = paper * mix(vec3(1.), PINK, dP * .92) * mix(vec3(1.), BLUE, dB * .9);
+  col *= .985 + .03 * hash(floor(p * dpr));
+  gl_FragColor = vec4(col, 1.);
+}`));
+  gl.linkProgram(pr); gl.useProgram(pr);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const ap = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+  const tex = (u, src) => { const tx = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + u); gl.bindTexture(gl.TEXTURE_2D, tx); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+    for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); };
+  tex(0, img); tex(1, tc);
+  const U = n => gl.getUniformLocation(pr, n);
+  gl.uniform1i(U('photo'), 0); gl.uniform1i(U('word'), 1); gl.uniform1f(U('dpr'), dpr); gl.uniform1f(U('H'), H); gl.viewport(0, 0, PW, PH);
+  const draw = sec => { gl.uniform1f(U('t'), ((sec % LOOP) + LOOP) % LOOP / LOOP); gl.drawArrays(gl.TRIANGLES, 0, 3); };
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>
