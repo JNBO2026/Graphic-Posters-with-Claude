@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. three.js 0.160 (vendor/, MIT): two figures after Schlemmer's Triadic Ballet, built only from primitives
+     (cones, spheres, discs, a spiral), on a bare stage, lit by one hard spotlight with soft PCF shadows.
+     Every pose is a function of time, so the loop is exact. Type: Josefin Sans, Google Fonts, drawn over the canvas. -->
+<meta charset="utf-8">
+<title>Day 26: Triadic.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#1A1A1C; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+  .t { position:absolute; left:72px; right:72px; top:62px; font:700 150px/1 'Josefin Sans'; letter-spacing:.06em; color:#EFE9DD; display:flex; justify-content:space-between; }
+  .s { position:absolute; left:72px; right:72px; bottom:66px; font:700 44px/1 'Josefin Sans'; letter-spacing:.14em; color:#1A1A1C; display:flex; justify-content:space-between; text-transform:uppercase; }
+</style>
+</head>
+<body>
+<div class="t"><span>T</span><span>R</span><span>I</span><span>A</span><span>D</span><span>I</span><span>C</span></div>
+<div class="s"><span>Ballet in 3D</span><span>After Schlemmer</span></div>
+<script type="module">
+import * as THREE from './vendor/three.module.min.js';
+const W = 1240, H = 1754, LOOP = 10, dpr = window.devicePixelRatio || 1, TAU = Math.PI * 2;
+await document.fonts.load('700 100px "Josefin Sans"');
+const R = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+R.setPixelRatio(dpr); R.setSize(W, H); R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap;
+R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
+document.body.prepend(R.domElement);
+const S = new THREE.Scene(); S.background = new THREE.Color('#1A1A1C');
+const cam = new THREE.PerspectiveCamera(30, W / H, .1, 100); cam.position.set(0, 3.0, 19.5); cam.lookAt(0, 3.7, 0);
+// the stage: a pale floor and a back wall, both catching shadow
+const mat = (c, r = .85, m = 0) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: m });
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), mat('#8E877B', .95)); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; S.add(floor);
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(60, 40), mat('#3B3834', .95)); wall.position.set(0, 20, -4.5); wall.receiveShadow = true; S.add(wall);
+S.add(new THREE.HemisphereLight('#F5EFE4', '#3A3530', .3));
+const key = new THREE.SpotLight('#FFF4E0', 1500, 70, .5, .3, 1.5); key.position.set(-14, 9, 6); key.target.position.set(0, 2.5, -1);
+key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -.0004; S.add(key, key.target);
+const RED = '#C8331F', YEL = '#E8B21C', BLU = '#1E46A8', BLK = '#161514', WHT = '#ECE6DA';
+const add = (g, m, p) => { const o = new THREE.Mesh(g, m); o.castShadow = o.receiveShadow = true; if (p) p.add(o); return o; };
+// figure one, after the Spiral costume: a cone skirt, a ringed spiral body, a sphere head, disc arms
+function spiral() {
+  const f = new THREE.Group();
+  const skirt = add(new THREE.ConeGeometry(1.5, 2.4, 64, 1, true), mat(YEL, .6), f); skirt.position.y = 1.2; skirt.rotation.x = Math.PI; skirt.material.side = THREE.DoubleSide;
+  const body = new THREE.Group(); body.position.y = 2.4; f.add(body);
+  const pts = []; for (let i = 0; i < 220; i++) { const t = i / 219; pts.push(new THREE.Vector3(Math.cos(t * TAU * 4) * (.75 - t * .35), t * 1.8, Math.sin(t * TAU * 4) * (.75 - t * .35))); }
+  add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 400, .09, 10), mat(BLK, .4), body);
+  const head = add(new THREE.SphereGeometry(.46, 48, 32), mat(WHT, .5), body); head.position.y = 2.25;
+  const arms = new THREE.Group(); arms.position.y = 1.4; body.add(arms);
+  for (const s of [-1, 1]) { const a = add(new THREE.CylinderGeometry(.55, .55, .06, 48), mat(RED, .55), arms); a.position.x = s * 1.25; a.rotation.z = Math.PI / 2; }
+  f.parts = { body, arms, head, skirt }; return f;
+}
+// figure two, after the Disc dancer: stacked discs for a body, a cone head, a ball on each arm
+function discs() {
+  const f = new THREE.Group();
+  for (let i = 0; i < 4; i++) { const d = add(new THREE.CylinderGeometry(1.1 - i * .17, 1.1 - i * .17, .22, 64), mat([BLU, WHT, BLU, WHT][i], .55), f); d.position.y = .5 + i * .62; }
+  const legL = add(new THREE.CylinderGeometry(.11, .11, .5, 16), mat(BLK, .5), f); legL.position.set(-.35, .25, 0);
+  const legR = add(new THREE.CylinderGeometry(.11, .11, .5, 16), mat(BLK, .5), f); legR.position.set(.35, .25, 0);
+  const upper = new THREE.Group(); upper.position.y = 2.9; f.add(upper);
+  const head = add(new THREE.ConeGeometry(.5, 1.2, 48), mat(RED, .5), upper); head.position.y = .9;
+  const neck = add(new THREE.SphereGeometry(.28, 32, 20), mat(BLK, .4), upper); neck.position.y = .2;
+  const arm = new THREE.Group(); upper.add(arm);
+  for (const s of [-1, 1]) { const rod = add(new THREE.CylinderGeometry(.06, .06, 1.6, 12), mat(BLK, .4), arm); rod.rotation.z = Math.PI / 2; rod.position.x = s * .8;
+    const ball = add(new THREE.SphereGeometry(.3, 32, 20), mat(YEL, .45), arm); ball.position.x = s * 1.65; }
+  f.parts = { upper, arm, head }; return f;
+}
+const A = spiral(), B = discs(); A.position.set(-2.3, 0, 0); B.position.set(2.45, 0, -.6); A.scale.setScalar(1.32); B.scale.setScalar(1.32); S.add(A, B);
+function pose(sec) {
+  const t = ((sec % LOOP) + LOOP) % LOOP / LOOP, ph = t * TAU;
+  // the spiral turns on the spot, its arms counter turning, a dip at each half
+  A.rotation.y = ph; A.parts.arms.rotation.y = -ph * 2; A.parts.body.position.y = 2.4 + .14 * Math.sin(ph * 2);
+  A.parts.arms.rotation.z = .3 * Math.sin(ph * 2);
+  // the disc dancer steps side to side and tips its arm like a balance
+  B.position.x = 2.45 + .4 * Math.sin(ph); B.rotation.y = -.5 + .5 * Math.sin(ph);
+  B.parts.arm.rotation.z = .5 * Math.sin(ph * 2 + .6); B.parts.upper.rotation.y = ph; B.parts.head.rotation.z = .12 * Math.sin(ph * 3);
+  R.render(S, cam);
+}
+pose(0); document.body.dataset.ready = '1';
+window.__seek = async t => pose(t);
+</script>
+</body>
+</html>
