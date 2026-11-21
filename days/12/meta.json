@@ -1,0 +1,11 @@
+{
+  "day": 12,
+  "date": "2026-11-21",
+  "started_at": "2026-11-21T15:23:47Z",
+  "author": "claude",
+  "title": "Same Grey.",
+  "note": "After Josef Albers: one grey on two fields looks like two greys, until a bridge of it joins them.",
+  "process": "Code only, no generative model. [[Claude Code]] built it in [[HTML]] and [[CSS]] with every colour in OKLCH: one greyed olive for both squares and the words, a violet field that pushes it light and a yellow that pushes it dull. A CSS animation grows a bridge of the same grey between the squares and takes it away, and an SVG noise filter gives the flat ink a little silkscreen tooth.",
+  "tools": ["Claude Code", "HTML", "CSS", "Google Fonts", "FFmpeg", "Playwright"],
+  "keywords": ["Interaction of colour", "exactly the same grey", "OKLCH", "a bridge of that grey", "Flat, silkscreen"]
+}

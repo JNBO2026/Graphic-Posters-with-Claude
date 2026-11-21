@@ -1,0 +1,1 @@
+Interaction of colour, after Josef Albers. Two big squares of exactly the same grey, one on a deep violet field, one on a bright yellow. They will not look the same. Once a loop a bridge of that grey grows between them and the lie collapses, then it goes and the lie comes back. Colours chosen in OKLCH so the pull is as strong as it can be. Flat, silkscreen, nothing else.

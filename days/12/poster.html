@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. HTML and CSS in OKLCH: the two squares and the words are one colour, oklch(63% .055 118). Only the fields differ.
+     A CSS animation grows a bridge of the same grey between the squares and takes it away again. -->
+<meta charset="utf-8">
+<title>Day 12: Same Grey.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700&display=block" rel="stylesheet">
+<style>
+  :root {
+    --grey: oklch(63% .055 118);     /* the one colour: both squares, the bridge and the words */
+    --cool: oklch(33% .17 296);     /* a violet that pushes it light and warm */
+    --warm: oklch(86% .16 96);      /* a yellow that pushes it dark and cool */
+  }
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:var(--cool); }
+  .f { position:absolute; left:0; width:1240px; height:877px; }
+  .top { top:0; background:var(--cool); } .bot { top:877px; background:var(--warm); }
+  .sq { position:absolute; left:400px; width:440px; height:440px; background:var(--grey); }
+  .s1 { top:290px; } .s2 { top:1024px; }
+  /* the bridge: same grey, grows from both squares to meet at the seam, holds, then withdraws */
+  .br { position:absolute; left:560px; width:120px; background:var(--grey); transform-origin:50% 0; }
+  .b1 { top:728px; height:150px; transform-origin:50% 0; animation:down 10s cubic-bezier(.2,.7,.2,1) infinite; }
+  .b2 { top:876px; height:150px; transform-origin:50% 100%; animation:down 10s cubic-bezier(.2,.7,.2,1) infinite; }
+  @keyframes down { 0%, 18% { transform:scaleY(0); } 38%, 62% { transform:scaleY(1); } 82%, 100% { transform:scaleY(0); } }
+  .w { position:absolute; left:400px; width:440px; font:700 76px/1 'Inter Tight'; letter-spacing:-.025em; color:var(--grey); }
+  .w1 { top:76px; } .w2 { top:1612px; text-align:right; }
+  /* silkscreen: flat ink, a little tooth */
+  .grain { position:absolute; inset:0; opacity:.16; mix-blend-mode:multiply; pointer-events:none; }
+</style>
+</head>
+<body>
+<div class="f top"></div><div class="f bot"></div>
+<div class="sq s1"></div><div class="sq s2"></div>
+<div class="br b1"></div><div class="br b2"></div>
+<div class="w w1">One grey.</div>
+<div class="w w2">Not two.</div>
+<svg class="grain" width="1240" height="1754"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="12"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 1.2 -.35"/></filter><rect width="1240" height="1754" filter="url(#n)"/></svg>
+</body>
+</html>
