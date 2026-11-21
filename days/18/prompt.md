@@ -1,0 +1,1 @@
+Ma: the space between things is a thing. One ensō, the Zen circle drawn in a single breath, painted by a fluid simulation so the ink blooms and feathers into wet paper the way real sumi does. The circle left open, as the tradition says. Almost all of the page empty, and the emptiness doing the work. One small red seal, the only colour.

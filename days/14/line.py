@@ -15,9 +15,9 @@ rng = np.random.default_rng(14)
 im = Image.open(os.path.join(HERE, 'src', 'puppy-02.jpg')).convert('L')
 cw = int(im.height * AW / AH); x0 = (im.width - cw) // 2
 im = im.crop((x0, 0, x0 + cw, im.height)).resize((AW // 4, AH // 4), Image.LANCZOS)   # density grid, 4 px a cell
-im = ImageOps.autocontrast(im, cutoff=1).filter(ImageFilter.GaussianBlur(.6))
+im = ImageOps.equalize(ImageOps.autocontrast(im, cutoff=1)).filter(ImageFilter.GaussianBlur(.8))   # equalised, so the face inside a black dog has tones to draw
 dark = 1 - np.asarray(im).astype(np.float32) / 255
-dens = np.clip((dark - .12) / .8, 0, 1) ** 2.0 + .01             # a little everywhere, so the line can always cross the page
+dens = np.clip(dark, 0, 1) ** 2.4 + .008            # a little everywhere, so the line can always cross the page
 gh, gw = dens.shape
 ys, xs = np.mgrid[0:gh, 0:gw]; cells = np.stack([xs.ravel() + .5, ys.ravel() + .5], 1).astype(np.float32); wts = dens.ravel()
 

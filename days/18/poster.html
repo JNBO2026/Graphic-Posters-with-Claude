@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. frames/ (git-ignored) are made by enso.py, a stable fluids simulation in NumPy: python3 -I days/18/enso.py
+     Here each frame is laid on paper as sumi ink on canvas, with the flying white of a dry brush opening along the stroke.
+     The seal: 間 (ma) in Shippori Mincho B1, Google Fonts. -->
+<meta charset="utf-8">
+<title>Day 18: Ma.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@800&display=block&text=%E9%96%93" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#F1ECE0; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, LOOP = 10, dpr = window.devicePixelRatio || 1, NF = 300, N = 480;
+  await document.fonts.load('800 100px "Shippori Mincho B1"', '間');
+  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
+  let seed = 18; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  // washi: warm paper, long pale fibres, a little cloud
+  const paper = document.createElement('canvas'); paper.width = W * dpr; paper.height = H * dpr; const p = paper.getContext('2d');
+  p.scale(dpr, dpr); p.fillStyle = '#F1ECE0'; p.fillRect(0, 0, W, H);
+  for (let i = 0; i < 260; i++) { p.fillStyle = `rgba(150,130,100,${.006 + rnd() * .01})`; p.beginPath(); p.arc(rnd() * W, rnd() * H, 30 + rnd() * 160, 0, Math.PI * 2); p.fill(); }
+  p.lineCap = 'round';
+  for (let i = 0; i < 1100; i++) { const x0 = rnd() * W, y0 = rnd() * H, a = rnd() * Math.PI, l = 8 + rnd() * 40;
+    p.strokeStyle = rnd() < .5 ? `rgba(255,253,248,${.25 + rnd() * .3})` : `rgba(150,130,100,${.03 + rnd() * .05})`; p.lineWidth = .5 + rnd() * .8;
+    p.beginPath(); p.moveTo(x0, y0); p.quadraticCurveTo(x0 + Math.cos(a) * l * .5 + (rnd() - .5) * 8, y0 + Math.sin(a) * l * .5 + (rnd() - .5) * 8, x0 + Math.cos(a) * l, y0 + Math.sin(a) * l); p.stroke(); }
+  // the seal: vermilion, carved, edges not quite straight
+  const seal = document.createElement('canvas'); seal.width = seal.height = 260; const s = seal.getContext('2d');
+  s.fillStyle = '#C8321F'; s.beginPath(); s.moveTo(8, 12); s.lineTo(248, 6); s.lineTo(252, 250); s.lineTo(10, 246); s.closePath(); s.fill();
+  s.globalCompositeOperation = 'destination-out'; s.font = '800 200px "Shippori Mincho B1"'; s.textAlign = 'center'; s.textBaseline = 'middle'; s.fillText('間', 130, 140);
+  for (let i = 0; i < 260; i++) { s.beginPath(); s.arc(rnd() * 260, rnd() * 260, rnd() * 2.6, 0, Math.PI * 2); s.fill(); }
+  s.strokeStyle = '#000'; s.lineWidth = 9; s.strokeRect(4, 4, 252, 252);
+  // the frames
+  const frames = [], getFrame = async i => { if (!frames[i]) { const im = new Image(); im.src = `frames/f${String(i).padStart(4, '0')}.png`; await im.decode(); frames[i] = im; } return frames[i]; };
+  // flying white: the stroke dries as it goes round, leaving concentric bristle gaps that open up towards the end
+  const A0 = -112 * Math.PI / 180, SWEEP = 322 * Math.PI / 180;
+  // the mask is cut at the size the ink is shown, with soft edges, so the bristle marks are crisp, not pixels
+  const RAD = 1060, CX = W / 2, CY = H * .46, Q = RAD, SC = N / Q;
+  const hash = (i, j) => { const v = Math.sin(i * 127.1 + j * 311.7) * 43758.5453; return v - Math.floor(v); };
+  const vn = (u, v) => { const i = Math.floor(u), j = Math.floor(v), fu = u - i, fv = v - j, a = hash(i, j), b = hash(i + 1, j), c = hash(i, j + 1), d = hash(i + 1, j + 1);
+    const su = fu * fu * (3 - 2 * fu), sv = fv * fv * (3 - 2 * fv); return (a * (1 - su) + b * su) * (1 - sv) + (c * (1 - su) + d * su) * sv; };
+  const sm = (e0, e1, v) => { const t = Math.max(0, Math.min(1, (v - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+  const dryMask = new Float32Array(Q * Q);
+  for (let j = 0; j < Q; j++) for (let i = 0; i < Q; i++) {
+    const dx = (i - Q / 2) * SC, dy = (j - Q / 2) * SC, r = Math.hypot(dx, dy); let a = Math.atan2(dy, dx) - A0; a = ((a % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const k = Math.min(1, a / SWEEP), dry = sm(.45, .95, k);
+    // bristles: uneven widths, and each one skips along its length where the paper's tooth catches it
+    const bristle = .5 + .5 * Math.sin(r * (.9 + .5 * vn(r * .05, 1.7)) + vn(r * .08, a * 3) * 7);
+    const skip = vn(a * 38 + r * .7, r * .21) * .6 + vn(a * 90, r * .5) * .4;
+    const g1 = sm(1 - dry * .85 - .06, 1 - dry * .85 + .06, bristle) * sm(.26, .34, skip);
+    const g2 = dry > .55 ? sm(.12 * dry + .03, .12 * dry - .03, skip) : 0;
+    dryMask[j * Q + i] = 1 - Math.max(g1, g2) * (.65 + .35 * vn(i * .14, j * .14));
+  }
+  const ink = document.createElement('canvas'); ink.width = ink.height = Q; const ik = ink.getContext('2d'); ik.imageSmoothingQuality = 'high';
+  async function draw(sec) {
+    const t = ((sec % LOOP) + LOOP) % LOOP;
+    // hold the finished circle, let it lift off the paper, then paint it again in one breath
+    let f, fade = 1;
+    if (t < 1.4) f = NF; else if (t < 2.4) { f = NF; fade = 1 - (t - 1.4); } else f = Math.max(1, Math.min(NF, Math.round(1 + (t - 2.4) / 7.6 * (NF - 1))));
+    const im = await getFrame(f);
+    ik.clearRect(0, 0, Q, Q); ik.drawImage(im, 0, 0, Q, Q);
+    const d = ik.getImageData(0, 0, Q, Q), px = d.data;
+    for (let i = 0; i < Q * Q; i++) { const v = px[i * 4] / 255 * dryMask[i] * fade;
+      // sumi: blue black where it's thick, warm grey where it thins and feathers
+      const a = Math.min(1, Math.pow(v, .85) * 1.08);
+      px[i * 4] = 22 + (1 - v) * 40; px[i * 4 + 1] = 21 + (1 - v) * 34; px[i * 4 + 2] = 24 + (1 - v) * 22; px[i * 4 + 3] = a * 255; }
+    ik.putImageData(d, 0, 0);
+    x.setTransform(1, 0, 0, 1, 0, 0); x.drawImage(paper, 0, 0);
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.imageSmoothingQuality = 'high';
+    x.globalCompositeOperation = 'multiply'; x.drawImage(ink, CX - RAD / 2, CY - RAD / 2, RAD, RAD); x.globalCompositeOperation = 'source-over';
+    x.drawImage(seal, W - 72 - 150, H - 72 - 150 - 40, 150, 150);
+  }
+  await draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; await draw(t); };
+</script>
+</body>
+</html>
