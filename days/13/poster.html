@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. Matter.js 0.20 (vendor/, MIT) simulates the letters and the ball as rigid bodies, once, at a fixed step;
+     the loop plays that one fall forwards, then backwards. Type: Inter Tight from Google Fonts, drawn on canvas. -->
+<meta charset="utf-8">
+<title>Day 13: Mass.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;800&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#F2F0EA; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+<script src="vendor/matter.min.js"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, FPS = 30, dpr = window.devicePixelRatio || 1;
+  await Promise.all(['800 100px "Inter Tight"', '500 54px "Inter Tight"'].map(f => document.fonts.load(f)));
+  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
+  const INK = '#111', RED = '#E3241B', PAPER = '#F2F0EA';
+  // the grid: 6 columns, 8 rows, 24 px gutters, inside the margin
+  const COLS = 6, ROWS = 8, GUT = 24, CW = (W - 2 * M - GUT * (COLS - 1)) / COLS, RH = (H - 2 * M - GUT * (ROWS - 1)) / ROWS;
+  const colX = c => M + c * (CW + GUT), rowY = r => M + r * (RH + GUT);
+
+  // ---------- the word, one letter a body, set on the grid ----------
+  const WORD = 'mass', GAP = 14;
+  // size the word so it runs exactly margin to margin
+  x.font = '800 100px "Inter Tight"';
+  const w100 = [...WORD].reduce((s, ch) => { const m = x.measureText(ch); return s + m.actualBoundingBoxLeft + m.actualBoundingBoxRight; }, 0);
+  const SIZE = 100 * (W - 2 * M - GAP * (WORD.length - 1)) / w100;
+  x.font = `800 ${SIZE}px "Inter Tight"`;
+  const glyphs = [...WORD].map(ch => { const m = x.measureText(ch); return { ch, l: m.actualBoundingBoxLeft, r: m.actualBoundingBoxRight, a: m.actualBoundingBoxAscent, d: m.actualBoundingBoxDescent, adv: m.width }; });
+  const baseY = rowY(5) - GUT;                         // the word sits on the line under row 4
+  const totalW = glyphs.reduce((s, g) => s + g.l + g.r, 0) + GAP * (glyphs.length - 1);
+  let gx = M + (W - 2 * M - totalW) / 2;               // flush with the margins as near as the letters allow
+  const E = Matter.Engine.create({ gravity: { x: 0, y: 0 } }), B = Matter.Bodies, C = Matter.Composite;
+  const bodies = glyphs.map((g, i) => {
+    const w = g.l + g.r, h = g.a + g.d, cx = gx + w / 2, cy = baseY - g.a + h / 2; gx += w + GAP;
+    const b = B.rectangle(cx, cy, w - 6, h - 6, { chamfer: { radius: 18 }, friction: .55, frictionStatic: .9, restitution: .12, density: .002 });
+    b.g = g; b.w = w; b.h = h; return b;
+  });
+  // the red ball, resting on the grid top right; it falls first and starts it all
+  const ball = B.circle(colX(4) + CW, rowY(1) + RH * .5, 118, { restitution: .45, friction: .2, density: .004 });
+  const floor = B.rectangle(W / 2, H - M + 200, W * 2, 400, { isStatic: true }), wl = B.rectangle(M - 200, H / 2, 400, H * 3, { isStatic: true }), wr = B.rectangle(W - M + 200, H / 2, 400, H * 3, { isStatic: true });
+  // the bin: one heavy wall, drawn on the grid a column in, so the word no longer fits on the floor and has to heap
+  const BX = colX(1) - GUT / 2, BT = rowY(6) - GUT / 2, BW = 14;
+  const bin = B.rectangle(BX, (BT + H - M) / 2, BW, H - M - BT, { isStatic: true, chamfer: { radius: 2 } });
+  C.add(E.world, [...bodies, ball, floor, wl, wr, bin]);
+
+  // ---------- simulate once: 60 steps a second, record every other step ----------
+  const STEPS = 240, rec = [];
+  const snap = () => rec.push([...bodies, ball].map(b => [b.position.x, b.position.y, b.angle]));
+  snap();
+  E.gravity.y = 1.15;
+  Matter.Body.setVelocity(ball, { x: -15, y: -6 });
+  // each letter leaves the grid its own way: a push and a spin
+  [[3, -9, .05], [-2, -12, -.06], [4, -7, .07], [-5, -10, -.05]].forEach(([vx, vy, w], i) => { Matter.Body.setVelocity(bodies[i], { x: vx, y: vy }); Matter.Body.setAngularVelocity(bodies[i], w); });
+  for (let i = 1; i <= STEPS; i++) { Matter.Engine.update(E, 1000 / 60); if (i % 2 === 0) snap(); }
+  const N = rec.length - 1;                            // 120 recorded frames of falling
+
+  function frameAt(t) {
+    // hold order (0 to 1.5), fall (1.5 to 5.5), hold the heap (5.5 to 6.5), rise back (6.5 to 9.5), hold (9.5 to 10)
+    if (t < 1.5) return 0;
+    if (t < 5.5) return (t - 1.5) / 4 * N;
+    if (t < 6.5) return N;
+    if (t < 9.5) { const u = (t - 6.5) / 3; return N * (1 - u * u * (3 - 2 * u)); }
+    return 0;
+  }
+  function draw(sec) {
+    const t = ((sec % LOOP) + LOOP) % LOOP, f = frameAt(t), i0 = Math.floor(f), i1 = Math.min(N, i0 + 1), k = f - i0;
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = PAPER; x.fillRect(0, 0, W, H);
+    // the grid, faint: a promise more than a picture
+    x.strokeStyle = 'rgba(17,17,17,.16)'; x.lineWidth = 1.2;
+    for (let c = 0; c < COLS; c++) { x.strokeRect(colX(c) + .5, M + .5, CW, H - 2 * M); }
+    for (let r = 1; r < ROWS; r++) { x.beginPath(); x.moveTo(M, rowY(r) - GUT / 2); x.lineTo(W - M, rowY(r) - GUT / 2); x.stroke(); }
+    x.fillStyle = INK; x.fillRect(BX - BW / 2, BT, BW, H - M - BT); x.fillRect(M, H - M - 2, W - 2 * M, 14);
+    // the words that stay put, on the grid, top left
+    x.fillStyle = INK; x.font = '500 54px "Inter Tight"'; x.letterSpacing = '-1px'; x.textBaseline = 'alphabetic';
+    ['The grid is a promise.', 'Gravity is a fact.'].forEach((s, j) => x.fillText(s, colX(0), rowY(0) + 54 + j * 64));
+    x.fillText('13 / 30', colX(4), rowY(0) + 54);
+    const all = [...bodies, ball];
+    all.forEach((b, j) => {
+      const a = rec[i0][j], c = rec[i1][j], px = a[0] + (c[0] - a[0]) * k, py = a[1] + (c[1] - a[1]) * k, an = a[2] + (c[2] - a[2]) * k;
+      x.save(); x.translate(px, py); x.rotate(an);
+      if (b === ball) { x.fillStyle = RED; x.beginPath(); x.arc(0, 0, 118, 0, Math.PI * 2); x.fill(); }
+      else { const g = b.g; x.fillStyle = INK; x.font = `800 ${SIZE}px "Inter Tight"`; x.letterSpacing = '0px'; x.fillText(g.ch, -b.w / 2 + g.l, -b.h / 2 + g.a); }
+      x.restore();
+    });
+  }
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>

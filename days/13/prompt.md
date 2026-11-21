@@ -1,0 +1,1 @@
+Order against gravity. A Swiss grid, one word set on it as carefully as Müller-Brockmann would, and a red ball. Then switch gravity on: a real rigid body physics engine takes the letters off the grid and drops them in a heap. Then play the physics backwards so the heap climbs back up into perfect order. The tension is the poster: the grid is a promise, gravity is a fact.

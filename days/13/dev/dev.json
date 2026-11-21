@@ -1,0 +1,6 @@
+[
+  { "img": "01-off-the-page.jpg", "step": "First setting", "verdict": "fixed", "why": "The word ran off both edges. Sized now to fit margin to margin." },
+  { "img": "02-tidy-row.jpg", "step": "First fall", "verdict": "cut", "why": "The floor was exactly as wide as the word, so it just landed in a row.", "then": 3 },
+  { "img": "03-order.jpg", "step": "A wall on the grid", "verdict": "kept", "why": "One heavy column line and a floor: the grid becomes a bin." },
+  { "img": "04-heap.jpg", "step": "The heap", "verdict": "kept", "why": "No room on the floor, so the m lands on its back. Then it all plays backwards." }
+]
