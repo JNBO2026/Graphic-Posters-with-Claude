@@ -1,0 +1,5 @@
+[
+  { "img": "01-on-the-wall.jpg", "step": "Painted on the back wall", "verdict": "cut", "why": "A flat wall barely distorts. Walking away it just slid sideways.", "then": 1 },
+  { "img": "02-whole.jpg", "step": "From the eye", "verdict": "kept", "why": "Looking down over the ball, the boxes and the floor: from here it's one word." },
+  { "img": "03-apart.jpg", "step": "Anywhere else", "verdict": "kept", "why": "The same paint, broken across every surface it landed on." }
+]
