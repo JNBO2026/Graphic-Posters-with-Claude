@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. numbers.json is counted from this repo's own development logs (every dev.json, days 06 to 24).
+     Isotype in the manner of Otto Neurath and Gerd Arntz: one figure is one attempt, drawn in SVG; rows, not bars.
+     Type: Archivo, Google Fonts (a grotesque close to the Futura the Vienna method used, but not a copy). -->
+<meta charset="utf-8">
+<title>Day 25: Isotype.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#F0EBDF; font-family:Archivo; color:#151413; }
+  h1 { position:absolute; left:72px; top:56px; margin:0; font:800 118px/0.95 Archivo; letter-spacing:-.025em; }
+  .row { position:absolute; left:72px; right:72px; }
+  .lab { font:800 46px/1 Archivo; letter-spacing:-.01em; display:flex; justify-content:space-between; align-items:baseline; border-top:5px solid #151413; padding-top:16px; }
+  .lab span { font-weight:500; }
+  .figs { display:flex; flex-wrap:wrap; gap:6px 4px; margin-top:20px; }
+  .figs svg { width:68px; height:96px; display:block; opacity:0; transform:translateY(-8px); animation:in 10s cubic-bezier(.2,.7,.2,1) infinite; }
+  @keyframes in { 0% { opacity:1; transform:none; } 100% { opacity:1; transform:none; } }
+  .key { position:absolute; left:72px; right:72px; bottom:66px; font:500 40px/1.2 Archivo; display:flex; align-items:center; gap:18px; }
+  .key svg { width:40px; height:56px; }
+</style>
+</head>
+<body>
+<h1>Every attempt,<br>counted.</h1>
+<div id="rows"></div>
+<div class="key"><svg viewBox="0 0 34 48"><use href="#fig" fill="#151413"/></svg> = one attempt at a poster, from the development logs</div>
+<svg width="0" height="0" style="position:absolute">
+  <!-- one figure, Arntz style: a person built from a few flat shapes, no outline, no face -->
+  <defs><g id="fig"><circle cx="17" cy="6.5" r="6.5"/><path d="M6 15.5 Q6 14 7.5 14 H26.5 Q28 14 28 15.5 V30 H23.5 V47 H18.6 V33 H15.4 V47 H10.5 V30 H6 Z"/></g>
+  <!-- the cut figure: the same person with a bar through them, the fixed figure: the same person with a bandage -->
+  </defs>
+</svg>
+<script>
+(async () => {
+  const D = await (await fetch('numbers.json')).json();
+  const rows = [
+    { key: 'kept', label: 'Kept', note: 'as it was', col: '#151413', n: D.kept },
+    { key: 'fixed', label: 'Fixed', note: 'once seen', col: '#1E5BB8', n: D.fixed },
+    { key: 'cut', label: 'Cut', note: 'started again', col: '#D23A23', n: D.cut },
+  ];
+  const host = document.getElementById('rows'); let top = 360, k = 0;
+  const total = rows.reduce((s, r) => s + r.n, 0);
+  rows.forEach(r => {
+    const el = document.createElement('div'); el.className = 'row'; el.style.top = top + 'px';
+    el.innerHTML = `<div class="lab">${r.label} <span>${r.n}, ${r.note}</span></div><div class="figs"></div>`;
+    const figs = el.querySelector('.figs');
+    for (let i = 0; i < r.n; i++, k++) {
+      const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 34 48');
+      s.innerHTML = `<use href="#fig" fill="${r.col}"/>` + (r.key === 'cut' ? `<path d="M1 44 L33 4" stroke="#F0EBDF" stroke-width="3.5"/>` : r.key === 'fixed' ? `<rect x="5" y="22" width="24" height="4" fill="#F0EBDF"/>` : '');
+      // the count: figures arrive one at a time across the first seven seconds, hold, then clear and count again
+      const at = .4 + k / total * 6.6, name = 'f' + k, p = at * 10;
+      const st = document.createElement('style');
+      st.textContent = `@keyframes ${name} { 0% { opacity:${k < 0 ? 1 : 1}; transform:none; } ${(p - .01).toFixed(2)}% { opacity:0; transform:translateY(-8px); } ${p.toFixed(2)}% { opacity:0; transform:translateY(-8px); } ${(p + 2.5).toFixed(2)}% { opacity:1; transform:none; } 94% { opacity:1; transform:none; } 99.9% { opacity:1; } 100% { opacity:1; transform:none; } }`;
+      document.head.appendChild(st); s.style.animationName = name; figs.appendChild(s);
+    }
+    host.appendChild(el); top += 136 + Math.ceil(r.n / 15) * 102 + 40;
+  });
+  await document.fonts.ready; document.body.dataset.ready = '1';
+})();
+</script>
+</body>
+</html>

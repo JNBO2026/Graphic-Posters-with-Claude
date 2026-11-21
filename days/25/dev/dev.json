@@ -1,0 +1,4 @@
+[
+  { "img": "01-the-count.jpg", "step": "Rows, not bars", "verdict": "kept", "why": "One figure, one attempt. You count them instead of guessing a length." },
+  { "img": "02-counting.jpg", "step": "The count arriving", "verdict": "kept", "why": "They land one by one, as a count does." }
+]
