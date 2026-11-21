@@ -1,0 +1,6 @@
+[
+  { "img": "01-the-cat.jpg", "step": "A cat, first try", "verdict": "cut", "why": "A soft grey cat on a grey ground: the line made a maze, not a face.", "then": 1 },
+  { "img": "02-a-black-dog.jpg", "step": "A black puppy", "verdict": "fixed", "why": "Dark subject, light floor. But all black, so the face disappeared." },
+  { "img": "03-equalised.jpg", "step": "Tones spread out", "verdict": "fixed", "why": "The face reads now. One long ruled jump still cut across it.", "then": 3 },
+  { "img": "04-mended.jpg", "step": "Long jumps mended", "verdict": "kept", "why": "Every long jump untangled. 11,000 points, one line, 117,000 px long." }
+]

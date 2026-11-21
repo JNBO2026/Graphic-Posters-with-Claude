@@ -1,0 +1,1 @@
+Economy of line. One photograph, drawn with a single continuous line that never lifts and never crosses itself: stippled into thousands of dots where it's dark, then joined by solving a travelling salesman problem through all of them. A red pen runs the whole length once a loop, so you can see it really is one line.
