@@ -1,0 +1,1 @@
+Data ink. Ten days of James's spoken prompts, 1,292 words, set as data. Every word of every prompt laid down in order, one line a day, so each day's prompt becomes a strip as long as he talked. The word he said most rises out of all of them, enormous. Nothing decorative: every mark on the page is a word he said.

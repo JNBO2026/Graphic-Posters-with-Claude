@@ -1,0 +1,5 @@
+[
+  { "img": "01-lit-words.jpg", "step": "Lit words only", "verdict": "cut", "why": "Every word honest, but the big word was too thin to see.", "then": 1 },
+  { "img": "02-knockout.jpg", "step": "The word in paper", "verdict": "fixed", "why": "Reads now, but it ran into the day numbers." },
+  { "img": "03-final.jpg", "step": "Clear of the numbers", "verdict": "kept", "why": "Ten days down the side, his top word across them." }
+]

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<!-- Code only. prompts.json is every word of James's ten spoken prompts (days 01 to 10), in order.
+     Each day is one band of words, set on canvas in IBM Plex Sans Condensed; every use of "design" is picked out,
+     and the word itself is drawn from those same lines, enormous. -->
+<meta charset="utf-8">
+<title>Day 17: What I Said.</title>
+<meta name="poster-motion" content="10">
+<meta name="poster-motion-fps" content="30">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;700&family=Anton&display=block" rel="stylesheet">
+<style>
+  html, body { margin:0; width:1240px; height:1754px; overflow:hidden; background:#111; }
+  canvas { position:absolute; left:0; top:0; width:1240px; height:1754px; display:block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const READY = (async () => {
+  const W = 1240, H = 1754, M = 72, LOOP = 10, dpr = window.devicePixelRatio || 1;
+  await Promise.all(['400 20px "IBM Plex Sans Condensed"', '700 20px "IBM Plex Sans Condensed"', '100px Anton'].map(f => document.fonts.load(f)));
+  const DAYS = await (await fetch('prompts.json')).json();
+  const cv = document.getElementById('c'); cv.width = W * dpr; cv.height = H * dpr; const x = cv.getContext('2d');
+  const BG = '#111', DIM = '#5A5852', ON = '#F2EFE6', HOT = '#FF5A1F', KEY = 'design';
+  // the big word, as a mask
+  const mk = document.createElement('canvas'); mk.width = W; mk.height = H; const m = mk.getContext('2d');
+  m.font = '100px Anton'; const mt = m.measureText(KEY.toUpperCase());
+  const WL = M + 70, s = (W - M - WL) / (mt.actualBoundingBoxLeft + mt.actualBoundingBoxRight), SY = 2.9, th = mt.actualBoundingBoxAscent * s * SY;
+  const wy = H * .5 - th / 2;
+  m.save(); m.translate(WL, wy); m.scale(s, s * SY); m.fillStyle = '#F2EFE6'; m.fillText(KEY.toUpperCase(), mt.actualBoundingBoxLeft, mt.actualBoundingBoxAscent); m.restore();
+  const md = m.getImageData(0, 0, W, H).data, inWord = (px, py) => { const i = (Math.round(py) * W + Math.round(px)) * 4; return md[i + 3] > 128; };
+  // ten bands, one a day; the words of each day flow along its lines, repeated so the band is full
+  const BAND = (H - 2 * M) / 10, LINE = 13.6, FS = 11.5;
+  const lines = [];
+  DAYS.forEach((d, k) => {
+    const y0 = M + k * BAND; let wi = 0;
+    for (let ly = y0 + 12; ly < y0 + BAND - 2; ly += LINE) {
+      let lx = M + 70, row = [];
+      while (lx < W - M) { const w = d.words[wi % d.words.length], again = wi >= d.words.length; row.push({ w, x: lx, again, i: wi }); x.font = `400 ${FS}px "IBM Plex Sans Condensed"`; lx += x.measureText(w).width + 4; wi++; }
+      lines.push({ day: d.day, y: ly, row });
+    }
+  });
+  function draw(sec) {
+    const t = ((sec % LOOP) + LOOP) % LOOP / LOOP;
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = BG; x.fillRect(0, 0, W, H);
+    // a reading head runs down the page once a loop and lights each day as it passes
+    const head = M + (H - 2 * M) * t;
+    x.textBaseline = 'alphabetic';
+    x.globalAlpha = .9; x.drawImage(mk, 0, 0); x.globalAlpha = 1;
+    for (const L of lines) {
+      for (const r of L.row) {
+        const big = inWord(r.x + 10, L.y - 5), key = r.w === KEY;
+        x.font = `${key || big ? 700 : 400} ${FS}px "IBM Plex Sans Condensed"`;
+        let c = r.again ? '#34322E' : DIM;
+        if (big) c = BG;
+        if (key) c = HOT;
+        if (Math.abs(L.y - head) < 6 && !big) c = key ? HOT : '#A8A49A';
+        x.fillStyle = c; x.fillText(r.w, r.x, L.y);
+      }
+    }
+    // the day numbers, big enough to read, in the margin of each band
+    x.font = '700 48px "IBM Plex Sans Condensed"';
+    DAYS.forEach((d, k) => { const yy = M + k * BAND + 46; x.fillStyle = ON; x.fillText(String(d.day).padStart(2, '0'), M - 4, yy); });
+  }
+  draw(0); document.body.dataset.ready = '1'; return draw;
+})();
+window.__seek = async t => { const draw = await READY; draw(t); };
+</script>
+</body>
+</html>
