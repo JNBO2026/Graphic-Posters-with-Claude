@@ -21,7 +21,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: colour, depth, a ghost",
+  "verdict": "fixed",
+  "why": "Navy and cream, a shadow cast in 3D, the next word drawn in vermilion before it arrives.",
+  "then": 4
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "Navy and cream, a shadow cast in 3D, the next word drawn in vermilion before it arrives."
+  "why": "Director's cut: the thin ghost outline went; the shadow became a solid block."
  }
 ]

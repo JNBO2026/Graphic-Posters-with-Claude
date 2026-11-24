@@ -28,7 +28,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: three coloured lights",
+  "verdict": "fixed",
+  "why": "Red, green and blue gels from three sides: each shadow is the colour of the two lights it doesn't block.",
+  "then": 5
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "Red, green and blue gels from three sides: each shadow is the colour of the two lights it doesn't block."
+  "why": "Director's cut: three lights that add up to white, colour only in the shadows."
  }
 ]

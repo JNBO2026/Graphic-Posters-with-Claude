@@ -22,7 +22,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: hand tinted, in relief",
+  "verdict": "fixed",
+  "why": "Each contour band in its own watercolour, sage to madder, lit so the creatures sit up off the page.",
+  "then": 4
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "Each contour band in its own watercolour, sage to madder, lit so the creatures sit up off the page."
+  "why": "Director's cut: the extra subtitle went."
  }
 ]

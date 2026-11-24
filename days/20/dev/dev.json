@@ -22,7 +22,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: a thumb that taps",
+  "verdict": "fixed",
+  "why": "Blue go, orange let me off; a cursor arcs between buttons and each press sinks in 3D.",
+  "then": 4
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "Blue go, orange let me off; a cursor arcs between buttons and each press sinks in 3D."
+  "why": "Director's cut: the caption grew into the second voice."
  }
 ]

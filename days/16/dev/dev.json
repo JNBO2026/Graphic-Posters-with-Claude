@@ -16,7 +16,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: layers and parallax",
+  "verdict": "fixed",
+  "why": "Every piece at its own height, casting its own shadow; a turning disc to balance the wedge.",
+  "then": 3
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "Every piece at its own height, casting its own shadow; a turning disc to balance the wedge."
+  "why": "Director's cut: the day number moved clear of the wedge."
  }
 ]

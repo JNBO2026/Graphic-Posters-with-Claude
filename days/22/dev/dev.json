@@ -18,7 +18,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: woven while you watch",
+  "verdict": "fixed",
+  "why": "A shuttle carries the weft up the loom; the word appears row by row in warm dyed yarn.",
+  "then": 3
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "A shuttle carries the weft up the loom; the word appears row by row in warm dyed yarn."
+  "why": "Director's cut: the warm weft pulled back until the word reads first."
  }
 ]

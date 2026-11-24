@@ -22,7 +22,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: an instrument",
+  "verdict": "fixed",
+  "why": "Dust lights up only where it crosses the beam; a wavelength ruler, each mark in its own colour.",
+  "then": 4
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "Dust lights up only where it crosses the beam; a wavelength ruler, each mark in its own colour."
+  "why": "Director's cut: every ruler mark now legible."
  }
 ]

@@ -29,7 +29,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: the line in 3D",
+  "verdict": "fixed",
+  "why": "One wire in space, nearer where the photo is darker. Turn it and the picture opens into relief.",
+  "then": 5
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "One wire in space, nearer where the photo is darker. Turn it and the picture opens into relief."
+  "why": "Director's cut: the background wire fades back so the puppy wins."
  }
 ]

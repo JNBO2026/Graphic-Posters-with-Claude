@@ -24,7 +24,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: wet ink, the seal pressed",
+  "verdict": "fixed",
+  "why": "The brush leaves a wet sheen that dries behind it; the seal comes down only when the circle is done.",
+  "then": 4
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "The brush leaves a wet sheen that dries behind it; the seal comes down only when the circle is done."
+  "why": "Director's cut: the corner character went. One seal is enough."
  }
 ]

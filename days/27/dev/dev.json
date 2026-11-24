@@ -22,7 +22,14 @@
  {
   "img": "09-elevated.jpg",
   "step": "Elevated: an OBJ and a painted room",
+  "verdict": "fixed",
+  "why": "A plinth written as an OBJ file, sage and ochre walls, the word in terracotta paint.",
+  "then": 4
+ },
+ {
+  "img": "10-directed.jpg",
+  "step": "Design director's pass",
   "verdict": "kept",
-  "why": "A plinth written as an OBJ file, sage and ochre walls, the word in terracotta paint."
+  "why": "Director's cut: the caption moved to clear wall."
  }
 ]
