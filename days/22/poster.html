@@ -48,7 +48,7 @@ void main() {
   vec3 warpC = vec3(.12, .20, .44) * (.85 + .3 * hash(i + 3.));      // indigo
   // the weft is dyed in long warm bands, saffron to rust to madder and back, so the cloth carries a slow stripe
   float bandT = .5 + .5 * sin(j * .045);
-  vec3 weftC = mix(vec3(.95, .90, .80), mix(vec3(.96, .78, .44), vec3(.90, .56, .40), bandT), .55) * (.92 + .12 * hash(j + 7.));
+  vec3 weftC = mix(vec3(.95, .90, .80), mix(vec3(.96, .78, .44), vec3(.90, .56, .40), bandT), .26) * (.92 + .12 * hash(j + 7.));
   // satin: in every five, the warp is up only once (weft faced), or down only once (warp faced)
   vec2 cc = vec2(CL + (i + .5) * P, CT + (j + .5) * P);   // the loom decides once per crossing, so the letters step thread by thread
   float inside = texture2D(mask, cc / vec2(1240., 1754.)).r;

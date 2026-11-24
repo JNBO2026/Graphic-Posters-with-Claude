@@ -106,9 +106,9 @@ const READY = (async () => {
     x.fillStyle = '#ECEBE6'; x.font = '700 150px "Space Grotesk"'; x.letterSpacing = '-4px'; x.textBaseline = 'alphabetic';
     x.fillText('Spectrum', M, H - M - 70);
     // a ruler of wavelengths up the right edge, ticked every 50 nm, the colour of each mark its own wavelength
-    x.save(); x.font = '500 30px "Space Grotesk"'; x.textAlign = 'right';
-    for (let l = 400; l <= 700; l += 50) { const yy = M + 120 + (l - 400) / 300 * (H * .5); const c = rgb(xyz(l)).map(v => Math.max(0, Math.min(1, v * 1.6)));
-      x.fillStyle = `rgb(${c.map(v => Math.round(Math.pow(v, 1 / 2.2) * 255)).join(',')})`; x.fillRect(W - M - 40, yy - 2, 40, 4); x.fillText(l + ' nm', W - M - 54, yy + 10); }
+    x.save(); x.font = '500 38px "Space Grotesk"'; x.textAlign = 'right';
+    for (let l = 400; l <= 700; l += 50) { const yy = M + 120 + (l - 400) / 300 * (H * .5); const c0 = rgb(xyz(l)).map(v => Math.max(0, v)), mx = Math.max(...c0, .001), c = c0.map(v => .12 + .88 * v / mx);   // every mark as bright as its hue allows
+      x.fillStyle = `rgb(${c.map(v => Math.round(Math.pow(v, 1 / 2.2) * 255)).join(',')})`; x.fillRect(W - M - 40, yy - 2, 40, 4); x.fillText(l + ' nm', W - M - 54, yy + 13); }
     x.restore();
     x.font = '500 40px "Space Grotesk"'; x.letterSpacing = '0px'; x.fillStyle = '#8E8C86';
     x.fillText('400 to 700 nanometres, one beam.', M + 4, H - M);

@@ -32,7 +32,7 @@ const pts = P.map(([x, y, k]) => new THREE.Vector3(x - W / 2, H / 2 - y, (k || 0
 const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal', .5);
 const SEG = pts.length * 2, geo = new THREE.TubeGeometry(curve, SEG, 2.6, 5, false);
 // colour by depth: an analogous run, deep indigo where the wire comes closest, rose where it lies back
-const cols = [], A = new THREE.Color('#23286B'), B = new THREE.Color('#7A2E8E'), C = new THREE.Color('#D9506A');
+const cols = [], A = new THREE.Color('#171A55'), B = new THREE.Color('#7A2E8E'), C = new THREE.Color('#E3C9BE');
 const n = geo.attributes.position.count, ring = 6;
 const pos = geo.attributes.position;
 for (let i = 0; i < n; i++) { const u = Math.min(1, Math.max(0, 1 - pos.getZ(i) / 150)); const c = u < .5 ? A.clone().lerp(B, u * 2) : B.clone().lerp(C, (u - .5) * 2); cols.push(c.r, c.g, c.b); }

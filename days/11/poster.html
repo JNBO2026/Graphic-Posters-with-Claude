@@ -73,7 +73,7 @@ void main() {
   // depth: a long cast shadow, as if the letters stood off the page, from a light that circles once a loop
   vec2 L = vec2(cos(t * TAU + .6), sin(t * TAU + .6)) * 2.6;
   float sh = 0.;
-  for (int i = 1; i <= 26; i++) { float dd = shape(p - L * float(i)); sh = max(sh, smoothstep(.8, -.8, dd) * (1. - float(i) / 30.)); }
+  for (int i = 1; i <= 26; i++) { float dd = shape(p - L * float(i)); sh = max(sh, smoothstep(.8, -.8, dd)); }   // a solid block of shadow, crisp at its end, like extruded type
   sh *= 1. - figure;
   // the horizon: a slow wave, and everything below it is the other way round
   float y = hz + sin(uv.x * 4.2 + t * TAU) * wob;
@@ -82,13 +82,10 @@ void main() {
   vec3 paper = vec3(.949, .918, .859), navy = vec3(.078, .094, .227), verm = vec3(.91, .26, .18);
   vec3 col = mix(paper, navy, ink);
   // the shadow: navy over paper above the line, paper over navy below
-  vec3 shc = mix(mix(paper, navy, .22), mix(navy, paper, .16), below);
+  vec3 shc = mix(mix(paper, navy, .38), mix(navy, paper, .30), below);
   col = mix(col, shc, sh * .9 * (1. - abs(figure - below) * 0.) * (1. - figure));
   // where IN and OUT overlap, a third shape: neither word, both words
   float both = smoothstep(aa, -aa, da) * smoothstep(aa, -aa, db);
-  // the word it is about to become, as a vermilion hairline
-  float other = k < .5 ? db : da;
-  col = mix(col, verm, smoothstep(2.6, 1., abs(other)) * .95);
   // the horizon itself, a vermilion rule
   col = mix(col, verm, smoothstep(2.2, .6, abs(p.y - y)) * .95);
   col += (hash(p * dpr + t) - .5) * .02;

@@ -75,7 +75,7 @@ const READY = (async () => {
     x.fillStyle = INK; x.font = '700 236px Oswald'; x.letterSpacing = '-2px';
     const ride = (1 - go(kT)) * -900;
     x.fillText('UPWARD', 40 + ride, 0); x.restore();
-    x.save(); x.translate(W - M - 20, M + 40); x.rotate(A); x.fillStyle = RED; x.font = '700 64px Oswald'; x.letterSpacing = '2px';
+    x.save(); x.translate(W - M - 10, H - M - 110); x.rotate(A); x.fillStyle = RED; x.font = '700 64px Oswald'; x.letterSpacing = '2px';
     x.textAlign = 'right'; x.globalAlpha = go(kT); x.fillText('16 / 30', 0, 60); x.restore();
   }
   draw(0); document.body.dataset.ready = '1'; return draw;

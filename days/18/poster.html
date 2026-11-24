@@ -86,9 +86,7 @@ const READY = (async () => {
     const stamp = t < 1.4 ? 1 : t < 2.4 ? 1 - (t - 1.4) : Math.max(0, Math.min(1, (t - 9.3) / .35));
     if (stamp > 0) { const sz = 150 * (1 + (1 - stamp) * .25); x.save(); x.globalAlpha = stamp; x.globalCompositeOperation = 'multiply';
       x.translate(W - 72 - 75, H - 72 - 75 - 40); x.rotate(-.03); x.drawImage(seal, -sz / 2, -sz / 2, sz, sz); x.restore(); }
-    // the title, in the margin's quiet: one word, as the seal's echo, set vertically in the way of a hanging scroll
-    x.save(); x.fillStyle = 'rgba(40,36,34,.82)'; x.font = '800 92px "Shippori Mincho B1"'; x.textAlign = 'center';
-    x.fillText('間', 72 + 50, 72 + 96); x.restore();
+
   }
   await draw(0); document.body.dataset.ready = '1'; return draw;
 })();
